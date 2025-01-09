@@ -1,7 +1,7 @@
 extends Button
 
-const checkerboard = preload("res://visual/icons/backgrounds/Checkerboard.svg")
-const gear_icon = preload("res://visual/icons/GearOutlined.svg")
+const checkerboard = preload("res://assets/icons/backgrounds/Checkerboard.svg")
+const gear_icon = preload("res://assets/icons/GearOutlined.svg")
 
 const ColorSwatch = preload("res://src/ui_widgets/color_swatch.tscn")
 
@@ -83,8 +83,8 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	var data := DropData.new(palette, idx)
 	# Set up a preview.
 	var preview := ColorSwatch.instantiate()
-	preview.palette = palette
-	preview.idx = idx
+	preview.color = palette.get_color(idx)
+	preview.color_name = palette.get_color_name(idx)
 	preview.modulate = Color(1, 1, 1, 0.85)
 	set_drag_preview(preview)
 	modulate = Color(1, 1, 1, 0.55)

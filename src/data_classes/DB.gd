@@ -9,31 +9,33 @@ const recognized_elements = ["svg", "g", "circle", "ellipse", "rect", "path", "l
 		"polyline", "polygon", "stop", "linearGradient", "radialGradient"]
 
 const element_icons = {
-	"circle": preload("res://visual/icons/element/circle.svg"),
-	"ellipse": preload("res://visual/icons/element/ellipse.svg"),
-	"rect": preload("res://visual/icons/element/rect.svg"),
-	"path": preload("res://visual/icons/element/path.svg"),
-	"line": preload("res://visual/icons/element/line.svg"),
-	"polygon":  preload("res://visual/icons/element/polygon.svg"),
-	"polyline":  preload("res://visual/icons/element/polyline.svg"),
-	"svg": preload("res://visual/icons/element/svg.svg"),
-	"g": preload("res://visual/icons/element/g.svg"),
-	"linearGradient": preload("res://visual/icons/element/linearGradient.svg"),
-	"radialGradient": preload("res://visual/icons/element/radialGradient.svg"),
-	"stop": preload("res://visual/icons/element/stop.svg"),
+	"circle": preload("res://assets/icons/element/circle.svg"),
+	"ellipse": preload("res://assets/icons/element/ellipse.svg"),
+	"rect": preload("res://assets/icons/element/rect.svg"),
+	"path": preload("res://assets/icons/element/path.svg"),
+	"line": preload("res://assets/icons/element/line.svg"),
+	"polygon":  preload("res://assets/icons/element/polygon.svg"),
+	"polyline":  preload("res://assets/icons/element/polyline.svg"),
+	"svg": preload("res://assets/icons/element/svg.svg"),
+	"g": preload("res://assets/icons/element/g.svg"),
+	"linearGradient": preload("res://assets/icons/element/linearGradient.svg"),
+	"radialGradient": preload("res://assets/icons/element/radialGradient.svg"),
+	"stop": preload("res://assets/icons/element/stop.svg"),
 }
-const unrecognized_xnode_icon = preload("res://visual/icons/element/unrecognized.svg")
+const unrecognized_xnode_icon = preload("res://assets/icons/element/unrecognized.svg")
 
 const xnode_icons = {
-	BasicXNode.NodeType.COMMENT: preload("res://visual/icons/element/xmlnodeComment.svg"),
-	BasicXNode.NodeType.TEXT: preload("res://visual/icons/element/xmlnodeText.svg"),
-	BasicXNode.NodeType.CDATA: preload("res://visual/icons/element/xmlnodeCDATA.svg"),
+	BasicXNode.NodeType.COMMENT: preload("res://assets/icons/element/xmlnodeComment.svg"),
+	BasicXNode.NodeType.TEXT: preload("res://assets/icons/element/xmlnodeText.svg"),
+	BasicXNode.NodeType.CDATA: preload("res://assets/icons/element/xmlnodeCDATA.svg"),
 }
 
 const recognized_attributes = {  # Dictionary{String: Array[String]}
 	# TODO this is just propagated_attributes, but it ruins the const because of Godot bug.
+	# TODO Add "color" to "g" when we're ready.
 	"svg": ["xmlns", "x", "y", "width", "height", "viewBox", "fill", "fill-opacity",
-			"stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin"],
+			"stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin",
+			"color"],
 	"g": ["transform", "opacity", "fill", "fill-opacity", "stroke", "stroke-opacity",
 			"stroke-width", "stroke-linecap", "stroke-linejoin"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod",
@@ -75,7 +77,7 @@ const valid_children = {  # Dictionary{String: Array[String]}
 }
 
 const propagated_attributes = ["fill", "fill-opacity", "stroke", "stroke-opacity",
-		"stroke-width", "stroke-linecap", "stroke-linejoin"]
+		"stroke-width", "stroke-linecap", "stroke-linejoin", "color"]
 
 const attribute_types = {
 	"viewBox": AttributeType.LIST,
@@ -100,6 +102,7 @@ const attribute_types = {
 	"stroke-width": AttributeType.NUMERIC,
 	"stroke-linecap": AttributeType.ENUM,
 	"stroke-linejoin": AttributeType.ENUM,
+	"color": AttributeType.COLOR,
 	"d": AttributeType.PATHDATA,
 	"points": AttributeType.LIST,
 	"transform": AttributeType.TRANSFORM_LIST,
@@ -142,6 +145,8 @@ const attribute_number_range = {
 }
 
 const attribute_color_url_allowed = ["fill", "stroke"]
+const attribute_color_none_allowed = ["fill", "stroke"]
+const attribute_color_current_color_allowed = ["fill", "stroke", "stop-color"]
 
 
 static func get_recognized_attributes(element_name: String) -> Array:
