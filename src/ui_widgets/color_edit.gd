@@ -3,7 +3,7 @@ extends LineEditButton
 
 const ColorPopup = preload("res://src/ui_widgets/color_popup.tscn")
 const ColorPickerPopup = preload("res://src/ui_widgets/color_picker_popup.tscn")
-const checkerboard = preload("res://visual/icons/backgrounds/ColorButtonBG.svg")
+const checkerboard = preload("res://assets/icons/backgrounds/ColorButtonBG.svg")
 
 @onready var color_picker: Control
 
@@ -14,7 +14,7 @@ signal value_changed(new_value: String)
 var value: String:
 	set(new_value):
 		new_value = ColorParser.add_hash_if_hex(new_value)
-		if ColorParser.is_valid(new_value, enable_alpha, false):
+		if ColorParser.is_valid(new_value, enable_alpha):
 			if new_value != value:
 				value = new_value
 				value_changed.emit(value)
@@ -31,9 +31,6 @@ func _ready() -> void:
 		custom_minimum_size.x += 14.0
 	sync(value)
 
-func is_color_valid_non_url(new_value: String) -> bool:
-	new_value = ColorParser.add_hash_if_hex(new_value)
-	return ColorParser.is_valid(new_value, enable_alpha, false)
 
 func sync(new_value: String) -> void:
 	text = new_value.trim_prefix("#")
@@ -43,7 +40,6 @@ func sync(new_value: String) -> void:
 func _on_pressed() -> void:
 	color_picker = ColorPopup.instantiate() if enable_palettes\
 			else ColorPickerPopup.instantiate()
-	color_picker.show_disable_color = false
 	if enable_alpha:
 		color_picker.enable_alpha = true
 	color_picker.current_value = ColorParser.add_hash_if_hex(value)
@@ -51,7 +47,8 @@ func _on_pressed() -> void:
 	color_picker.color_picked.connect(_on_color_picked)
 
 func _on_text_changed(new_text: String) -> void:
-	font_color = Configs.savedata.get_validity_color(!is_color_valid_non_url(new_text))
+	font_color = Configs.savedata.get_validity_color(
+			ColorParser.is_valid(ColorParser.add_hash_if_hex(new_text), enable_alpha))
 
 func _draw() -> void:
 	super()

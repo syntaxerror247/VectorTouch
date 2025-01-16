@@ -6,9 +6,9 @@ const ShortcutShowcaseWidget = preload("res://src/ui_widgets/presented_shortcut.
 const SettingFrame = preload("res://src/ui_widgets/setting_frame.tscn")
 const ProfileFrame = preload("res://src/ui_widgets/profile_frame.tscn")
 
-const plus_icon = preload("res://visual/icons/Plus.svg")
-const import_icon = preload("res://visual/icons/Import.svg")
-const reset_icon = preload("res://visual/icons/Reload.svg")
+const plus_icon = preload("res://assets/icons/Plus.svg")
+const import_icon = preload("res://assets/icons/Import.svg")
+const reset_icon = preload("res://assets/icons/Reload.svg")
 
 @onready var lang_button: Button = $VBoxContainer/Language
 @onready var content_container: ScrollContainer = %ContentContainer
@@ -310,17 +310,25 @@ func hide_advice(setting: String) -> void:
 
 
 func _on_language_pressed() -> void:
+	var strings_count := TranslationServer.get_translation_object("en").get_message_count()
+	
 	var btn_arr: Array[Button] = []
 	for lang in TranslationServer.get_loaded_locales():
 		# Translation percentages.
+		# TODO Godot drove me insane here. So Translation.get_translated_message() gets
+		# all the translations, even the fuzzied ones that aren't used... whuh?
+		# So I tried to use Translation.get_message_list(), and it gets the messages
+		# for all the translations... except the fuzzied ones for some reason? WHAT?!
+		# We solve this by finding the number of fuzzied strings by subtracting the
+		# message count of English messages by the message count of the locale.
 		if lang != "en":
 			var translation_obj := TranslationServer.get_translation_object(lang)
-			var translated_count := 0
-			for msg in translation_obj.get_translated_message_list():
+			var fuzzied_count := strings_count - translation_obj.get_message_count()
+			var translated_count := -fuzzied_count
+			for msg in translation_obj.get_message_list():
 				if not msg.is_empty():
 					translated_count += 1
-			var percentage := String.num(translated_count * 100.0 /\
-					translation_obj.get_message_count(), 1) + "%"
+			var percentage := String.num(translated_count * 100.0 / strings_count, 1) + "%"
 			
 			var is_current_locale := lang == TranslationServer.get_locale()
 			var new_btn := ContextPopup.create_button(
@@ -391,10 +399,10 @@ func update_language_button() -> void:
 func _popup_xml_palette_options(palette_xml_button: Button) -> void:
 	var btn_arr: Array[Button] = []
 	btn_arr.append(ContextPopup.create_button(Translator.translate("Import XML"),
-			add_imported_palette, false, load("res://visual/icons/Import.svg")))
+			add_imported_palette, false, load("res://assets/icons/Import.svg")))
 	btn_arr.append(ContextPopup.create_button(Translator.translate("Paste XML"),
 			add_pasted_palette, !ColorPalette.is_valid_palette(Utils.get_clipboard_web_safe()),
-			load("res://visual/icons/Paste.svg")))
+			load("res://assets/icons/Paste.svg")))
 	
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_arr, true)
@@ -411,7 +419,7 @@ func add_pasted_palette() -> void:
 func add_imported_palette() -> void:
 	FileUtils.open_xml_import_dialog(_on_import_palette_finished)
 
-func _on_import_palette_finished(file_text: String, _file_name: String) -> void:
+func _on_import_palette_finished(file_text: String) -> void:
 	_shared_add_palettes_logic(ColorPalette.text_to_palettes(file_text))
 
 func _shared_add_palettes_logic(palettes: Array[ColorPalette]) -> void:

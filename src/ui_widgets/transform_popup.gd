@@ -7,12 +7,12 @@ const MiniNumberField = preload("res://src/ui_widgets/mini_number_field.tscn")
 const TransformEditor = preload("res://src/ui_widgets/transform_editor.tscn")
 
 const icons_dict := {
-	"matrix": preload("res://visual/icons/Matrix.svg"),
-	"translate": preload("res://visual/icons/Translate.svg"),
-	"rotate": preload("res://visual/icons/Rotate.svg"),
-	"scale": preload("res://visual/icons/Scale.svg"),
-	"skewX": preload("res://visual/icons/SkewX.svg"),
-	"skewY": preload("res://visual/icons/SkewY.svg"),
+	"matrix": preload("res://assets/icons/Matrix.svg"),
+	"translate": preload("res://assets/icons/Translate.svg"),
+	"rotate": preload("res://assets/icons/Rotate.svg"),
+	"scale": preload("res://assets/icons/Scale.svg"),
+	"skewX": preload("res://assets/icons/SkewX.svg"),
+	"skewY": preload("res://assets/icons/SkewY.svg"),
 }
 
 var attribute_ref: AttributeTransformList
@@ -129,37 +129,37 @@ func delete_transform(idx: int) -> void:
 	UR.commit_action()
 
 func _on_apply_matrix_pressed() -> void:
-	var final_transform := attribute_ref.get_final_transform()
+	var final_transform := attribute_ref.get_final_precise_transform()
 	UR.create_action("")
 	UR.add_do_method(attribute_ref.set_transform_list.bind([
-			Transform.TransformMatrix.new(final_transform.x.x, final_transform.x.y,
-			final_transform.y.x, final_transform.y.y, final_transform.origin.x,
-			final_transform.origin.y)] as Array[Transform]))
+			Transform.TransformMatrix.new(final_transform[0], final_transform[1],
+			final_transform[2], final_transform[3], final_transform[4],
+			final_transform[5])] as Array[Transform]))
 	UR.add_do_method(rebuild)
 	UR.add_undo_method(attribute_ref.set_transform_list.bind(get_transform_list()))
 	UR.add_undo_method(rebuild)
 	UR.commit_action()
 
 func update_final_transform() -> void:
-	var final_transform := attribute_ref.get_final_transform()
-	x1_edit.set_value(final_transform[0].x)
-	x2_edit.set_value(final_transform[0].y)
-	y1_edit.set_value(final_transform[1].x)
-	y2_edit.set_value(final_transform[1].y)
-	o1_edit.set_value(final_transform[2].x)
-	o2_edit.set_value(final_transform[2].y)
+	var final_transform := attribute_ref.get_final_precise_transform()
+	x1_edit.set_value(final_transform[0])
+	x2_edit.set_value(final_transform[1])
+	y1_edit.set_value(final_transform[2])
+	y2_edit.set_value(final_transform[3])
+	o1_edit.set_value(final_transform[4])
+	o2_edit.set_value(final_transform[5])
 
 
 func popup_transform_actions(idx: int, control: Control) -> void:
 	var btn_array: Array[Button] = []
 	btn_array.append(ContextPopup.create_button(Translator.translate("Insert After"),
 			popup_new_transform_context.bind(idx + 1, control), false,
-			load("res://visual/icons/InsertAfter.svg")))
+			load("res://assets/icons/InsertAfter.svg")))
 	btn_array.append(ContextPopup.create_button(Translator.translate("Insert Before"),
 			popup_new_transform_context.bind(idx, control), false,
-			load("res://visual/icons/InsertBefore.svg")))
+			load("res://assets/icons/InsertBefore.svg")))
 	btn_array.append(ContextPopup.create_button(Translator.translate("Delete"),
-			delete_transform.bind(idx), false, load("res://visual/icons/Delete.svg")))
+			delete_transform.bind(idx), false, load("res://assets/icons/Delete.svg")))
 	
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_array, true)
