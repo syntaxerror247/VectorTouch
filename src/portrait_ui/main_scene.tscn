@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://bihwwoedqcyo8"]
+
+[ext_resource type="Script" path="res://src/portrait_ui/main_scene.gd" id="1_o7lif"]
+[ext_resource type="PackedScene" uid="uid://cr1fdlmbknnko" path="res://src/ui_parts/code_editor.tscn" id="3_4uluy"]
+[ext_resource type="PackedScene" uid="uid://ccynisiuyn5qn" path="res://src/ui_parts/inspector.tscn" id="4_jik7v"]
+[ext_resource type="PackedScene" uid="uid://bvrncl7e6yn5b" path="res://src/ui_parts/display.tscn" id="5_gb5yr"]
+
+[node name="MainScene" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_o7lif")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(360, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="HSplitContainer" type="VSplitContainer" parent="PanelContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 40
+theme_override_constants/minimum_grab_thickness = 30
+
+[node name="Inspector" parent="PanelContainer/HSplitContainer" instance=ExtResource("4_jik7v")]
+layout_mode = 2
+
+[node name="CodeEditor" parent="PanelContainer/HSplitContainer" instance=ExtResource("3_4uluy")]
+visible = false
+layout_mode = 2
+
+[node name="Display" parent="PanelContainer/HSplitContainer" instance=ExtResource("5_gb5yr")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
