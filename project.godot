@@ -13,7 +13,7 @@ config_version=5
 config/name="GodSVG Mobile"
 config/version="1.0-alpha7"
 config/tags=PackedStringArray("project")
-run/main_scene="res://src/ui_parts/main_scene.tscn"
+run/main_scene="res://src/portrait_ui/main_scene.tscn"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.3")
 run/low_processor_mode=true
@@ -37,10 +37,10 @@ HandlerGUI="*res://src/autoload/HandlerGUI.gd"
 
 [display]
 
-window/size/viewport_width=1024
-window/size/viewport_height=640
-window/size/mode=2
+window/size/viewport_width=720
+window/size/viewport_height=1280
 window/energy_saving/keep_screen_on=false
+window/handheld/orientation=1
 mouse_cursor/tooltip_position_offset=Vector2(0, 10)
 
 [filesystem]
@@ -51,6 +51,7 @@ import/fbx/enabled=false
 [gui]
 
 timers/tooltip_delay_sec=0.4
+theme/custom="res://temp_theme.tres"
 
 [input]
 
