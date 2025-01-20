@@ -11,7 +11,6 @@ func _ready() -> void:
 		add_child(MacMenu.instantiate())
 
 func update_theme() -> void:
-	pass
 	var stylebox := StyleBoxFlat.new()
 	stylebox.bg_color = ThemeUtils.overlay_panel_inner_color
 	stylebox.set_content_margin_all(0)
