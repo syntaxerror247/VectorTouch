@@ -9,16 +9,16 @@ on:
 
 env:
   # Which godot version to use for exporting.
-  GODOT_VERSION: 4.3
+  GODOT_VERSION: 4.4
   # Which godot release to use for exporting. (stable/rc/beta/alpha)
-  GODOT_RELEASE: stable
+  GODOT_RELEASE: beta
   # Used in the editor config file name. Do not change this for patch releases.
-  GODOT_FEATURE_VERSION: 4.3
+  GODOT_FEATURE_VERSION: 4.4
   # Commit hash
-  GODOT_COMMIT_HASH: 77dcf97
-  PROJECT_NAME: GodSVG
+  GODOT_COMMIT_HASH: d33da79d3
+  PROJECT_NAME: GodSVG Mobile
   GODOT_REPO: https://github.com/godotengine/godot.git
-  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes
+  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes swappy=no
 
 jobs:
   format:
@@ -119,7 +119,7 @@ jobs:
         run: |
           cd godsvg
           mkdir -p build/android
-          godot --headless --export-debug "Android" build/android/GodSVG-debug.apk
+          godot --headless --export-debug "Android" build/android/GodSVG-Mobile-debug.apk
 
       - name: Export release project
         if: github.event_name == 'workflow_dispatch'
@@ -131,20 +131,20 @@ jobs:
           cd godsvg
           mkdir -p build/android
           echo "${{ secrets.KEYSTORE }}" | base64 -d > /tmp/release.keystore
-          godot --headless --export-release "Android" build/android/GodSVG.apk
+          godot --headless --export-release "Android" build/android/GodSVG-Mobile.apk
 
       - name: Upload debug artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PROJECT_NAME }}.debug.Android
-          path: godsvg/build/android/GodSVG-debug.apk
+          name: ${{ env.PROJECT_NAME }}.debug
+          path: godsvg/build/android/GodSVG-Mobile-debug.apk
           if-no-files-found: error
           retention-days: 28
 
       - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PROJECT_NAME }}.release.Android
-          path: godsvg/build/android/GodSVG.apk
+          name: ${{ env.PROJECT_NAME }}
+          path: godsvg/build/android/GodSVG-Mobile.apk
           if-no-files-found: ignore
           retention-days: 28
