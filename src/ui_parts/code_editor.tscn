@@ -34,6 +34,7 @@ corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
 [node name="CodeEditor" type="VBoxContainer"]
+custom_minimum_size = Vector2(0, 90)
 theme_override_constants/separation = 0
 script = ExtResource("1_nffk0")
 
@@ -99,7 +100,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = -2
 
 [node name="SVGCodeEdit" type="TextEdit" parent="ScriptEditor"]
-custom_minimum_size = Vector2(0, 96)
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
