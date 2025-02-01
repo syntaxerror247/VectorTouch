@@ -18,7 +18,7 @@ theme_override_constants/separation = 0
 script = ExtResource("1_o7lif")
 
 [node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(360, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -26,8 +26,7 @@ size_flags_vertical = 3
 [node name="HSplitContainer" type="VSplitContainer" parent="PanelContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 40
-theme_override_constants/minimum_grab_thickness = 30
+theme_override_constants/separation = 30
 theme_override_styles/split_bar_background = SubResource("StyleBoxFlat_mt61i")
 
 [node name="TabContainer" type="TabContainer" parent="PanelContainer/HSplitContainer"]
@@ -50,3 +49,6 @@ metadata/_tab_index = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 2

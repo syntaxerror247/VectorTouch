@@ -259,36 +259,12 @@ func update_ui_scale() -> void:
 	var window := get_window()
 	if not window.is_node_ready():
 		await window.ready
-	var old_scale_factor := window.content_scale_factor
-	
-	# Get window size without the decorations.
-	var usable_screen_size := Vector2i(DisplayServer.screen_get_usable_rect(
-			DisplayServer.window_get_current_screen()).size -\
-			window.get_size_with_decorations() + window.size)
-	
-	# Presumably the default size would always be enough for the contents.
-	var window_default_size := Vector2i(
-			ProjectSettings.get_setting("display/window/size/viewport_width"),
-			ProjectSettings.get_setting("display/window/size/viewport_height"))
-	
-	# How much can the default size be increased before it takes all usable screen space.
-	var max_expansion := Vector2(usable_screen_size) / Vector2(window_default_size)
-	var max_scale := snappedf(minf(max_expansion.x, max_expansion.y) - 0.125, 0.25)
-	if OS.get_name() == "Android":
-		# This is a temporary fix for smaller UI scale on Android.
-		# TODO Update this logic after moving to Godot 4.4
-		max_scale *= 1.1
-	var final_scale := minf(Configs.savedata.ui_scale * _calculate_auto_scale(), max_scale)
-	var resize_factor := final_scale / old_scale_factor
-	
-	if not OS.get_name() in ["Android", "Web"]:
-		# TODO Check later if this workaround is still necessary for Windows.
-		if OS.get_name() != "Windows" or window.mode == Window.MODE_WINDOWED:
-			# The window's minimum size can mess with the size change, so we set it to zero.
-			window.min_size = Vector2i.ZERO
-			window.size *= resize_factor
-		window.min_size = window_default_size * final_scale
-	window.content_scale_factor = final_scale
+	if Configs.savedata.auto_ui_scale:
+		window.content_scale_factor = _calculate_auto_scale()
+	else:
+		var final_scale := minf(Configs.savedata.ui_scale, 4.0)
+		window.content_scale_factor = final_scale
+
 
 func open_update_checker() -> void:
 	var confirmation_dialog = ConfirmDialog.instantiate()
@@ -325,44 +301,25 @@ func open_export() -> void:
 				Translator.translate("Export"), FileUtils.open_export_dialog.bind(svg_export_data))
 
 func _calculate_auto_scale() -> float:
-	if not Configs.savedata.auto_ui_scale:
-		return 1.0
+	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
 
-	# Credit: Godots (MIT, by MakovWait and contributors)
+	if dpi <= 120:
+		return 0.75  # ldpi
+	elif dpi <= 160:
+		return 1.0  # mdpi (baseline)
+	elif dpi <= 240:
+		return 1.5  # hdpi
+	elif dpi <= 320:
+		return 2.0  # xhdpi
+	elif dpi <= 480:
+		return 3.0  # xxhdpi
+	elif dpi <= 640:
+		return 4.0  # xxxhdpi
+	else:
+		return 5.0  # Beyond xxxhdpi
 
-	var screen := DisplayServer.window_get_current_screen()
-	if DisplayServer.screen_get_size(screen) == Vector2i():
-		return 1.0
+	return 1.0  # Default fallback scale
 
-	# Use the smallest dimension to use a correct display scale on portrait displays.
-	var smallest_dimension := mini(DisplayServer.screen_get_size(screen).x,
-			DisplayServer.screen_get_size(screen).y)
-
-	var dpi :=  DisplayServer.screen_get_dpi(screen)
-	if dpi != 72:
-		if dpi < 72:
-			return 0.75
-		elif dpi <= 96:
-			return 1.0
-		elif dpi <= 120:
-			return 1.25
-		elif dpi <= 160:
-			return 1.5
-		elif dpi <= 200:
-			return 2.0
-		elif dpi <= 240:
-			return 2.5
-		elif dpi <= 320:
-			return 3.0
-		elif dpi <= 480:
-			return 4.0
-		else:  # dpi > 480
-			return 5.0
-	elif smallest_dimension >= 1700:
-		# Likely a hiDPI display, but we aren't certain due to the returned DPI.
-		# Use an intermediate scale to handle this situation.
-		return 1.5
-	return 1.0
 
 # Helpers
 
