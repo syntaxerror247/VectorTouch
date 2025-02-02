@@ -323,8 +323,6 @@ func _calculate_auto_scale() -> float:
 	else:
 		return 5.0  # Beyond xxxhdpi
 
-	return 1.0  # Default fallback scale
-
 
 func update_window_title() -> void:
 	if Configs.savedata.use_filename_for_window_title and\
