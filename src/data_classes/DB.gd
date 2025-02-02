@@ -199,12 +199,9 @@ attribute_name: String) -> PercentageHandling:
 		_: return PercentageHandling.FRACTION
 
 
-static func element_with_setup(name: String, user_setup_value = null) -> Element:
+static func element_with_setup(name: String, user_setup_values: Array) -> Element:
 	var new_element := element(name)
-	if user_setup_value != null:
-		new_element.user_setup(user_setup_value)
-	else:
-		new_element.user_setup()
+	new_element.user_setup.callv(user_setup_values)
 	return new_element
 
 static func element(name: String) -> Element:
@@ -223,16 +220,16 @@ static func element(name: String) -> Element:
 		"stop": return ElementStop.new()
 		_: return ElementUnrecognized.new(name)
 
-static func attribute(name: String, formatter: Formatter, value: String) -> Attribute:
+static func attribute(name: String, value: String) -> Attribute:
 	match DB.get_attribute_type(name):
-		DB.AttributeType.NUMERIC: return AttributeNumeric.new(name, formatter, value)
-		DB.AttributeType.COLOR: return AttributeColor.new(name, formatter, value)
-		DB.AttributeType.LIST: return AttributeList.new(name, formatter, value)
-		DB.AttributeType.PATHDATA: return AttributePathdata.new(name, formatter, value)
-		DB.AttributeType.ENUM: return AttributeEnum.new(name, formatter, value)
-		DB.AttributeType.TRANSFORM_LIST: return AttributeTransformList.new(name, formatter, value)
-		DB.AttributeType.ID: return AttributeID.new(name, formatter, value)
-		_: return Attribute.new(name, formatter, value)
+		DB.AttributeType.NUMERIC: return AttributeNumeric.new(name, value)
+		DB.AttributeType.COLOR: return AttributeColor.new(name, value)
+		DB.AttributeType.LIST: return AttributeList.new(name, value)
+		DB.AttributeType.PATHDATA: return AttributePathdata.new(name, value)
+		DB.AttributeType.ENUM: return AttributeEnum.new(name, value)
+		DB.AttributeType.TRANSFORM_LIST: return AttributeTransformList.new(name, value)
+		DB.AttributeType.ID: return AttributeID.new(name, value)
+		_: return Attribute.new(name, value)
 
 
 static func is_element_gradient(checked_element: Element) -> bool:

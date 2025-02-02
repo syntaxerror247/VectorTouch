@@ -7,8 +7,8 @@ func _sync() -> void:
 	_commands = parse_pathdata(get_value())
 	locate_start_points()
 
-func format(text: String) -> String:
-	return path_commands_to_text(parse_pathdata(text))
+func _format(text: String, formatter: Formatter) -> String:
+	return path_commands_to_text(parse_pathdata(text), formatter)
 
 
 func get_commands() -> Array[PathCommand]:
@@ -156,10 +156,10 @@ func insert_command(idx: int, cmd_char: String, vec := Vector2.ZERO) -> void:
 	sync_after_commands_change()
 
 
-func _convert_command(idx: int, cmd_char: String) -> void:
+func _convert_command(idx: int, cmd_char: String) -> bool:
 	var old_cmd := get_command(idx)
 	if old_cmd.command_char == cmd_char:
-		return
+		return false
 	
 	var cmd_absolute_char := cmd_char.to_upper()
 	var new_cmd: PathCommand = PathCommand.translation_dict[cmd_absolute_char].new()
@@ -202,16 +202,22 @@ func _convert_command(idx: int, cmd_char: String) -> void:
 	_commands.insert(idx, new_cmd)
 	if relative:
 		_commands[idx].toggle_relative()
+	return true
 
 func convert_command(idx: int, cmd_char: String) -> void:
-	_convert_command(idx, cmd_char)
-	sync_after_commands_change()
+	var conversion_made := _convert_command(idx, cmd_char)
+	if conversion_made:
+		sync_after_commands_change()
 
 func convert_commands_optimized(indices: PackedInt32Array,
 cmd_chars: PackedStringArray) -> void:
+	var conversions_made := false
 	for i in indices.size():
-		_convert_command(indices[i], cmd_chars[i])
-	sync_after_commands_change()
+		var conversion_made := _convert_command(indices[i], cmd_chars[i])
+		if conversion_made:
+			conversions_made = true
+	if conversions_made:
+		sync_after_commands_change()
 
 
 func delete_commands(indices: Array[int]) -> void:
@@ -399,7 +405,8 @@ static func path_commands_from_parsed_data(data: Array[Array]) -> Array[PathComm
 	return cmds
 
 
-func path_commands_to_text(commands_arr: Array[PathCommand]) -> String:
+func path_commands_to_text(commands_arr: Array[PathCommand],
+formatter := Configs.savedata.editor_formatter) -> String:
 	var output := ""
 	var num_parser := NumstringParser.new()
 	num_parser.compress_numbers = formatter.pathdata_compress_numbers

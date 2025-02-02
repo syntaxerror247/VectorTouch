@@ -7,20 +7,17 @@ signal xnodes_added(xids: Array[PackedInt32Array])
 signal xnodes_deleted(xids: Array[PackedInt32Array])
 signal xnodes_moved_in_parent(parent_xid: PackedInt32Array, old_indices: Array[int])
 signal xnodes_moved_to(xids: Array[PackedInt32Array], location: PackedInt32Array)
-signal xnode_layout_changed  # Emitted together with any of the above 4.
+signal xnode_layout_changed  # Emitted together with any of the above four.
 
 @warning_ignore("unused_signal")
 signal basic_xnode_text_changed(xid: PackedInt32Array)
 @warning_ignore("unused_signal")
 signal basic_xnode_rendered_text_changed(xid: PackedInt32Array)
 
-var formatter: Formatter
-
-func _init(new_formatter: Formatter) -> void:
+func _init() -> void:
 	super()
 	xid = PackedInt32Array()
 	root = self
-	formatter = new_formatter
 
 func get_xnode(loc: PackedInt32Array) -> XNode:
 	var current_element: XNode = self
@@ -237,23 +234,20 @@ func optimize(not_applied := false) -> bool:
 					return true
 				replace_xnode(element.xid, element.get_replacement("path"))
 			"path":
-				var pathdata: AttributePathdata = element.get_attribute("d")
-				# Simplify A rotation to 0 degrees for circular arcs.
-				for cmd_idx in pathdata.get_command_count():
-					var command := pathdata.get_command(cmd_idx)
-					var cmd_char := command.command_char
-					if cmd_char in "Aa" and command.rx == command.ry and command.rot != 0:
-						if not_applied:
-							return true
-						pathdata.set_command_property(cmd_idx, "rot", 0)
-				
 				# Replace L with H or V when possible.
 				var conversion_indices := PackedInt32Array()
 				var conversion_cmd_chars := PackedStringArray()
 				
+				var pathdata: AttributePathdata = element.get_attribute("d")
 				for cmd_idx in pathdata.get_command_count():
 					var command := pathdata.get_command(cmd_idx)
 					var cmd_char := command.command_char
+					
+					# Simplify A rotation to 0 degrees for circular arcs.
+					if cmd_char in "Aa" and command.rx == command.ry and command.rot != 0.0:
+						if not_applied:
+							return true
+						pathdata.set_command_property(cmd_idx, "rot", 0.0)
 					
 					if cmd_char == "l":
 						if command.x == 0:

@@ -1,6 +1,7 @@
 extends PanelContainer
 
 signal imported
+signal canceled
 
 @onready var warnings_label: RichTextLabel = %WarningsLabel
 @onready var texture_preview: CenterContainer = %TexturePreview
@@ -13,18 +14,18 @@ var imported_text := ""
 func _ready() -> void:
 	imported.connect(queue_free)
 	ok_button.pressed.connect(imported.emit)
+	canceled.connect(queue_free)
+	cancel_button.pressed.connect(canceled.emit)
 	
 	# Convert forward and backward to show how GodSVG would display the given SVG.
-	var imported_text_parse_result := SVGParser.text_to_root(imported_text,
-			Configs.savedata.editor_formatter)
-	var preview_text := SVGParser.root_to_text(imported_text_parse_result.svg,
-			Configs.savedata.editor_formatter)
-	var preview_parse_result := SVGParser.text_to_root(preview_text,
-			Configs.savedata.editor_formatter)
-	var preview := preview_parse_result.svg
-	if is_instance_valid(preview):
-		texture_preview.setup_svg(SVGParser.root_to_text(preview,
-				Configs.savedata.editor_formatter), preview.get_size())
+	var imported_text_parse_result := SVGParser.text_to_root(imported_text)
+	if is_instance_valid(imported_text_parse_result.svg):
+		var preview_text := SVGParser.root_to_editor_text(imported_text_parse_result.svg)
+		var preview_parse_result := SVGParser.text_to_root(preview_text)
+		var preview := preview_parse_result.svg
+		if is_instance_valid(preview):
+			texture_preview.setup_svg(SVGParser.root_to_editor_text(preview),
+					preview.get_size())
 	
 	if imported_text_parse_result.error != SVGParser.ParseError.OK:
 		texture_preview.hide()
@@ -44,7 +45,6 @@ func _ready() -> void:
 			for warning in svg_warnings:
 				warnings_label.text += warning + "\n"
 	ok_button.grab_focus()
-	cancel_button.pressed.connect(queue_free)
 	$VBoxContainer/Title.text = Translator.translate("Import Problems")
 	ok_button.text = Translator.translate("Import")
 	cancel_button.text = Translator.translate("Cancel")

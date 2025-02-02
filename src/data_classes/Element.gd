@@ -149,14 +149,23 @@ func get_attribute_value(attribute_name: String, real := false) -> String:
 		return ""
 	return get_default(attribute_name)
 
+
+func get_attribute_true_color(attribute_name: String) -> String:
+	if DB.get_attribute_type(attribute_name) != DB.AttributeType.COLOR:
+		push_error("Attribute not the correct type.")
+	var attrib_value := get_attribute_value(attribute_name)
+	if attrib_value == "currentColor":
+		return get_default("color")
+	return attrib_value
+
 func get_attribute_num(attribute_name: String) -> float:
 	if DB.get_attribute_type(attribute_name) != DB.AttributeType.NUMERIC:
 		push_error("Attribute not the correct type.")
-	var attrib: AttributeNumeric = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
+	var num: float = _attributes[attribute_name].get_num() if\
+			has_attribute(attribute_name) else\
+			AttributeNumeric.text_to_num(get_default(attribute_name))
 	# Possibly adjust for percentage.
-	var num := attrib.get_num()
-	if attrib.is_percentage():
+	if is_attribute_percentage(attribute_name):
 		var percentage_handling := get_percentage_handling(attribute_name)
 		if percentage_handling == DB.PercentageHandling.FRACTION:
 			return num
@@ -173,50 +182,17 @@ func get_attribute_num(attribute_name: String) -> float:
 				DB.PercentageHandling.NORMALIZED: return svg.normalized_diagonal * num
 	return num
 
-func get_attribute_true_color(attribute_name: String) -> String:
-	if DB.get_attribute_type(attribute_name) != DB.AttributeType.COLOR:
-		push_error("Attribute not the correct type.")
-	var attrib: AttributeColor = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
-	var attrib_value := attrib.get_value()
-	if attrib_value == "currentColor":
-		return get_default("color")
-	return attrib_value
-
 func is_attribute_percentage(attribute_name: String) -> bool:
 	if DB.get_attribute_type(attribute_name) != DB.AttributeType.NUMERIC:
 		push_error("Attribute not the correct type.")
-	var attrib: AttributeNumeric = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
-	return attrib.is_percentage()
-
-func get_attribute_rect(attribute_name: String) -> float:
-	if DB.get_attribute_type(attribute_name) != DB.AttributeType.LIST:
-		push_error("Attribute not the correct type.")
-	var attrib: AttributeList = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
-	return attrib.get_rect()
+	return _attributes[attribute_name].is_percentage() if has_attribute(attribute_name) else\
+			AttributeNumeric.text_check_percentage(get_default(attribute_name))
 
 func get_attribute_list(attribute_name: String) -> PackedFloat64Array:
 	if DB.get_attribute_type(attribute_name) != DB.AttributeType.LIST:
 		push_error("Attribute not the correct type.")
-	var attrib: AttributeList = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
-	return attrib.get_list()
-
-func get_attribute_commands(attribute_name: String) -> Array[PathCommand]:
-	if DB.get_attribute_type(attribute_name) != DB.AttributeType.PATHDATA:
-		push_error("Attribute not the correct type.")
-	var attrib: AttributePathdata = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
-	return attrib.get_commands()
-
-func get_attribute_transforms(attribute_name: String) -> Array[Transform]:
-	if DB.get_attribute_type(attribute_name) != DB.AttributeType.TRANSFORM_LIST:
-		push_error("Attribute not the correct type.")
-	var attrib: AttributeTransformList = _attributes[attribute_name] if\
-			has_attribute(attribute_name) else new_default_attribute(attribute_name)
-	return attrib.get_transform_list()
+	return _attributes[attribute_name].get_list() if has_attribute(attribute_name) else\
+			AttributeList.text_to_list(get_default(attribute_name))
 
 func get_attribute_final_precise_transform(attribute_name: String) -> PackedFloat64Array:
 	if DB.get_attribute_type(attribute_name) != DB.AttributeType.TRANSFORM_LIST:
@@ -226,19 +202,19 @@ func get_attribute_final_precise_transform(attribute_name: String) -> PackedFloa
 	return attrib.get_final_precise_transform()
 
 
-func set_attribute(attribute_name: String, value: Variant) -> void:
-	var attrib: Attribute
-	if has_attribute(attribute_name):
-		attrib = _attributes[attribute_name]
-	else:
-		attrib = new_attribute(attribute_name)
-	
+func set_attribute(attrib_name: String, value: Variant) -> void:
 	var value_type := typeof(value)
+	
+	var has_attrib := has_attribute(attrib_name)
+	if not has_attrib and value_type == TYPE_STRING and value.is_empty():
+		return
+	
+	var attrib := _attributes[attrib_name] if has_attrib else new_attribute(attrib_name)
 	
 	if value_type == TYPE_STRING:
 		attrib.set_value(value)
 	else:
-		match DB.get_attribute_type(attribute_name):
+		match DB.get_attribute_type(attrib_name):
 			DB.AttributeType.NUMERIC:
 				if value_type in [TYPE_FLOAT, TYPE_INT]: attrib.set_num(value)
 				else: push_error("Invalid value set to attribute.")
@@ -271,13 +247,8 @@ func duplicate(include_children := true) -> Element:
 	var new_element: Element
 	if type == ElementUnrecognized:
 		new_element = ElementUnrecognized.new(self.name)
-	elif type == ElementRoot:
-		new_element = ElementRoot.new(self.formatter)
 	else:
 		new_element = type.new()
-	
-	if type == ElementRoot:
-		new_element.formatter = self.formatter
 	
 	for attribute in _attributes:
 		new_element.set_attribute(attribute, get_attribute_value(attribute))
@@ -296,11 +267,11 @@ func apply_to(element: Element, dropped_attributes: PackedStringArray) -> void:
 
 # Converts a percentage numeric attribute to absolute.
 # TODO this is no longer used, but might become useful again in the future.
-func make_attribute_absolute(attribute_name: String) -> void:
-	if is_attribute_percentage(attribute_name):
-		var new_attrib := new_attribute(attribute_name)
-		new_attrib.set_num(get_attribute_num(attribute_name))
-		_attributes[attribute_name] = new_attrib
+func make_attribute_absolute(attrib_name: String) -> void:
+	if is_attribute_percentage(attrib_name):
+		var new_attrib := new_attribute(attrib_name)
+		new_attrib.set_num(get_attribute_num(attrib_name))
+		_attributes[attrib_name] = new_attrib
 
 
 # To be overridden in extending classes.
@@ -354,9 +325,4 @@ func new_default_attribute(name: String) -> Attribute:
 	return _create_attribute(name, get_default(name))
 
 func _create_attribute(name: String, value := "") -> Attribute:
-	if root != null:
-		return DB.attribute(name, root.formatter, value)
-	elif root == self:
-		return DB.attribute(name, self.formatter, value)
-	else:
-		return DB.attribute(name, Formatter.new(), value)
+	return DB.attribute(name, value)

@@ -100,6 +100,7 @@ func setup_content() -> void:
 				btn.text = get_translated_formatter_tab(tab_idx)
 				btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 				btn.focus_mode = Control.FOCUS_NONE
+				btn.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 				categories.add_child(btn)
 			vbox.add_child(categories)
 			create_setting_container()
@@ -128,6 +129,7 @@ func setup_content() -> void:
 				btn.text = get_translated_shortcut_tab(tab_idx)
 				btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 				btn.focus_mode = Control.FOCUS_NONE
+				btn.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 				categories.add_child(btn)
 			vbox.add_child(categories)
 			var shortcuts := VBoxContainer.new()
@@ -534,8 +536,8 @@ func show_formatter(category: String) -> void:
 	current_setup_setting = "xml_indentation_spaces"
 	add_number_dropdown(Translator.translate("Number of indentation spaces"),
 			[2, 3, 4, 6, 8], true, false, Formatter.INDENTS_MIN, Formatter.INDENTS_MAX,
-			not current_setup_resource.xml_pretty_formatting and\
-			current_setup_resource.xml_indentation_use_spaces)
+			not (current_setup_resource.xml_pretty_formatting and\
+			current_setup_resource.xml_indentation_use_spaces))
 	
 	add_section(Translator.translate("Numbers"))
 	current_setup_setting = "number_remove_leading_zero"

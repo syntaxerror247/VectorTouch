@@ -7,9 +7,7 @@ var help_rid: RID
 
 var file_rid: RID
 var file_idx: int
-var file_clear_svg_idx: int
 var file_optimize_idx: int
-var file_clear_association_idx: int
 var file_reset_svg_idx: int
 
 var edit_rid: RID
@@ -44,7 +42,7 @@ func _enter_tree() -> void:
 	# Custom menus.
 	_generate_main_menus()
 	_setup_menu_items()
-	SVG.changed.connect(_on_svg_changed)
+	State.svg_changed.connect(_on_svg_changed)
 
 
 func _reset_menus() -> void:
@@ -108,12 +106,11 @@ func _setup_menu_items() -> void:
 	_add_action(file_rid, "import")
 	_add_action(file_rid, "export")
 	_add_action(file_rid, "save")
+	_add_action(file_rid, "save_as")
 	NativeMenu.add_separator(file_rid)
 	_add_action(file_rid, "copy_svg_text")
-	file_clear_svg_idx = _add_action(file_rid, "clear_svg")
 	file_optimize_idx = _add_action(file_rid, "optimize")
 	NativeMenu.add_separator(file_rid)
-	file_clear_association_idx = _add_action(file_rid, "clear_file_path")
 	file_reset_svg_idx = _add_action(file_rid, "reset_svg")
 	_on_svg_changed()
 	# Edit and Tool menus.
@@ -180,17 +177,13 @@ func _get_keycode_for_events(input_events: Array[InputEvent]) -> Key:
 
 
 func _on_svg_changed() -> void:
-	NativeMenu.set_item_disabled(file_rid, file_clear_svg_idx, SVG.text == SVG.DEFAULT)
-	var is_path_empty := Configs.savedata.current_file_path.is_empty()
-	NativeMenu.set_item_disabled(file_rid, file_clear_association_idx, is_path_empty)
-	NativeMenu.set_item_disabled(file_rid, file_reset_svg_idx, is_path_empty)
-
+	NativeMenu.set_item_disabled(file_rid, file_reset_svg_idx,
+			FileUtils.compare_svg_to_disk_contents() == FileUtils.FileState.DIFFERENT)
 
 func _on_display_view_settings_updated(show_grid: bool, show_handles: bool, rasterized_svg: bool) -> void:
 	NativeMenu.set_item_checked(view_rid, view_show_grid_idx, show_grid)
 	NativeMenu.set_item_checked(view_rid, view_show_handles_idx, show_handles)
 	NativeMenu.set_item_checked(view_rid, view_rasterized_svg_idx, rasterized_svg)
-
 
 func _on_display_snap_settings_updated(snap_enabled: bool, snap_amount: float) -> void:
 	NativeMenu.set_item_checked(snap_rid, snap_enable_idx, snap_enabled)
