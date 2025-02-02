@@ -1,63 +1,54 @@
-[gd_scene load_steps=7 format=3 uid="uid://ce6j54x27pom"]
+[gd_scene load_steps=7 format=3 uid="uid://bihwwoedqcyo8"]
 
-[ext_resource type="Script" uid="uid://b14gd6s3wl4us" path="res://src/ui_parts/editor_scene.gd" id="1_78d5d"]
-[ext_resource type="Texture2D" uid="uid://co75w07yqmcro" path="res://assets/icons/theme/SplitGrabber2.svg" id="2_852uu"]
-[ext_resource type="PackedScene" uid="uid://cr1fdlmbknnko" path="res://src/ui_widgets/code_editor.tscn" id="3_5ris2"]
-[ext_resource type="PackedScene" uid="uid://cxmrx6t4jkhyj" path="res://src/ui_parts/global_actions.tscn" id="3_852uu"]
-[ext_resource type="PackedScene" uid="uid://ccynisiuyn5qn" path="res://src/ui_parts/inspector.tscn" id="4_podmt"]
-[ext_resource type="PackedScene" uid="uid://bvrncl7e6yn5b" path="res://src/ui_parts/display.tscn" id="5_4vrq4"]
+[ext_resource type="Script" uid="uid://dunoppeuubgd1" path="res://src/ui_parts/editor_scene.gd" id="1_o7lif"]
+[ext_resource type="PackedScene" uid="uid://cxmrx6t4jkhyj" path="res://src/ui_parts/global_actions.tscn" id="2_p8urg"]
+[ext_resource type="PackedScene" uid="uid://cr1fdlmbknnko" path="res://src/ui_widgets/code_editor.tscn" id="3_4uluy"]
+[ext_resource type="PackedScene" uid="uid://ccynisiuyn5qn" path="res://src/ui_parts/inspector.tscn" id="4_jik7v"]
+[ext_resource type="PackedScene" uid="uid://bvrncl7e6yn5b" path="res://src/ui_parts/display.tscn" id="5_gb5yr"]
 
-[node name="EditorScene" type="HBoxContainer"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mt61i"]
+bg_color = Color(0.0745098, 0.0745098, 0.121569, 0.501961)
+
+[node name="MainScene" type="VBoxContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_78d5d")
+theme_override_constants/separation = 0
+script = ExtResource("1_o7lif")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(360, 0)
+[node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2
-size_flags_horizontal = 3
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 3
 
-[node name="HSplitContainer" type="HSplitContainer" parent="PanelContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 6
-theme_override_icons/grabber = ExtResource("2_852uu")
-split_offset = -122
-
-[node name="MarginContainer" type="MarginContainer" parent="PanelContainer/HSplitContainer"]
-layout_mode = 2
-theme_override_constants/margin_left = 6
-theme_override_constants/margin_top = 6
-theme_override_constants/margin_right = 0
-theme_override_constants/margin_bottom = 6
-
-[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/HSplitContainer/MarginContainer"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="GlobalActions" parent="PanelContainer/HSplitContainer/MarginContainer/VBoxContainer" instance=ExtResource("3_852uu")]
+[node name="GlobalActions" parent="MarginContainer" instance=ExtResource("2_p8urg")]
 layout_mode = 2
 
-[node name="MainContainer" type="VSplitContainer" parent="PanelContainer/HSplitContainer/MarginContainer/VBoxContainer"]
+[node name="HSplitContainer" type="VSplitContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 10
-split_offset = -400
+theme_override_constants/separation = 30
+theme_override_styles/split_bar_background = SubResource("StyleBoxFlat_mt61i")
 
-[node name="CodeEditor" parent="PanelContainer/HSplitContainer/MarginContainer/VBoxContainer/MainContainer" instance=ExtResource("3_5ris2")]
+[node name="TabContainer" type="TabContainer" parent="HSplitContainer"]
 layout_mode = 2
+tab_alignment = 1
+current_tab = 0
+tabs_position = 1
 
-[node name="Inspector" parent="PanelContainer/HSplitContainer/MarginContainer/VBoxContainer/MainContainer" instance=ExtResource("4_podmt")]
+[node name="Inspector" parent="HSplitContainer/TabContainer" instance=ExtResource("4_jik7v")]
 layout_mode = 2
+metadata/_tab_index = 0
 
-[node name="MarginContainer2" type="MarginContainer" parent="PanelContainer/HSplitContainer"]
+[node name="CodeEditor" parent="HSplitContainer/TabContainer" instance=ExtResource("3_4uluy")]
+visible = false
 layout_mode = 2
-theme_override_constants/margin_top = 6
+metadata/_tab_index = 1
 
-[node name="Display" parent="PanelContainer/HSplitContainer/MarginContainer2" instance=ExtResource("5_4vrq4")]
+[node name="Display" parent="HSplitContainer" instance=ExtResource("5_gb5yr")]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
