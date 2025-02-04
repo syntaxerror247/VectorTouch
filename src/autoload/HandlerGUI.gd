@@ -68,7 +68,7 @@ func _add_control(new_control: Control) -> void:
 	menu_stack.append(overlay_ref)
 	get_tree().root.add_child(overlay_ref)
 	overlay_ref.add_child(new_control)
-	new_control.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	new_control.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	new_control.tree_exiting.connect(_remove_control.bind(overlay_ref))
 
 func _remove_control(overlay_ref: ColorRect = null) -> void:

@@ -2,7 +2,7 @@ extends PanelContainer
 
 const PaletteConfigWidget = preload("res://src/ui_widgets/palette_config.tscn")
 const ShortcutConfigWidget = preload("res://src/ui_widgets/setting_shortcut.tscn")
-const ShortcutShowcaseWidget = preload("res://src/ui_widgets/presented_shortcut.tscn")
+#const ShortcutShowcaseWidget = preload("res://src/ui_widgets/presented_shortcut.tscn")
 const SettingFrame = preload("res://src/ui_widgets/setting_frame.tscn")
 const ProfileFrame = preload("res://src/ui_widgets/profile_frame.tscn")
 
@@ -46,7 +46,8 @@ func setup_tabs() -> void:
 	var button_group := ButtonGroup.new()
 	add_tab("formatting", Translator.translate("Formatting"), button_group)
 	add_tab("palettes", Translator.translate("Palettes"), button_group)
-	add_tab("shortcuts", Translator.translate("Shortcuts"), button_group)
+	# Removing shortcuts tab as this is not really needed for mobile port.
+	#add_tab("shortcuts", Translator.translate("Shortcuts"), button_group)
 	add_tab("theming", Translator.translate("Theming"), button_group)
 	add_tab("other", Translator.translate("Other"), button_group)
 
@@ -113,32 +114,32 @@ func setup_content() -> void:
 			vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 			content_container.add_child(vbox)
 			rebuild_palettes()
-		"shortcuts":
-			advice_panel.hide()
-			var vbox := VBoxContainer.new()
-			vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			vbox.add_theme_constant_override("separation", 6)
-			content_container.add_child(vbox)
-			var categories := HFlowContainer.new()
-			var button_group := ButtonGroup.new()
-			for tab_idx in shortcut_tab_names:
-				var btn := Button.new()
-				btn.toggle_mode = true
-				btn.button_group = button_group
-				btn.pressed.connect(show_shortcuts.bind(tab_idx))
-				btn.text = get_translated_shortcut_tab(tab_idx)
-				btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-				btn.focus_mode = Control.FOCUS_NONE
-				btn.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
-				categories.add_child(btn)
-			vbox.add_child(categories)
-			var shortcuts := VBoxContainer.new()
-			shortcuts.add_theme_constant_override("separation", 3)
-			shortcuts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			shortcuts.size_flags_vertical = Control.SIZE_EXPAND_FILL
-			vbox.add_child(shortcuts)
-			categories.get_child(0).button_pressed = true
-			categories.get_child(0).pressed.emit()
+		#"shortcuts":
+			#advice_panel.hide()
+			#var vbox := VBoxContainer.new()
+			#vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			#vbox.add_theme_constant_override("separation", 6)
+			#content_container.add_child(vbox)
+			#var categories := HFlowContainer.new()
+			#var button_group := ButtonGroup.new()
+			#for tab_idx in shortcut_tab_names:
+				#var btn := Button.new()
+				#btn.toggle_mode = true
+				#btn.button_group = button_group
+				#btn.pressed.connect(show_shortcuts.bind(tab_idx))
+				#btn.text = get_translated_shortcut_tab(tab_idx)
+				#btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+				#btn.focus_mode = Control.FOCUS_NONE
+				#btn.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+				#categories.add_child(btn)
+			#vbox.add_child(categories)
+			#var shortcuts := VBoxContainer.new()
+			#shortcuts.add_theme_constant_override("separation", 3)
+			#shortcuts.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			#shortcuts.size_flags_vertical = Control.SIZE_EXPAND_FILL
+			#vbox.add_child(shortcuts)
+			#categories.get_child(0).button_pressed = true
+			#categories.get_child(0).pressed.emit()
 		"theming":
 			advice_panel.hide()
 			create_setting_container()
@@ -220,16 +221,18 @@ func setup_content() -> void:
 					SaveData.HANDLE_SIZE_MIN, SaveData.HANDLE_SIZE_MAX)
 			add_advice(Translator.translate(
 					"Changes the visual size and grabbing area of handles."))
-			current_setup_setting = "ui_scale"
-			add_number_dropdown(Translator.translate("UI scale"),
-					[0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 4.0], false, false,
-					SaveData.UI_SCALE_MIN, SaveData.UI_SCALE_MAX)
-			add_advice(Translator.translate(
-					"Changes the scale of the visual user interface."))
-			current_setup_setting = "auto_ui_scale"
-			add_checkbox(Translator.translate("Auto UI scale"))
-			add_advice(Translator.translate(
-					"Scales the user interface based on the screen size."))
+			
+			# Temporarily hiding settings to change scale.
+			#current_setup_setting = "ui_scale"
+			#add_number_dropdown(Translator.translate("UI scale"),
+					#[0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 4.0], false, false,
+					#SaveData.UI_SCALE_MIN, SaveData.UI_SCALE_MAX)
+			#add_advice(Translator.translate(
+					#"Changes the scale of the visual user interface."))
+			#current_setup_setting = "auto_ui_scale"
+			#add_checkbox(Translator.translate("Auto UI scale"))
+			#add_advice(Translator.translate(
+					#"Scales the user interface based on the screen size."))
 			
 			# Disable mouse wrap if not available.
 			if not DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP):
@@ -573,19 +576,19 @@ func show_formatter(category: String) -> void:
 	add_checkbox(Translator.translate("Remove unnecessary parameters"))
 
 
-func show_shortcuts(category: String) -> void:
-	var shortcuts_container := content_container.get_child(-1).get_child(-1)
-	for child in shortcuts_container.get_children():
-		child.queue_free()
-	
-	for action in ShortcutUtils.get_shortcuts(category):
-		var shortcut_config := ShortcutConfigWidget.instantiate() if\
-				ShortcutUtils.is_shortcut_modifiable(action) else\
-				ShortcutShowcaseWidget.instantiate()
-		
-		shortcuts_container.add_child(shortcut_config)
-		shortcut_config.label.text = TranslationUtils.get_shortcut_description(action)
-		shortcut_config.setup(action)
+#func show_shortcuts(category: String) -> void:
+	#var shortcuts_container := content_container.get_child(-1).get_child(-1)
+	#for child in shortcuts_container.get_children():
+		#child.queue_free()
+	#
+	#for action in ShortcutUtils.get_shortcuts(category):
+		#var shortcut_config := ShortcutConfigWidget.instantiate() if\
+				#ShortcutUtils.is_shortcut_modifiable(action) else\
+				#ShortcutShowcaseWidget.instantiate()
+		#
+		#shortcuts_container.add_child(shortcut_config)
+		#shortcut_config.label.text = TranslationUtils.get_shortcut_description(action)
+		#shortcut_config.setup(action)
 
 func create_setting_container() -> void:
 	setting_container = VBoxContainer.new()
