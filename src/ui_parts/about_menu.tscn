@@ -5,7 +5,7 @@
 [ext_resource type="FontFile" uid="uid://depydd16jq777" path="res://assets/fonts/FontMono.ttf" id="3_e8i1t"]
 [ext_resource type="FontFile" uid="uid://dc0w4sx0h0fui" path="res://assets/fonts/FontBold.ttf" id="4_n6gp0"]
 [ext_resource type="Texture2D" uid="uid://cgxpm1e3v0i3v" path="res://assets/icons/Link.svg" id="6_hbk78"]
-[ext_resource type="Script" uid="uid://ci44864moadn" path="res://src/ui_widgets/GridDrawingControl.gd" id="7_nvctb"]
+[ext_resource type="Script" uid="uid://d1wnuyd66tafu" path="res://src/ui_widgets/GridDrawingControl.gd" id="7_nvctb"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jtvwe"]
 content_margin_left = 6.0
@@ -20,16 +20,9 @@ border_width_bottom = 1
 border_color = Color(0.301961, 0.301961, 0.4, 1)
 
 [node name="AboutMenu" type="PanelContainer"]
-custom_minimum_size = Vector2(512, 408)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -2.0
-offset_top = -2.0
-offset_right = 2.0
-offset_bottom = 2.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"OverlayPanel"
@@ -61,7 +54,8 @@ theme_override_font_sizes/font_size = 16
 layout_mode = 2
 theme_override_constants/line_spacing = 0
 theme_override_font_sizes/font_size = 12
-text = "© 2023 MewPurPur
+text = "© 2025 Anish Mishra
+© 2023 MewPurPur
 © 2023-present GodSVG contributors"
 
 [node name="TabContainer" type="TabContainer" parent="VBoxContainer"]
@@ -110,7 +104,6 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_constants/h_separation = -1
 theme_override_constants/v_separation = -1
-columns = 2
 script = ExtResource("7_nvctb")
 stylebox = SubResource("StyleBoxFlat_jtvwe")
 
@@ -257,6 +250,7 @@ theme_override_fonts/font = ExtResource("3_e8i1t")
 theme_override_font_sizes/font_size = 10
 text = "MIT License
 
+Copyright (c) 2025 Anish Mishra
 Copyright (c) 2023 MewPurPur
 Copyright (c) 2023-present GodSVG contributors
 

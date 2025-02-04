@@ -21,7 +21,7 @@ const app_info_json = preload("res://app_info.json")
 
 func _ready() -> void:
 	var app_info: Dictionary = app_info_json.data
-	version_label.text = "GodSVG v" + ProjectSettings.get_setting("application/config/version")
+	version_label.text = "GodSVG-Mobile v" + ProjectSettings.get_setting("application/config/version")
 	project_founder_list.items = app_info.project_founder_and_manager
 	project_founder_list.setup()
 	authors_list.items = app_info.authors
