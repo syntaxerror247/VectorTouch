@@ -68,7 +68,7 @@ const _shortcut_categories_dict: Dictionary[String, Dictionary] = {
 		"about_info": true,
 		"about_donate": true,
 		"about_repo": true,
-		"about_website": true,
+		"about_website": false,
 		"check_updates": true,
 	}
 }
@@ -106,7 +106,8 @@ static func fn(shortcut: String) -> Callable:
 		"select_all": return State.select_all
 		"about_info": return HandlerGUI.open_about
 		"about_donate": return HandlerGUI.open_donate
-		"about_repo": return OS.shell_open.bind("https://github.com/MewPurPur/GodSVG")
+		"about_repo": return OS.shell_open.bind("https://github.com/syntaxerror247/GodSVG-Mobile")
+		"about_godsvg_repo": return OS.shell_open.bind("https://github.com/MewPurPur/GodSVG")
 		"about_website": return OS.shell_open.bind("https://godsvg.com")
 		"check_updates": return HandlerGUI.open_update_checker
 		"open_settings": return HandlerGUI.open_settings

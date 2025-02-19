@@ -1,18 +1,18 @@
 [gd_scene load_steps=3 format=3 uid="uid://cnay1l0u6a5tw"]
 
-[ext_resource type="Script" path="res://src/ui_parts/shortcut_panel_config.gd" id="1_eg1f5"]
+[ext_resource type="Script" uid="uid://cnmsf3h1qq3q6" path="res://src/ui_parts/shortcut_panel_config.gd" id="1_eg1f5"]
 [ext_resource type="PackedScene" uid="uid://bp1iblavfxjvu" path="res://src/ui_widgets/enum_dropdown.tscn" id="2_pru61"]
 
 [node name="ShortcutPanelConfig" type="PanelContainer"]
-custom_minimum_size = Vector2(460, 300)
+custom_minimum_size = Vector2(200, 300)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -225.0
+offset_left = -112.0
 offset_top = -150.0
-offset_right = 225.0
+offset_right = 112.0
 offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -35,7 +35,6 @@ theme_type_variation = &"SpaciousPanel"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/PanelContainer"]
 layout_mode = 2
-theme_override_constants/separation = 36
 
 [node name="SlotContainer" type="VBoxContainer" parent="VBoxContainer/PanelContainer/HBoxContainer"]
 unique_name_in_owner = true
@@ -48,7 +47,8 @@ alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LayoutBox" type="HBoxContainer" parent="VBoxContainer/PanelContainer/HBoxContainer/ConfigContainer"]
+[node name="LayoutBox" type="VBoxContainer" parent="VBoxContainer/PanelContainer/HBoxContainer/ConfigContainer"]
+custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 size_flags_vertical = 4
 
@@ -56,6 +56,7 @@ size_flags_vertical = 4
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
 
 [node name="LayoutDropdown" parent="VBoxContainer/PanelContainer/HBoxContainer/ConfigContainer/LayoutBox" instance=ExtResource("2_pru61")]
 unique_name_in_owner = true

@@ -24,7 +24,7 @@ var dimensions := Vector2.ZERO
 @onready var file_title: Label = %FileTitle
 @onready var info_tooltip: MarginContainer = %InfoTooltip
 @onready var quality_related_container: HBoxContainer = %QualityRelatedContainer
-@onready var titled_panel: HTitledPanel = %TitledPanel
+@onready var titled_panel: VBoxContainer = %TitledPanel
 
 func _exit_tree() -> void:
 	UR.free()
@@ -72,16 +72,6 @@ func _ready() -> void:
 	%HeightContainer/Label.text = Translator.translate("Height") + ":"
 	cancel_button.text = Translator.translate("Cancel")
 	export_button.text = Translator.translate("Export")
-	
-	titled_panel.corner_radius_bottom_left = 0
-	titled_panel.corner_radius_bottom_right = 5
-	titled_panel.corner_radius_top_left = 5
-	titled_panel.corner_radius_top_right = 5
-	titled_panel.color = ThemeUtils.common_panel_inner_color
-	titled_panel.border_color = ThemeUtils.common_panel_border_color
-	titled_panel.border_width = 2
-	titled_panel.title_margin = 2
-	titled_panel.panel_margin = 8
 
 
 func _on_export_button_pressed() -> void:

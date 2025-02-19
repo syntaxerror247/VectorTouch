@@ -27,8 +27,8 @@ func _ready() -> void:
 func request() -> void:
 	retry_button.hide()
 	status_label.text = Translator.translate("Retrieving information...")
-	var err := http.request("https://api.github.com/repos/MewPurPur/GodSVG/releases",
-			["User-Agent: MewPurPur/GodSVG"])
+	var err := http.request("https://api.github.com/repos/syntaxerror247/GodSVG-Mobile/releases",
+			["User-Agent: syntaxerror247/GodSVG-Mobile"])
 	if err != OK:
 		display_error_message(error_string(err))
 

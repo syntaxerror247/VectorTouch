@@ -81,11 +81,6 @@ func _on_more_options_pressed() -> void:
 			"Check for updates"), ShortcutUtils.fn("check_updates"), false,
 			load("res://assets/icons/Reload.svg"), "check_updates"))
 	
-	if can_show_savedata_folder:
-		buttons_arr.append(ContextPopup.create_button(Translator.translate(
-				"View savedata"), open_savedata_folder , false,
-				load("res://assets/icons/OpenFolder.svg")))
-	
 	var antialias_fraction := 0.25
 	var final_size := 16
 	var first_resizing_size := final_size / antialias_fraction
@@ -101,15 +96,17 @@ func _on_more_options_pressed() -> void:
 			ShortcutUtils.fn("about_info"), false,
 			ImageTexture.create_from_image(about_image), "about_info")
 	buttons_arr.append(about_btn)
+	# It requires to hover over it to see details, which is not possible on Android.
+	# Would re-enable it in future with a better UX.
+	#buttons_arr.append(ContextPopup.create_button(Translator.translate(
+			#"Donate…"), ShortcutUtils.fn("about_donate"), false,
+			#load("res://assets/icons/Heart.svg"), "about_donate"))
 	buttons_arr.append(ContextPopup.create_button(Translator.translate(
-			"Donate…"), ShortcutUtils.fn("about_donate"), false,
-			load("res://assets/icons/Heart.svg"), "about_donate"))
+			"GodSVG repository"), ShortcutUtils.fn("about_godsvg_repo"), false,
+			load("res://assets/icons/Link.svg"), ""))
 	buttons_arr.append(ContextPopup.create_button(Translator.translate(
-			"GodSVG repository"), ShortcutUtils.fn("about_repo"), false,
+			"GodSVG-Mobile repository"), ShortcutUtils.fn("about_repo"), false,
 			load("res://assets/icons/Link.svg"), "about_repo"))
-	buttons_arr.append(ContextPopup.create_button(Translator.translate(
-			"GodSVG website"), ShortcutUtils.fn("about_website"), false,
-			load("res://assets/icons/Link.svg"), "about_website"))
 	var separator_indices := PackedInt32Array([1, 3])
 	if can_show_savedata_folder:
 		separator_indices = PackedInt32Array([2, 4])
