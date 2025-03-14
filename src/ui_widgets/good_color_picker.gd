@@ -1,6 +1,6 @@
 extends VBoxContainer
 
-const EyedropperPopup = preload("res://src/ui_parts/eyedropper_popup.tscn")
+const EyedropperPopupScene = preload("res://src/ui_parts/eyedropper_popup.tscn")
 
 const handle_texture = preload("res://assets/icons/BWHandle.svg")
 const slider_arrow = preload("res://assets/icons/SliderArrow.svg")
@@ -11,14 +11,15 @@ var alpha_enabled := false
 var is_none_keyword_available := false
 var is_current_color_keyword_available := false
 
-var UR := UndoRedo.new()
+var undo_redo := UndoRedoRef.new()
 
 enum SliderMode {RGB, HSV}
 var slider_mode: SliderMode:
 	set(new_mode):
 		slider_mode = new_mode
 		var disabled_button := hsv_button if new_mode == SliderMode.HSV else rgb_button
-		for btn in [hsv_button, rgb_button]:
+		var arr: Array[Button] = [hsv_button, rgb_button]
+		for btn in arr:
 			btn.disabled = (btn == disabled_button)
 			btn.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
 					btn == disabled_button else Control.CURSOR_POINTING_HAND
@@ -111,8 +112,9 @@ func update_keyword_button() -> void:
 func _ready() -> void:
 	# Set up signals.
 	widgets_arr[0].gui_input.connect(parse_slider_input.bind(0, true))
-	for i in [1, 2, 3]:
-		widgets_arr[i].gui_input.connect(parse_slider_input.bind(i))
+	widgets_arr[1].gui_input.connect(parse_slider_input.bind(1))
+	widgets_arr[2].gui_input.connect(parse_slider_input.bind(2))
+	widgets_arr[3].gui_input.connect(parse_slider_input.bind(3))
 	if alpha_enabled:
 		alpha_slider.visible = alpha_enabled
 		widgets_arr[4].gui_input.connect(parse_slider_input.bind(4))
@@ -125,7 +127,6 @@ func _ready() -> void:
 
 func _exit_tree() -> void:
 	RenderingServer.free_rid(color_wheel_surface)
-	UR.free()
 
 func register_visual_change(new_color: Color, use_backup := true) -> void:
 	if use_backup and new_color == backup_display_color:
@@ -133,13 +134,13 @@ func register_visual_change(new_color: Color, use_backup := true) -> void:
 	elif not use_backup and new_color == display_color:
 		return
 	
-	UR.create_action("")
-	UR.add_do_method(set_color.bind(hex(new_color), new_color))
+	undo_redo.create_action("")
+	undo_redo.add_do_method(set_color.bind(hex(new_color), new_color))
 	if use_backup:
-		UR.add_undo_method(set_color.bind(backup_color, backup_display_color))
+		undo_redo.add_undo_method(set_color.bind(backup_color, backup_display_color))
 	else:
-		UR.add_undo_method(set_color.bind(color, display_color))
-	UR.commit_action()
+		undo_redo.add_undo_method(set_color.bind(color, display_color))
+	undo_redo.commit_action()
 
 
 func set_color(new_color: String, new_display_color: Color) -> void:
@@ -162,8 +163,9 @@ func update() -> void:
 	tracks_arr[0].material.set_shader_parameter("v", display_color.v)
 	tracks_arr[0].material.set_shader_parameter("base_color",
 			Color.from_hsv(display_color.h, display_color.s, 1.0))
-	for i in [1, 2, 3]:
-		tracks_arr[i].material.set_shader_parameter("base_color", display_color)
+	tracks_arr[1].material.set_shader_parameter("base_color", display_color)
+	tracks_arr[2].material.set_shader_parameter("base_color", display_color)
+	tracks_arr[3].material.set_shader_parameter("base_color", display_color)
 	if alpha_enabled:
 		tracks_arr[4].material.set_shader_parameter("base_color", display_color)
 	# Redraw widgets, color indicators, color wheel.
@@ -339,22 +341,22 @@ func _on_keyword_button_pressed() -> void:
 			get_viewport())
 
 func set_to_keyword(keyword: String) -> void:
-	UR.create_action("")
+	undo_redo.create_action("")
 	if color.strip_edges() == keyword:
-		UR.add_do_method(set_color.bind(backup_color, backup_display_color))
-		UR.add_undo_method(set_color.bind(color, display_color))
+		undo_redo.add_do_method(set_color.bind(backup_color, backup_display_color))
+		undo_redo.add_undo_method(set_color.bind(color, display_color))
 	else:
 		backup()
-		UR.add_do_method(set_color.bind(keyword, display_color))
-		UR.add_undo_method(set_color.bind(color, display_color))
-	UR.commit_action()
+		undo_redo.add_do_method(set_color.bind(keyword, display_color))
+		undo_redo.add_undo_method(set_color.bind(color, display_color))
+	undo_redo.commit_action()
 
 func _on_reset_color_button_pressed() -> void:
 	reset_color_button.disabled = true
-	UR.create_action("")
-	UR.add_do_method(set_color.bind(starting_color, starting_display_color))
-	UR.add_undo_method(set_color.bind(color, display_color))
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_method(set_color.bind(starting_color, starting_display_color))
+	undo_redo.add_undo_method(set_color.bind(color, display_color))
+	undo_redo.commit_action()
 
 
 func _on_rgb_pressed() -> void:
@@ -417,8 +419,10 @@ func _on_track_resized() -> void:
 		queue_redraw_widgets()
 
 func queue_redraw_widgets() -> void:
-	for i in [0, 1, 2, 3]:
-		widgets_arr[i].queue_redraw()
+	widgets_arr[0].queue_redraw()
+	widgets_arr[1].queue_redraw()
+	widgets_arr[2].queue_redraw()
+	widgets_arr[3].queue_redraw()
 	if alpha_enabled:
 		widgets_arr[4].queue_redraw()
 
@@ -468,16 +472,16 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if ShortcutUtils.is_action_pressed(event, "redo"):
-		if UR.has_redo():
-			UR.redo()
+		if undo_redo.has_redo():
+			undo_redo.redo()
 		accept_event()
 	elif ShortcutUtils.is_action_pressed(event, "undo"):
-		if UR.has_undo():
-			UR.undo()
+		if undo_redo.has_undo():
+			undo_redo.undo()
 		accept_event()
 
 
 func _on_eyedropper_pressed() -> void:
-	var eyedropper_popup := EyedropperPopup.instantiate()
+	var eyedropper_popup := EyedropperPopupScene.instantiate()
 	eyedropper_popup.color_picked.connect(register_visual_change.bind(false))
 	HandlerGUI.add_popup(eyedropper_popup)

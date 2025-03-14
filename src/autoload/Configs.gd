@@ -20,7 +20,7 @@ signal handle_visuals_changed
 @warning_ignore("unused_signal")
 signal shortcut_panel_changed
 @warning_ignore("unused_signal")
-signal active_tab_file_path_changed
+signal active_tab_status_changed
 @warning_ignore("unused_signal")
 signal active_tab_changed
 @warning_ignore("unused_signal")
@@ -71,7 +71,6 @@ func reset_settings() -> void:
 	savedata.language = "en"
 	savedata.set_shortcut_panel_slots({ 0: "undo", 1: "redo" })
 	savedata.set_palettes([Palette.new("Pure", Palette.Preset.PURE)])
-	savedata.add_empty_tab()
 	save()
 
 

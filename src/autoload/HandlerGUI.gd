@@ -1,13 +1,12 @@
 extends Node
 
-# Not a good idea to preload scenes inside a singleton.
-const AlertDialog = preload("res://src/ui_widgets/alert_dialog.tscn")
-const ConfirmDialog = preload("res://src/ui_widgets/confirm_dialog.tscn")
-const SettingsMenu = preload("res://src/ui_parts/settings_menu.tscn")
-const AboutMenu = preload("res://src/ui_parts/about_menu.tscn")
-const DonateMenu = preload("res://src/ui_parts/donate_menu.tscn")
-const UpdateMenu = preload("res://src/ui_parts/update_menu.tscn")
-const ExportMenu = preload("res://src/ui_parts/export_menu.tscn")
+const AlertDialogScene = preload("res://src/ui_widgets/alert_dialog.tscn")
+const ConfirmDialogScene = preload("res://src/ui_widgets/confirm_dialog.tscn")
+const SettingsMenuScene = preload("res://src/ui_parts/settings_menu.tscn")
+const AboutMenuScene = preload("res://src/ui_parts/about_menu.tscn")
+const DonateMenuScene = preload("res://src/ui_parts/donate_menu.tscn")
+const UpdateMenuScene = preload("res://src/ui_parts/update_menu.tscn")
+const ExportMenuScene = preload("res://src/ui_parts/export_menu.tscn")
 const ShortcutPanelScene = preload("res://src/ui_parts/shortcut_panel.tscn")
 
 # Menus should be added with add_menu() and removed by being freed.
@@ -25,7 +24,7 @@ func _enter_tree() -> void:
 
 func _ready() -> void:
 	Configs.active_tab_changed.connect(update_window_title)
-	Configs.active_tab_file_path_changed.connect(update_window_title)
+	Configs.active_tab_status_changed.connect(update_window_title)
 	update_window_title()
 	
 	Configs.ui_scale_changed.connect(update_ui_scale)
@@ -62,13 +61,14 @@ func _add_control(new_control: Control) -> void:
 	get_tree().root.propagate_notification(NOTIFICATION_DRAG_END)
 	remove_all_popups()
 	
-	var overlay_ref = ColorRect.new()
+	var overlay_ref := ColorRect.new()
 	overlay_ref.color = Color(0, 0, 0, 0.4)
 	overlay_ref.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	menu_stack.append(overlay_ref)
 	get_tree().root.add_child(overlay_ref)
 	overlay_ref.add_child(new_control)
 	new_control.tree_exiting.connect(_remove_control.bind(overlay_ref))
+	throw_mouse_motion_event()
 
 func _remove_control(overlay_ref: ColorRect = null) -> void:
 	# If an overlay_ref is passed but doesn't match, do nothing.
@@ -92,6 +92,9 @@ func _remove_control(overlay_ref: ColorRect = null) -> void:
 	throw_mouse_motion_event()
 
 func remove_all_menus() -> void:
+	if menu_stack.is_empty():
+		return
+	
 	while not menu_stack.is_empty():
 		menu_stack.pop_back().queue_free()
 	throw_mouse_motion_event()
@@ -112,6 +115,7 @@ func add_popup(new_popup: Control) -> void:
 	
 	new_popup.reset_size()
 	new_popup.tree_exiting.connect(remove_popup.bind(overlay_ref))
+	throw_mouse_motion_event()
 
 func remove_popup(overlay_ref: Control = null) -> void:
 	if popup_stack.is_empty():
@@ -126,6 +130,9 @@ func remove_popup(overlay_ref: Control = null) -> void:
 	throw_mouse_motion_event()
 
 func remove_all_popups() -> void:
+	if popup_stack.is_empty():
+		return
+	
 	while not popup_stack.is_empty():
 		popup_stack.pop_back().queue_free()
 	throw_mouse_motion_event()
@@ -191,7 +198,7 @@ var last_mouse_click_double := false
 func _input(event: InputEvent) -> void:
 	if ShortcutUtils.is_action_pressed(event, "quit"):
 		remove_all_menus()
-		var confirm_dialog = ConfirmDialog.instantiate()
+		var confirm_dialog := ConfirmDialogScene.instantiate()
 		add_menu(confirm_dialog)
 		confirm_dialog.setup(Translator.translate("Quit GodSVG"),
 				Translator.translate("Do you want to quit GodSVG?"),
@@ -208,8 +215,9 @@ func _input(event: InputEvent) -> void:
 			last_mouse_click_double = false
 	
 	# Stuff that should replace the existing overlays, or that opens separate windows.
-	for action in ["about_info", "about_donate", "check_updates", "open_settings",
-	"open_externally", "open_in_folder"]:
+	const CONST_ARR_1: PackedStringArray = ["about_info", "about_donate", "check_updates",
+			"open_settings", "open_externally", "open_in_folder"]
+	for action in CONST_ARR_1:
 		if ShortcutUtils.is_action_pressed(event, action):
 			remove_all_menus()
 			get_viewport().set_input_as_handled()
@@ -217,7 +225,8 @@ func _input(event: InputEvent) -> void:
 			return
 	
 	# Stuff that links externally.
-	for action in ["about_repo", "about_website"]:
+	const CONST_ARR_2: PackedStringArray = ["about_repo", "about_website"]
+	for action in CONST_ARR_2:
 		if ShortcutUtils.is_action_pressed(event, action):
 			get_viewport().set_input_as_handled()
 			ShortcutUtils.fn_call(action)
@@ -228,8 +237,11 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# Global actions that should happen regardless of the context.
-	for action in ["import", "export", "save", "save_as", "close_tab", "new_tab",
-	"select_next_tab", "select_previous_tab", "copy_svg_text", "optimize", "reset_svg"]:
+	const CONST_ARR_3: PackedStringArray = ["import", "export", "save", "save_as",
+			"close_tab", "close_tabs_to_left", "close_tabs_to_right", "close_all_other_tabs",
+			"new_tab", "select_next_tab", "select_previous_tab", "copy_svg_text", "optimize",
+			"reset_svg"]
+	for action in CONST_ARR_3:
 		if ShortcutUtils.is_action_pressed(event, action):
 			get_viewport().set_input_as_handled()
 			ShortcutUtils.fn_call(action)
@@ -249,8 +261,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	get_viewport().gui_is_dragging():
 		return
 	
-	for action in ["redo", "undo", "ui_cancel", "delete", "move_up", "move_down",
-	"duplicate", "select_all"]:
+	const CONST_ARR: PackedStringArray = ["redo", "undo", "ui_cancel", "delete", "move_up",
+			"move_down", "duplicate", "select_all"]
+	for action in CONST_ARR:
 		if ShortcutUtils.is_action_pressed(event, action):
 			get_viewport().set_input_as_handled()
 			ShortcutUtils.fn_call(action)
@@ -259,11 +272,50 @@ func _unhandled_input(event: InputEvent) -> void:
 		State.respond_to_key_input(event)
 
 
+func get_window_default_size() -> Vector2i:
+	return Vector2i(ProjectSettings.get_setting("display/window/size/viewport_width"),
+			ProjectSettings.get_setting("display/window/size/viewport_height"))
+
+func get_usable_rect() -> Vector2i:
+	var window := get_window()
+	return Vector2i(DisplayServer.screen_get_usable_rect(
+			DisplayServer.window_get_current_screen()).size -\
+			window.get_size_with_decorations() + window.size)
+
+func get_max_ui_scale() -> float:
+	var usable_screen_size := get_usable_rect()
+	var window_default_size := get_window_default_size()
+	# How much can the default size be increased before it takes all usable screen space.
+	var max_expansion := Vector2(usable_screen_size) / Vector2(window_default_size)
+	return clampf(snappedf(minf(max_expansion.x, max_expansion.y) - 0.025, 0.05), 0.75, 4.0)
+
+func get_min_ui_scale() -> float:
+	return maxf(snappedf(get_max_ui_scale() / 2.0 - 0.125, 0.25), 0.75)
+
+func get_auto_ui_scale() -> float:
+	# Usable rect might not be reliable on web, so attempt to use devicePixelRatio.
+	if OS.get_name() == "Web":
+		var pixel_ratio: float = JavaScriptBridge.eval("window.devicePixelRatio || 1", true)
+		if is_finite(pixel_ratio):
+			return snappedf(pixel_ratio, 0.25)
+	
+	var screen_size := get_usable_rect()
+	if screen_size.x == 0 or screen_size.y == 0:
+		return 1.0
+	
+	# The wider the screen, the bigger the automatically chosen UI scale.
+	var aspect_ratio := screen_size.aspect()
+	var auto_scale := get_max_ui_scale() * clampf(aspect_ratio * 0.375, 0.6, 0.8)
+	if OS.get_name() == "Android":
+		auto_scale *= 1.1  # Default to giving mobile a bit more space.
+	return clampf(snappedf(auto_scale, 0.25), get_min_ui_scale(), get_max_ui_scale())
+
+
 func update_ui_scale() -> void:
 	var window := get_window()
 	if not window.is_node_ready():
 		await window.ready
-	if Configs.savedata.auto_ui_scale:
+	if Configs.savedata.ui_scale == SaveData.ScalingApproach.AUTO:
 		window.content_scale_factor = _calculate_auto_scale()
 	else:
 		var final_scale := minf(Configs.savedata.ui_scale, 4.0)
@@ -271,45 +323,61 @@ func update_ui_scale() -> void:
 
 
 func open_update_checker() -> void:
-	var confirmation_dialog = ConfirmDialog.instantiate()
+	var confirmation_dialog := ConfirmDialogScene.instantiate()
 	add_menu(confirmation_dialog)
 	confirmation_dialog.setup(Translator.translate("Check for updates?"),
-			Translator.translate("This requires GodSVG to connect to the internet."),
+			Translator.translate("This will connect to github.com to compare version numbers. No other data is collected or transmitted."),
 			Translator.translate("OK"), _list_updates)
 
 func _list_updates() -> void:
 	remove_all_menus()
-	var update_menu_instance = UpdateMenu.instantiate()
+	var update_menu_instance := UpdateMenuScene.instantiate()
 	add_menu(update_menu_instance)
 
 func open_settings() -> void:
-	add_menu(SettingsMenu.instantiate())
+	add_menu(SettingsMenuScene.instantiate())
 
 func open_about() -> void:
-	add_menu(AboutMenu.instantiate())
+	add_menu(AboutMenuScene.instantiate())
 
 func open_donate() -> void:
-	add_menu(DonateMenu.instantiate())
+	add_menu(DonateMenuScene.instantiate())
 
 func open_export() -> void:
 	var width := State.root_element.width
 	var height := State.root_element.height
-	if is_finite(width) and is_finite(height) and width > 0.0 and height > 0.0:
-		add_menu(ExportMenu.instantiate())
+	
+	var dimensions_valid := (is_finite(width) and is_finite(height) and\
+			width > 0.0 and height > 0.0)
+	var dimensions_too_different := false
+	
+	if dimensions_valid:
+		dimensions_too_different = (1 / minf(width, height) > 16384 / maxf(width, height))
+		if not dimensions_too_different:
+			add_menu(ExportMenuScene.instantiate())
+			return
+	
+	var message: String
+	if dimensions_too_different:
+		message = Translator.translate(
+				"The graphic can be exported only as SVG because its proportions are too extreme.")
 	else:
-		var confirm_dialog = ConfirmDialog.instantiate()
-		add_menu(confirm_dialog)
-		var svg_export_data := ImageExportData.new()
-		confirm_dialog.setup(Translator.translate("Export SVG"), Translator.translate(
-				"The graphic can only be exported as SVG because its size is not defined. Do you want to proceed?"),
-				Translator.translate("Export"), FileUtils.open_export_dialog.bind(svg_export_data))
+		message = Translator.translate(
+				"The graphic can be exported only as SVG because its size is not defined.")
+	message += "\n\n" + Translator.translate("Do you want to proceed?")
+	
+	var confirm_dialog := ConfirmDialogScene.instantiate()
+	add_menu(confirm_dialog)
+	var svg_export_data := ImageExportData.new()
+	confirm_dialog.setup(Translator.translate("Export SVG"), message,
+			Translator.translate("Export"), FileUtils.open_export_dialog.bind(svg_export_data))
 
 func _calculate_auto_scale() -> float:
 	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
 
-	if dpi <= 120:
-		return 0.75  # ldpi
-	elif dpi <= 160:
+	#if dpi <= 120:
+		#return 0.75  # ldpi
+	if dpi <= 160:
 		return 1.0  # mdpi (baseline)
 	elif dpi <= 240:
 		return 1.5  # hdpi
@@ -326,8 +394,7 @@ func _calculate_auto_scale() -> float:
 func update_window_title() -> void:
 	if Configs.savedata.use_filename_for_window_title and\
 	not Configs.savedata.get_active_tab().svg_file_path.is_empty():
-		get_window().title = Configs.savedata.get_active_tab().get_presented_name() +\
-				" - GodSVG"
+		get_window().title = Configs.savedata.get_active_tab().presented_name + " - GodSVG"
 	else:
 		get_window().title = "GodSVG"
 

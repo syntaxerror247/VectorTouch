@@ -1,9 +1,9 @@
 # A fallback file dialog, always used if the native file dialog is not available.
 extends PanelContainer
 
-const ChooseNameDialog = preload("res://src/ui_widgets/choose_name_dialog.tscn")
-const ConfirmDialog = preload("res://src/ui_widgets/confirm_dialog.tscn")
-const AlertDialog = preload("res://src/ui_widgets/alert_dialog.tscn")
+const ChooseNameDialogScene = preload("res://src/ui_widgets/choose_name_dialog.tscn")
+const ConfirmDialogScene = preload("res://src/ui_widgets/confirm_dialog.tscn")
+const AlertDialogScene = preload("res://src/ui_widgets/alert_dialog.tscn")
 
 signal file_selected(path: String)
 
@@ -20,13 +20,13 @@ var mode: FileMode
 
 var current_dir := ""
 var current_file := ""
-var default_file := ""
+var default_file := ""  # The file you opened this dialog with.
 var extensions := PackedStringArray()
 
 var item_height := 16
 var search_text := ""
 
-var DA: DirAccess
+var dir_cursor: DirAccess
 
 @onready var title_label: Label = $VBoxContainer/TitleLabel
 @onready var search_field: BetterLineEdit = %SearchField
@@ -146,16 +146,17 @@ func file_sort(file1: String, file2: String) -> bool:
 
 # This function requires a safe input.
 func set_dir(dir: String) -> void:
-	DA = DirAccess.open(dir)
-	if !is_instance_valid(DA):
+	dir_cursor = DirAccess.open(dir)
+	if !is_instance_valid(dir_cursor):
 		return
 	
 	file_list.clear()
+	file_list.get_v_scroll_bar().value = 0
 	# Basic setup.
 	unfocus_file()
 	current_dir = dir
 	path_field.text = current_dir
-	DA.include_hidden = Configs.savedata.file_dialog_show_hidden
+	dir_cursor.include_hidden = Configs.savedata.file_dialog_show_hidden
 	# Rebuild the system dirs, as we may now need to highlight the current one.
 	drives_list.clear()
 	for drive in system_dirs_to_show:
@@ -182,9 +183,9 @@ func set_dir(dir: String) -> void:
 	# Gather the files and directories. Must be sorted, so can't use PackedStringArray.
 	var directories: Array[String] = []
 	var files: Array[String] = []
-	for directory in DA.get_directories():
+	for directory in dir_cursor.get_directories():
 		directories.append(directory)
-	for file in DA.get_files():
+	for file in dir_cursor.get_files():
 		files.append(file)
 	directories.sort_custom(file_sort)
 	files.sort_custom(file_sort)
@@ -223,7 +224,8 @@ func set_file(file: String) -> void:
 		file += "." + extensions[0]
 	file_list.ensure_current_is_visible()
 	current_file = file
-	file_field.text = current_file
+	if not file.is_empty():
+		file_field.text = file
 
 # For optimization, only generate the visible files' images.
 func _setup_file_images() -> void:
@@ -259,7 +261,7 @@ func _setup_file_images() -> void:
 
 func select_file() -> void:
 	if mode == FileMode.SAVE and FileAccess.file_exists(current_dir.path_join(current_file)):
-		var confirm_dialog := ConfirmDialog.instantiate()
+		var confirm_dialog := ConfirmDialogScene.instantiate()
 		HandlerGUI.add_dialog(confirm_dialog)
 		confirm_dialog.setup(Translator.translate("Alert!"), Translator.translate(
 				"A file named \"{file_name}\" already exists. Replacing will overwrite its contents!").format(
@@ -274,11 +276,11 @@ func focus_file(path: String) -> void:
 func unfocus_file() -> void:
 	set_file(default_file)
 
-func copy_path() -> void:
+func copy_file_path() -> void:
 	DisplayServer.clipboard_set(current_dir.path_join(current_file))
 
 func create_folder() -> void:
-	var create_folder_dialog := ChooseNameDialog.instantiate()
+	var create_folder_dialog := ChooseNameDialogScene.instantiate()
 	HandlerGUI.add_dialog(create_folder_dialog)
 	create_folder_dialog.setup(Translator.translate("Create new folder"),
 			_on_create_folder_finished, _create_folder_error)
@@ -293,15 +295,15 @@ func _create_folder_error(text: String) -> String:
 	return ""
 
 func _on_create_folder_finished(text: String) -> void:
-	DA = DirAccess.open(current_dir)
-	if !is_instance_valid(DA):
+	dir_cursor = DirAccess.open(current_dir)
+	if !is_instance_valid(dir_cursor):
 		return
 	
-	var err := DA.make_dir(text)
+	var err := dir_cursor.make_dir(text)
 	if err == OK:
 		refresh_dir()
 	else:
-		var alert_dialog := AlertDialog.instantiate()
+		var alert_dialog := AlertDialogScene.instantiate()
 		HandlerGUI.add_dialog(alert_dialog)
 		alert_dialog.setup(Translator.translate("Failed to create a folder."))
 
@@ -313,7 +315,8 @@ func open_dir_context(dir: String) -> void:
 				enter_dir.bind(dir), false, load("res://assets/icons/OpenFolder.svg"),
 				"ui_accept"),
 		ContextPopup.create_button(Translator.translate("Copy path"),
-				copy_path, false, load("res://assets/icons/Copy.svg"))]
+				DisplayServer.clipboard_set.bind(dir), false,
+				load("res://assets/icons/Copy.svg"))]
 	context_popup.setup(btn_arr, true)
 	var vp := get_viewport()
 	HandlerGUI.popup_under_pos(context_popup, vp.get_mouse_position(), vp)
@@ -324,7 +327,7 @@ func open_file_context(file: String) -> void:
 		ContextPopup.create_button(special_button.text,
 				select_file, false, load("res://assets/icons/OpenFile.svg"), "ui_accept"),
 		ContextPopup.create_button(Translator.translate("Copy path"),
-				copy_path, false, load("res://assets/icons/Copy.svg"))]
+				copy_file_path, false, load("res://assets/icons/Copy.svg"))]
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_arr, true)
 	var vp := get_viewport()
@@ -383,8 +386,8 @@ func _on_file_field_text_submitted(new_text: String) -> void:
 		file_field.text = current_file
 
 func _on_path_field_text_submitted(new_text: String) -> void:
-	DA = DirAccess.open(new_text)
-	if is_instance_valid(DA):
+	dir_cursor = DirAccess.open(new_text)
+	if is_instance_valid(dir_cursor):
 		set_dir(new_text)
 	else:
 		path_field.text = current_dir
@@ -419,9 +422,10 @@ func _on_replace_button_pressed() -> void:
 # Helpers
 
 func _init() -> void:
-	for enum_value in [OS.SYSTEM_DIR_DCIM, OS.SYSTEM_DIR_DESKTOP, OS.SYSTEM_DIR_DOCUMENTS,
-	OS.SYSTEM_DIR_DOWNLOADS, OS.SYSTEM_DIR_MOVIES, OS.SYSTEM_DIR_MUSIC,
-	OS.SYSTEM_DIR_PICTURES, OS.SYSTEM_DIR_RINGTONES]:
+	const arr: Array[OS.SystemDir] = [OS.SYSTEM_DIR_DCIM, OS.SYSTEM_DIR_DESKTOP,
+			OS.SYSTEM_DIR_DOCUMENTS, OS.SYSTEM_DIR_DOWNLOADS, OS.SYSTEM_DIR_MOVIES,
+			OS.SYSTEM_DIR_MUSIC, OS.SYSTEM_DIR_PICTURES, OS.SYSTEM_DIR_RINGTONES]
+	for enum_value in arr:
 		system_dir_paths[enum_value] = OS.get_system_dir(enum_value)
 
 var system_dir_paths: Dictionary[OS.SystemDir, String] = {}

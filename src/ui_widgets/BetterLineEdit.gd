@@ -71,10 +71,7 @@ func _draw() -> void:
 func _make_custom_tooltip(for_text: String) -> Object:
 	if mono_font_tooltip:
 		var label := Label.new()
-		label.begin_bulk_theme_override()
 		label.add_theme_font_override("font", ThemeUtils.mono_font)
-		label.add_theme_font_size_override("font_size", 13)
-		label.end_bulk_theme_override()
 		label.text = for_text
 		return label
 	else:
@@ -85,7 +82,8 @@ func _input(event: InputEvent) -> void:
 	if not has_focus():
 		return
 	
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT,
+	MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]):
 		if event.is_pressed() and not get_global_rect().has_point(event.position) and\
 		popup_level == HandlerGUI.popup_stack.size():
 			release_focus()
@@ -109,10 +107,10 @@ func _gui_input(event: InputEvent) -> void:
 		var separator_arr: Array[int] = []
 		if editable:
 			btn_arr.append(ContextPopup.create_button(Translator.translate("Undo"),
-					menu_option.bind(LineEdit.MENU_UNDO), false,
+					menu_option.bind(LineEdit.MENU_UNDO), not has_undo(),
 					load("res://assets/icons/Undo.svg"), "ui_undo"))
 			btn_arr.append(ContextPopup.create_button(Translator.translate("Redo"),
-					menu_option.bind(LineEdit.MENU_REDO), false,
+					menu_option.bind(LineEdit.MENU_REDO), not has_redo(),
 					load("res://assets/icons/Redo.svg"), "ui_redo"))
 			if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
 				separator_arr = [2]

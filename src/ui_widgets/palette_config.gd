@@ -1,9 +1,9 @@
 extends PanelContainer
 
-const ColorSwatchType = preload("res://src/ui_widgets/color_swatch_config.gd")
+const ColorSwatch = preload("res://src/ui_widgets/color_swatch_config.gd")
 
-const ColorSwatch = preload("res://src/ui_widgets/color_swatch_config.tscn")
-const ConfigurePopup = preload("res://src/ui_widgets/configure_color_popup.tscn")
+const ColorSwatchScene = preload("res://src/ui_widgets/color_swatch_config.tscn")
+const ConfigurePopupScene = preload("res://src/ui_widgets/configure_color_popup.tscn")
 const plus_icon = preload("res://assets/icons/Plus.svg")
 
 signal layout_changed
@@ -18,12 +18,13 @@ var currently_edited_idx := -1
 
 func setup_theme() -> void:
 	palette_button.begin_bulk_theme_override()
-	for theming in ["normal", "hover", "pressed"]:
-		var stylebox := palette_button.get_theme_stylebox(theming).duplicate()
+	const CONST_ARR: PackedStringArray = ["normal", "hover", "pressed"]
+	for theme_type in CONST_ARR:
+		var stylebox := palette_button.get_theme_stylebox(theme_type).duplicate()
 		stylebox.content_margin_top -= 3
 		stylebox.content_margin_bottom -= 2
 		stylebox.content_margin_left += 1
-		palette_button.add_theme_stylebox_override(theming, stylebox)
+		palette_button.add_theme_stylebox_override(theme_type, stylebox)
 	palette_button.end_bulk_theme_override()
 	var panel_stylebox := get_theme_stylebox("panel").duplicate()
 	panel_stylebox.content_margin_top = panel_stylebox.content_margin_bottom
@@ -56,7 +57,7 @@ func rebuild_colors() -> void:
 	set_label_text(palette.title)
 	
 	for i in palette.get_color_count():
-		var swatch := ColorSwatch.instantiate()
+		var swatch := ColorSwatchScene.instantiate()
 		swatch.palette = palette
 		swatch.idx = i
 		swatch.pressed.connect(popup_configure_color.bind(swatch))
@@ -75,7 +76,7 @@ func rebuild_colors() -> void:
 	fake_swatch.focus_mode = Control.FOCUS_NONE
 	fake_swatch.mouse_filter = Control.MOUSE_FILTER_PASS
 	fake_swatch.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	var color_swatch_ref := ColorSwatch.instantiate()
+	var color_swatch_ref := ColorSwatchScene.instantiate()
 	fake_swatch.custom_minimum_size = color_swatch_ref.custom_minimum_size
 	color_swatch_ref.queue_free()
 	fake_swatch.pressed.connect(popup_add_color)
@@ -94,7 +95,7 @@ func display_warnings() -> void:
 
 
 func popup_configure_color(swatch: Button) -> void:
-	var configure_popup := ConfigurePopup.instantiate()
+	var configure_popup := ConfigurePopupScene.instantiate()
 	configure_popup.palette = swatch.palette
 	configure_popup.idx = swatch.idx
 	configure_popup.color_deletion_requested.connect(remove_color.bind(swatch.idx))
@@ -118,10 +119,13 @@ func hide_name_edit() -> void:
 
 # Update text color to red if the title won't work (because it's a duplicate).
 func _on_name_edit_text_changed(new_text: String) -> void:
-	for theme_color in ["font_color", "font_hover_color"]:
-		name_edit.add_theme_color_override(theme_color,
+	name_edit.begin_bulk_theme_override()
+	const CONST_ARR: PackedStringArray = ["font_color", "font_hover_color"]
+	for theme_type in CONST_ARR:
+		name_edit.add_theme_color_override(theme_type,
 				Configs.savedata.get_validity_color(false, new_text != palette.title and\
 				not Configs.savedata.is_palette_title_unused(new_text)))
+	name_edit.end_bulk_theme_override()
 
 func _on_name_edit_text_submitted(new_title: String) -> void:
 	new_title = new_title.strip_edges()
@@ -150,18 +154,19 @@ func set_label_text(new_text: String) -> void:
 	else:
 		palette_button.text = new_text
 	palette_button.begin_bulk_theme_override()
+	const CONST_ARR: PackedStringArray = ["font_color", "font_hover_color", "font_pressed_color"]
 	if palette.title.is_empty():
-		for theme_name in ["font_color", "font_hover_color", "font_pressed_color"]:
-			palette_button.add_theme_color_override(theme_name,
+		for theme_type in CONST_ARR:
+			palette_button.add_theme_color_override(theme_type,
 					ThemeUtils.common_subtle_text_color)
 	else:
 		if not Configs.savedata.is_palette_valid(palette):
-			for theme_name in ["font_color", "font_hover_color", "font_pressed_color"]:
-				palette_button.add_theme_color_override(theme_name,
+			for theme_type in CONST_ARR:
+				palette_button.add_theme_color_override(theme_type,
 						Configs.savedata.basic_color_error)
 		else:
-			for theme_name in ["font_color", "font_hover_color", "font_pressed_color"]:
-				palette_button.remove_theme_color_override(theme_name)
+			for theme_type in CONST_ARR:
+				palette_button.remove_theme_color_override(theme_type)
 	palette_button.end_bulk_theme_override()
 
 func delete() -> void:
@@ -234,7 +239,7 @@ func _on_palette_button_pressed() -> void:
 	btn_arr.append(ContextPopup.create_button(Translator.translate("Copy as XML"),
 			copy_palette.bind(palette_idx), false, load("res://assets/icons/Copy.svg")))
 	btn_arr.append(ContextPopup.create_button(Translator.translate("Save as XML"),
-			save_palette.bind(palette_idx), false, load("res://assets/icons/Paste.svg")))
+			save_palette.bind(palette_idx), false, load("res://assets/icons/Export.svg")))
 	
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_arr, true, -1, -1, PackedInt32Array([separator_idx]))
@@ -256,7 +261,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	var buffer := 6
 	var pos := colors_container.get_local_mouse_position()
 	
-	if not (data is ColorSwatchType.DropData and\
+	if not (data is ColorSwatch.DropData and\
 	Rect2(Vector2.ZERO, colors_container.size).grow(buffer).has_point(pos)):
 		clear_proposed_drop()
 		return false
@@ -276,7 +281,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 	proposed_drop_idx = new_idx
 	for swatch in get_swatches():
-		swatch.proposed_drop_data = ColorSwatchType.DropData.new(palette, new_idx)
+		swatch.proposed_drop_data = ColorSwatch.DropData.new(palette, new_idx)
 		swatch.queue_redraw()
 	return data.palette != palette or (data.palette == palette and\
 			data.index != new_idx and data.index != new_idx - 1)

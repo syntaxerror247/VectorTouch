@@ -1,5 +1,21 @@
 class_name TranslationUtils extends RefCounted
 
+static func _get_locale_name(locale: String) -> String:
+	match locale:
+		"pt_BR": return "Brazilian Portuguese"
+		"zh_CN": return "Simplified Chinese"
+	return TranslationServer.get_locale_name(locale)
+
+static func get_locale_string(locale: String) -> String:
+	if not "_" in locale:
+		return locale.to_upper()
+	var separator_pos := locale.find("_")
+	return locale.left(separator_pos) + "-" + locale.right(-separator_pos - 1).to_upper()
+
+static func get_locale_display(locale: String) -> String:
+	return "%s (%s)" % [_get_locale_name(locale), get_locale_string(locale)]
+
+
 static func get_shortcut_description(action_name: String) -> String:
 	match action_name:
 		"export": return Translator.translate("Export")
@@ -7,6 +23,9 @@ static func get_shortcut_description(action_name: String) -> String:
 		"save": return Translator.translate("Save")
 		"save_as": return Translator.translate("Save as")
 		"close_tab": return Translator.translate("Close tab")
+		"close_tabs_to_left": return Translator.translate("Close tabs to the left")
+		"close_tabs_to_right": return Translator.translate("Close tabs to the right")
+		"close_all_other_tabs": return Translator.translate("Close all other tabs")
 		"new_tab": return Translator.translate("Create a new tab")
 		"select_next_tab": return Translator.translate("Select the next tab")
 		"select_previous_tab": return Translator.translate("Select the previous tab")

@@ -28,13 +28,13 @@ func get_setting_default(setting: String) -> Variant:
 		"basic_color_warning": return Color("ee5")
 		
 		"invert_zoom": return false
-		"wrap_mouse": return false
+		"wraparound_panning": return false
 		"use_ctrl_for_zoom": return true
 		"use_native_file_dialog": return true
 		"use_filename_for_window_title": return true
 		"handle_size": return 1.0 if OS.get_name() != "Android" else 2.0
-		"ui_scale": return 1.0
-		"auto_ui_scale": return true
+		"ui_scale": return ScalingApproach.AUTO
+		"custom_ui_scale": return true
 	return null
 
 func reset_to_default() -> void:
@@ -54,6 +54,8 @@ func validate() -> void:
 		editor_formatter = Formatter.new(Formatter.Preset.PRETTY)
 	if not is_instance_valid(export_formatter):
 		export_formatter = Formatter.new(Formatter.Preset.COMPACT)
+	if _active_tab_index >= _tabs.size() or _active_tab_index < 0:
+		_active_tab_index = _active_tab_index  # Run the setter.
 
 
 const CURRENT_VERSION = 1
@@ -199,10 +201,10 @@ const CURRENT_VERSION = 1
 			invert_zoom = new_value
 			emit_changed()
 
-@export var wrap_mouse := false:
+@export var wraparound_panning := false:
 	set(new_value):
-		if wrap_mouse != new_value:
-			wrap_mouse = new_value
+		if wraparound_panning != new_value:
+			wraparound_panning = new_value
 			emit_changed()
 
 @export var use_ctrl_for_zoom := true:
@@ -238,24 +240,16 @@ const HANDLE_SIZE_MAX = 4.0
 			emit_changed()
 			Configs.handle_visuals_changed.emit()
 
-const UI_SCALE_MIN = 0.5
-const UI_SCALE_MAX = 5.0
-@export var ui_scale := 1.0:
+enum ScalingApproach {AUTO, CONSTANT_075, CONSTANT_100, CONSTANT_125, CONSTANT_150,
+		CONSTANT_175, CONSTANT_200, CONSTANT_300, CONSTANT_400, MAX}
+@export var ui_scale := ScalingApproach.AUTO:
 	set(new_value):
 		# Validation
-		new_value = clampf(new_value, UI_SCALE_MIN, UI_SCALE_MAX)
-		if is_nan(new_value):
-			new_value = get_setting_default("ui_scale")
+		if not (new_value >= 0 and new_value < ScalingApproach.size()):
+			new_value = ScalingApproach.AUTO
 		# Main part
 		if ui_scale != new_value:
 			ui_scale = new_value
-			emit_changed()
-			Configs.ui_scale_changed.emit()
-
-@export var auto_ui_scale := true:
-	set(new_value):
-		if auto_ui_scale != new_value:
-			auto_ui_scale = new_value
 			emit_changed()
 			Configs.ui_scale_changed.emit()
 
@@ -277,7 +271,7 @@ const MAX_SNAP = 16384
 @export var color_picker_slider_mode := GoodColorPicker.SliderMode.RGB:
 	set(new_value):
 		# Validation
-		if new_value < 0 || new_value >= GoodColorPicker.SliderMode.size():
+		if not (new_value >= 0 and new_value < GoodColorPicker.SliderMode.size()):
 			new_value = GoodColorPicker.SliderMode.RGB
 		# Main part
 		if color_picker_slider_mode != new_value:
@@ -295,17 +289,6 @@ const MAX_SNAP = 16384
 		if file_dialog_show_hidden != new_value:
 			file_dialog_show_hidden = new_value
 			emit_changed()
-
-@export var shortcut_panel_layout := ShortcutPanel.Layout.HORIZONTAL_STRIP:
-	set(new_value):
-		# Validation
-		if new_value < 0 || new_value >= ShortcutPanel.Layout.size():
-			new_value = ShortcutPanel.Layout.HORIZONTAL_STRIP
-		# Main part
-		if shortcut_panel_layout != new_value:
-			shortcut_panel_layout = new_value
-			emit_changed()
-			Configs.shortcut_panel_changed.emit()
 
 
 const MAX_RECENT_DIRS = 5
@@ -369,10 +352,20 @@ func action_get_shortcuts(action: String) -> Array[InputEvent]:
 		return Configs.default_shortcuts[action]
 
 func action_modify_shortcuts(action: String, new_events: Array[InputEvent]) -> void:
-	if new_events != Configs.default_shortcuts[action]:
-		_shortcuts[action] = new_events
+	var are_new_events_default := true
+	if new_events.size() != Configs.default_shortcuts[action].size():
+		are_new_events_default = false
 	else:
+		for i in new_events.size():
+			if not new_events[i].is_match(Configs.default_shortcuts[action][i]):
+				are_new_events_default = false
+				break
+	
+	if are_new_events_default:
 		_shortcuts.erase(action)
+	else:
+		_shortcuts[action] = new_events
+	
 	_action_sync_inputmap(action)
 	update_shortcut_validities()
 	emit_changed()
@@ -391,14 +384,14 @@ func update_shortcut_validities() -> void:
 			# If the key already exists, set validity to false, otherwise set to true.
 			_shortcut_validities[shortcut_id] = not shortcut_id in _shortcut_validities
 
-func is_shortcut_valid(shortcut: InputEvent) -> bool:
-	var shortcut_id = shortcut.get_keycode_with_modifiers()
+func is_shortcut_valid(shortcut: InputEventKey) -> bool:
+	var shortcut_id := shortcut.get_keycode_with_modifiers()
 	if not shortcut_id in _shortcut_validities:
 		return true
 	return _shortcut_validities[shortcut_id]
 
-func get_actions_with_shortcut(shortcut: InputEvent) -> PackedStringArray:
-	var shortcut_id = shortcut.get_keycode_with_modifiers()
+func get_actions_with_shortcut(shortcut: InputEventKey) -> PackedStringArray:
+	var shortcut_id := shortcut.get_keycode_with_modifiers()
 	if not shortcut_id in _shortcut_validities:
 		return PackedStringArray()
 	elif _shortcut_validities[shortcut_id]:
@@ -510,6 +503,17 @@ func set_palettes(new_palettes: Array[Palette]) -> void:
 			export_formatter.changed.connect(emit_changed)
 
 
+@export var shortcut_panel_layout := ShortcutPanel.Layout.HORIZONTAL_STRIP:
+	set(new_value):
+		# Validation
+		if not (new_value >= 0 and new_value < ShortcutPanel.Layout.size()):
+			new_value = ShortcutPanel.Layout.HORIZONTAL_STRIP
+		# Main part
+		if shortcut_panel_layout != new_value:
+			shortcut_panel_layout = new_value
+			emit_changed()
+			Configs.shortcut_panel_changed.emit()
+
 const SHORTCUT_PANEL_MAX_SLOTS = 6
 @export var _shortcut_panel_slots: Dictionary[int, String] = {}:
 	set(new_value):
@@ -549,13 +553,13 @@ func erase_shortcut_panel_slot(slot: int) -> void:
 	Configs.shortcut_panel_changed.emit()
 
 
-const MAX_TABS = 5
+const MAX_TABS = 50
 @export var _tabs: Array[TabData] = []:
 	set(new_value):
 		# Validation
 		var used_ids := PackedInt32Array()
 		for idx in range(new_value.size() - 1, -1, -1):
-			var tab = new_value[idx]
+			var tab := new_value[idx]
 			if not is_instance_valid(tab) or tab.id in used_ids:
 				new_value.remove_at(idx)
 			else:
@@ -571,7 +575,7 @@ const MAX_TABS = 5
 			
 			for tab in _tabs:
 				tab.changed.connect(emit_changed)
-				tab.file_path_changed.connect(_on_tab_file_path_changed.bind(tab.id))
+				tab.status_changed.connect(_on_tab_status_changed.bind(tab.id))
 			emit_changed()
 			if _tabs.is_empty():
 				_add_new_tab()
@@ -590,9 +594,10 @@ const MAX_TABS = 5
 			_active_tab_index = new_value
 			emit_changed()
 
-func _on_tab_file_path_changed(id: int):
+func _on_tab_status_changed(id: int) -> void:
 	if id == _tabs[_active_tab_index].id:
-		Configs.active_tab_file_path_changed.emit()
+		Configs.active_tab_status_changed.emit()
+	Configs.tabs_changed.emit()
 
 func has_tabs() -> bool:
 	return not _tabs.is_empty()
@@ -638,13 +643,20 @@ func _add_new_tab() -> void:
 	var new_id := 1
 	while true:
 		if not new_id in used_ids:
-			var new_tab := TabData.new(new_id)
-			new_tab.is_new = true
-			new_tab.changed.connect(emit_changed)
-			new_tab.file_path_changed.connect(_on_tab_file_path_changed.bind(new_id))
-			_tabs.append(new_tab)
-			return
+			break
 		new_id += 1
+	
+	var new_tab := TabData.new(new_id)
+	new_tab.fully_loaded = false
+	new_tab.changed.connect(emit_changed)
+	new_tab.status_changed.connect(_on_tab_status_changed.bind(new_id))
+	
+	# Clear file path for the new tab.
+	var new_tab_path := new_tab.get_edited_file_path()
+	if FileAccess.file_exists(new_tab_path):
+		DirAccess.remove_absolute(new_tab_path)
+	
+	_tabs.append(new_tab)
 
 func add_empty_tab() -> void:
 	_add_new_tab()
@@ -664,47 +676,40 @@ func add_tab_with_path(new_file_path: String) -> void:
 	Configs.tabs_changed.emit()
 	set_active_tab_index(_tabs.size() - 1)
 
-func remove_tabs(indices: PackedInt32Array) -> void:
-	# Validate the passed indices.
-	var indices_to_remove := PackedInt32Array()
-	for idx in indices:
-		if idx >= 0 and idx < _tabs.size() and not idx in indices_to_remove:
-			indices_to_remove.append(idx)
-	
-	if indices_to_remove.is_empty():
+func remove_tab(idx: int) -> void:
+	if idx < 0 or idx >= _tabs.size():
 		return
 	
 	var new_active_tab_index := _active_tab_index
-	# For each index, remove the tab. If there are no tabs in the end, add one.
-	for idx in range(_tabs.size() - 1, -1, -1):
-		if idx in indices_to_remove:
-			_tabs.remove_at(idx)
-			if idx < _active_tab_index:
-				new_active_tab_index -= 1
+	# If there are no tabs in the end, add one.
+	_tabs.remove_at(idx)
+	if idx < _active_tab_index:
+		new_active_tab_index -= 1
 	
 	# Clear unnecessary files.
 	var used_file_paths := PackedStringArray()
 	for tab in _tabs:
 		used_file_paths.append(tab.get_edited_file_path())
 	
-	for file_name in DirAccess.get_files_at(TabData.EDITED_FILES_DIR):
-		var full_path := TabData.EDITED_FILES_DIR.path_join(file_name)
-		if not full_path in used_file_paths:
-			DirAccess.remove_absolute(TabData.EDITED_FILES_DIR.path_join(file_name))
+	if DirAccess.dir_exists_absolute(TabData.EDITED_FILES_DIR):
+		for file_name in DirAccess.get_files_at(TabData.EDITED_FILES_DIR):
+			var full_path := TabData.EDITED_FILES_DIR.path_join(file_name)
+			if not full_path in used_file_paths:
+				DirAccess.remove_absolute(TabData.EDITED_FILES_DIR.path_join(file_name))
 	
 	if _tabs.is_empty():
 		_add_new_tab()
 	
 	emit_changed()
 	Configs.tabs_changed.emit()
-	var has_tab_changed := (_active_tab_index in indices_to_remove)
+	var has_tab_changed := (_active_tab_index == idx)
 	_active_tab_index = clampi(new_active_tab_index, 0, _tabs.size() - 1)
 	_tabs[_active_tab_index].activate()
 	if has_tab_changed:
 		Configs.active_tab_changed.emit()
 
 func remove_active_tab() -> void:
-	remove_tabs(PackedInt32Array([_active_tab_index]))
+	remove_tab(_active_tab_index)
 
 func move_tab(old_idx: int, new_idx: int) -> void:
 	if old_idx == new_idx or old_idx < 0 or old_idx > get_tab_count() or\

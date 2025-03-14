@@ -2,12 +2,14 @@
 class_name FileUtils extends RefCounted
 
 enum FileState {SAME, DIFFERENT, DOES_NOT_EXIST}
+enum TabCloseMode {SINGLE, TO_LEFT, TO_RIGHT, ALL_OTHERS}
 
-const GoodFileDialogType = preload("res://src/ui_parts/good_file_dialog.gd")
+const GoodFileDialog = preload("res://src/ui_parts/good_file_dialog.gd")
 
-const AlertDialog = preload("res://src/ui_widgets/alert_dialog.tscn")
-const ImportWarningMenu = preload("res://src/ui_parts/import_warning_menu.tscn")
-const GoodFileDialog = preload("res://src/ui_parts/good_file_dialog.tscn")
+const AlertDialogScene = preload("res://src/ui_widgets/alert_dialog.tscn")
+const OptionsDialogScene = preload("res://src/ui_widgets/options_dialog.tscn")
+const ImportWarningMenuScene = preload("res://src/ui_parts/import_warning_menu.tscn")
+const GoodFileDialogScene = preload("res://src/ui_parts/good_file_dialog.tscn")
 
 static func reset_svg() -> void:
 	var file_path := Configs.savedata.get_active_tab().svg_file_path
@@ -29,17 +31,26 @@ static func compare_svg_to_disk_contents() -> FileState:
 		return FileState.DIFFERENT
 
 
-static func save_svg() -> void:
-	var file_path := Configs.savedata.get_active_tab().svg_file_path
+static func _save_svg_with_custom_final_callback(final_callback: Callable) -> void:
+	var active_tab := Configs.savedata.get_active_tab()
+	var file_path := active_tab.svg_file_path
 	if not file_path.is_empty() and FileAccess.file_exists(file_path):
-		FileAccess.open(file_path, FileAccess.WRITE).store_string(State.get_export_text())
+		active_tab.save_to_bound_path()
+		if final_callback.is_valid():
+			final_callback.call()
 	else:
-		save_svg_as()
+		_save_svg_as_with_custom_final_callback(final_callback)
+
+static func _save_svg_as_with_custom_final_callback(final_callback: Callable) -> void:
+	open_export_dialog(ImageExportData.new(), final_callback)
+
+static func save_svg() -> void:
+	_save_svg_with_custom_final_callback(Callable())
 
 static func save_svg_as() -> void:
-	open_export_dialog(ImageExportData.new())
+	_save_svg_as_with_custom_final_callback(Callable())
 
-static func open_export_dialog(export_data: ImageExportData) -> void:
+static func open_export_dialog(export_data: ImageExportData, final_callback := Callable()) -> void:
 	OS.request_permissions()
 	if OS.has_feature("web"):
 		var web_format_name := ImageExportData.web_formats[export_data.format]
@@ -51,23 +62,30 @@ static func open_export_dialog(export_data: ImageExportData) -> void:
 	else:
 		if _is_native_preferred():
 			var native_callback :=\
-					func(has_selected: bool, files: PackedStringArray, _filter_idx: int):
+					func(has_selected: bool, files: PackedStringArray, _filter_idx: int) -> void:
 						if has_selected:
 							_finish_export(files[0], export_data)
+							if final_callback.is_valid():
+								final_callback.call()
 			
 			DisplayServer.file_dialog_show(
 					Translator.translate("Save the .\"{format}\" file").format(
 					{"format": export_data.format}), Configs.savedata.get_active_tab_dir(),
-					Utils.get_file_name(Configs.savedata.get_active_tab().svg_file_path) +\
-					"." + export_data.format, false, DisplayServer.FILE_DIALOG_MODE_SAVE_FILE,
+					_choose_file_name() + "." + export_data.format, false,
+					DisplayServer.FILE_DIALOG_MODE_SAVE_FILE,
 					PackedStringArray(["*." + export_data.format]), native_callback)
 		else:
-			var export_dialog := GoodFileDialog.instantiate()
-			export_dialog.setup(Configs.savedata.get_active_tab_dir(),
-					Utils.get_file_name(Configs.savedata.get_active_tab().svg_file_path),
-					GoodFileDialogType.FileMode.SAVE, PackedStringArray([export_data.format]))
+			var non_native_callback :=\
+					func(path: String) -> void:
+						_finish_export(path, export_data)
+						if final_callback.is_valid():
+							final_callback.call()
+			
+			var export_dialog := GoodFileDialogScene.instantiate()
+			export_dialog.setup(Configs.savedata.get_active_tab_dir(), _choose_file_name(),
+					GoodFileDialog.FileMode.SAVE, PackedStringArray([export_data.format]))
 			HandlerGUI.add_menu(export_dialog)
-			export_dialog.file_selected.connect(func(path): _finish_export(path, export_data))
+			export_dialog.file_selected.connect(non_native_callback)
 
 static func open_xml_export_dialog(xml: String, file_name: String) -> void:
 	OS.request_permissions()
@@ -76,7 +94,7 @@ static func open_xml_export_dialog(xml: String, file_name: String) -> void:
 	else:
 		if _is_native_preferred():
 			var native_callback :=\
-					func(has_selected: bool, files: PackedStringArray, _filter_idx: int):
+					func(has_selected: bool, files: PackedStringArray, _filter_idx: int) -> void:
 						if has_selected:
 							_finish_xml_export(files[0], xml)
 			
@@ -86,11 +104,12 @@ static func open_xml_export_dialog(xml: String, file_name: String) -> void:
 					file_name + ".xml", false, DisplayServer.FILE_DIALOG_MODE_SAVE_FILE,
 					PackedStringArray(["*.xml"]), native_callback)
 		else:
-			var export_dialog := GoodFileDialog.instantiate()
+			var export_dialog := GoodFileDialogScene.instantiate()
 			export_dialog.setup(Configs.savedata.get_last_dir(),
-					file_name, GoodFileDialogType.FileMode.SAVE, PackedStringArray(["xml"]))
+					file_name, GoodFileDialog.FileMode.SAVE, PackedStringArray(["xml"]))
 			HandlerGUI.add_menu(export_dialog)
-			export_dialog.file_selected.connect(func(path): _finish_xml_export(path, xml))
+			export_dialog.file_selected.connect(
+					func(path: String) -> void: _finish_xml_export(path, xml))
 
 static func _finish_export(file_path: String, export_data: ImageExportData) -> void:
 	if file_path.get_extension().is_empty():
@@ -105,9 +124,11 @@ static func _finish_export(file_path: String, export_data: ImageExportData) -> v
 		_:
 			# When saving SVG, also modify the file path to associate it
 			# with the graphic being edited.
-			Configs.savedata.get_active_tab().svg_file_path = file_path
-			FileAccess.open(file_path, FileAccess.WRITE).store_string(State.get_export_text())
-	HandlerGUI.remove_all_menus()
+			var active_tab := Configs.savedata.get_active_tab()
+			active_tab.svg_file_path = file_path
+			active_tab.save_to_bound_path()
+	HandlerGUI.remove_all_menus()  # At least for now this is what's always needed.
+
 
 static func _finish_xml_export(file_path: String, xml: String) -> void:
 	if file_path.get_extension().is_empty():
@@ -121,6 +142,9 @@ static func _finish_xml_export(file_path: String, xml: String) -> void:
 static func _is_native_preferred() -> bool:
 	return DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE) and\
 			Configs.savedata.use_native_file_dialog
+
+static func _choose_file_name() -> String:
+	return Utils.get_file_name(Configs.savedata.get_active_tab().svg_file_path)
 
 
 # No need for completion callback here yet.
@@ -156,7 +180,7 @@ completion_callback: Callable, native_dialog_title := "") -> void:
 				filters.append("*" + extension)
 			
 			var native_callback :=\
-					func(has_selected: bool, files: PackedStringArray, _filter_idx: int):
+					func(has_selected: bool, files: PackedStringArray, _filter_idx: int) -> void:
 						if has_selected:
 							_finish_file_import(files[0], completion_callback, extensions)
 			
@@ -164,12 +188,14 @@ completion_callback: Callable, native_dialog_title := "") -> void:
 					Configs.savedata.get_last_dir(), "", false,
 					DisplayServer.FILE_DIALOG_MODE_OPEN_FILE, filters, native_callback)
 		else:
-			var import_dialog := GoodFileDialog.instantiate()
+			var import_dialog := GoodFileDialogScene.instantiate()
 			import_dialog.setup(Configs.savedata.get_last_dir(), "",
-					GoodFileDialogType.FileMode.SELECT, extensions)
+					GoodFileDialog.FileMode.SELECT, extensions)
 			HandlerGUI.add_menu(import_dialog)
 			import_dialog.file_selected.connect(
-					func(path): _finish_file_import(path, completion_callback, extensions))
+					func(path: String) -> void:
+						_finish_file_import(path, completion_callback, extensions)
+			)
 
 static func _finish_file_import(file_path: String, completion_callback: Callable,
 allowed_extensions: PackedStringArray) -> Error:
@@ -194,7 +220,7 @@ allowed_extensions: PackedStringArray) -> Error:
 			error += "\n" + Translator.translate("Check if the file still exists in the selected file path.")
 	
 	if not error.is_empty():
-		var alert_dialog := AlertDialog.instantiate()
+		var alert_dialog := AlertDialogScene.instantiate()
 		HandlerGUI.add_dialog(alert_dialog)
 		alert_dialog.setup(error)
 		return ERR_FILE_CANT_OPEN
@@ -220,24 +246,53 @@ static func _apply_svg(data: Variant, file_path: String) -> void:
 				"The imported file is already being edited inside GodSVG.")
 		if compare_svg_to_disk_contents() == FileState.DIFFERENT:
 			alert_message += "\n\n" + Translator.translate(
-					"If you want to apply the unsaved file state, use \"Reset SVG\" instead.")
-		var alert_dialog := AlertDialog.instantiate()
+					"If you want to revert your edits since the last save, use {reset_svg}.").format(
+					{"reset_svg": TranslationUtils.get_shortcut_description("reset_svg")})
+		
+		var alert_dialog := AlertDialogScene.instantiate()
 		HandlerGUI.add_menu(alert_dialog)
 		alert_dialog.setup(alert_message)
-	else:
+		return
+	
+	# If the active tab is empty, replace it. Otherwise make it a new transient tab.
+	# If there are already too many tabs, do nothing.
+	if Configs.savedata.get_active_tab().empty_unsaved:
+		var warning_panel := ImportWarningMenuScene.instantiate()
+		var tab_index := Configs.savedata.get_active_tab_index()
+		Configs.savedata.add_tab_with_path(file_path)
+		Configs.savedata.remove_tab(tab_index)
+		Configs.savedata.move_tab(Configs.savedata.get_tab_count() - 1, tab_index)
+		warning_panel.canceled.connect(_on_import_panel_canceled_empty_tab_scenario)
+		warning_panel.imported.connect(_on_import_panel_accepted_empty_tab_scenario.bind(
+				data))
+		warning_panel.set_svg(data)
+		HandlerGUI.add_menu(warning_panel)
+	elif Configs.savedata.get_tab_count() < SaveData.MAX_TABS:
+		var warning_panel := ImportWarningMenuScene.instantiate()
 		State.transient_tab_path = file_path
-		var warning_panel := ImportWarningMenu.instantiate()
-		warning_panel.canceled.connect(_on_import_panel_canceled)
-		warning_panel.imported.connect(_on_import_panel_accepted.bind(file_path, data))
+		warning_panel.canceled.connect(_on_import_panel_canceled_transient_scenario)
+		warning_panel.imported.connect(_on_import_panel_accepted_transient_scenario.bind(
+				file_path, data))
 		warning_panel.set_svg(data)
 		HandlerGUI.add_menu(warning_panel)
 
-static func _on_import_panel_canceled() -> void:
+static func _on_import_panel_canceled_empty_tab_scenario() -> void:
+	var tab_index := Configs.savedata.get_active_tab_index()
+	Configs.savedata.add_empty_tab()
+	Configs.savedata.remove_tab(tab_index)
+	Configs.savedata.move_tab(Configs.savedata.get_tab_count() - 1, tab_index)
+
+static func _on_import_panel_accepted_empty_tab_scenario(svg_text: String) -> void:
+	Configs.savedata.get_active_tab().setup_svg_text(svg_text)
+	State.sync_elements()
+
+static func _on_import_panel_canceled_transient_scenario() -> void:
 	State.transient_tab_path = ""
 
-static func _on_import_panel_accepted(file_path: String, svg_text: String) -> void:
-	State.transient_tab_path = ""
+static func _on_import_panel_accepted_transient_scenario(
+file_path: String, svg_text: String) -> void:
 	Configs.savedata.add_tab_with_path(file_path)
+	State.transient_tab_path = ""
 	Configs.savedata.get_active_tab().setup_svg_text(svg_text)
 	State.sync_elements()
 
@@ -247,6 +302,70 @@ static func open_svg(file_path: String) -> void:
 
 static func open_svg_folder(file_path: String) -> void:
 	OS.shell_show_in_file_manager(file_path)
+
+
+static func close_tabs(initial_idx: int, tab_close_mode := TabCloseMode.SINGLE) -> void:
+	var indices: Array[int] = []
+	match tab_close_mode:
+		TabCloseMode.SINGLE:
+			indices = [initial_idx]
+		TabCloseMode.TO_LEFT:
+			for i in range(initial_idx - 1, -1, -1):
+				indices.append(i)
+		TabCloseMode.TO_RIGHT:
+			for i in Configs.savedata.get_tab_count() - initial_idx - 1:
+				indices.append(initial_idx + 1)
+		TabCloseMode.ALL_OTHERS:
+			for i in initial_idx:
+				indices.append(0)
+			for i in Configs.savedata.get_tab_count() - initial_idx - 1:
+				indices.append(1)
+	_close_tabs_internal(indices)
+
+static func _close_tabs_internal(indices: Array[int]) -> void:
+	if indices.is_empty():
+		return
+	
+	var idx: int = indices.pop_front()
+	if idx < 0 or idx >= Configs.savedata.get_tab_count():
+		return
+	
+	var tab := Configs.savedata.get_tab(idx)
+	
+	var dont_save_callback := func() -> void:
+			Configs.savedata.remove_tab(idx)
+			HandlerGUI.remove_all_menus()
+			_close_tabs_internal(indices.duplicate())
+	
+	if tab.marked_unsaved or (tab.svg_file_path.is_empty() and not tab.empty_unsaved):
+		Configs.savedata.set_active_tab_index(idx)
+		var save_callback := _save_svg_with_custom_final_callback.bind(dont_save_callback)
+		
+		var title := ""
+		var message := ""
+		if tab.svg_file_path.is_empty():
+			title = Translator.translate("Save the file?")
+			message = Translator.translate("Do you want to save this file?")
+		else:
+			title = Translator.translate("Save the changes?")
+			message = Translator.translate(
+					"Do you want to save the changes made to {file_name}?").format(
+					{"file_name": Configs.savedata.get_active_tab().presented_name}) + "\n\n" +\
+					Translator.translate("Your changes will be lost if you don't save them.")
+		
+		var options_dialog := OptionsDialogScene.instantiate()
+		HandlerGUI.add_menu(options_dialog)
+		options_dialog.setup(title, message)
+		if OS.get_name() == "Windows":
+			options_dialog.add_option(Translator.translate("Save"), save_callback, true, false)
+			options_dialog.add_option(Translator.translate("Don't save"), dont_save_callback)
+			options_dialog.add_cancel_option()
+		else:
+			options_dialog.add_option(Translator.translate("Don't save"), dont_save_callback)
+			options_dialog.add_cancel_option()
+			options_dialog.add_option(Translator.translate("Save"), save_callback, true, false)
+	else:
+		dont_save_callback.call()
 
 
 # Web stuff.
@@ -289,7 +408,7 @@ completion_callback: Callable) -> void:
 	var extension := file_name.get_extension().to_lower()
 	
 	if not extension in allowed_extensions:
-		var alert_dialog: Node = AlertDialog.instantiate()
+		var alert_dialog := AlertDialogScene.instantiate()
 		HandlerGUI.add_dialog(alert_dialog)
 		alert_dialog.setup(TranslationUtils.get_bad_extension_alert_text(extension,
 				allowed_extensions))

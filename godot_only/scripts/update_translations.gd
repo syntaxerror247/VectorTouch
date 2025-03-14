@@ -2,7 +2,7 @@
 @tool
 extends EditorScript
 
-const TRANSLATIONS_DIR = "assets/translations"
+const TRANSLATIONS_DIR = "translations"
 
 const HEADER = """#, fuzzy
 msgid \"\"
@@ -14,8 +14,7 @@ msgstr \"\"
 \"Language-Team: \\n\"
 \"MIME-Version: 1.0\\n\"
 \"Content-Type: text/plain; charset=UTF-8\\n\"
-\"Content-Transfer-Encoding: 8bit\\n\"
-\"X-Generator: Poedit 3.4.2\\n\"\n"""
+\"Content-Transfer-Encoding: 8bit\\n\"\n"""
 
 # Don't have a better solution than handling all these different whitespace variations...
 var delimiters: Dictionary[String, String] = {}
@@ -33,17 +32,14 @@ class Message:
 	# The files this message is in are added as comments. The lines aren't
 	# kept track of, as they don't provide useful context and change frequently.
 	var files := PackedStringArray()
-	var msgid := String()
+	var msgid := ""
 	
 	func _init(p_msgid: String, p_files: PackedStringArray):
 		msgid = p_msgid
 		files = p_files.duplicate()
 	
 	func _to_string() -> String:
-		var ret := "\n"
-		for file in files:
-			ret += "#: %s\n" % file
-		return ret + 'msgid "%s"\nmsgstr ""\n' % msgid
+		return "\n#: " + "\n#: ".join(files) + '\nmsgid "%s"\nmsgstr ""\n' % msgid
 
 
 func _run() -> void:

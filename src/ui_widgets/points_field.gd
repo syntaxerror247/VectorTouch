@@ -13,7 +13,7 @@ const STRIP_HEIGHT = 22.0
 
 signal focused
 
-const MiniNumberField = preload("mini_number_field.tscn")
+const MiniNumberFieldScene = preload("mini_number_field.tscn")
 
 const more_icon = preload("res://assets/icons/SmallMore.svg")
 const plus_icon = preload("res://assets/icons/Plus.svg")
@@ -44,22 +44,19 @@ var add_move_button: Control
 
 func set_value(new_value: String, save := false) -> void:
 	element.set_attribute(attribute_name, new_value)
-	sync(element.get_attribute_value(attribute_name, true))
+	sync()
 	if save:
 		State.queue_svg_save()
-
-func sync_to_attribute() -> void:
-	set_value(element.get_attribute_value(attribute_name))
 
 
 func setup() -> void:
 	Configs.language_changed.connect(update_translation)
-	sync_to_attribute()
+	sync()
 	element.attribute_changed.connect(_on_element_attribute_changed)
 	line_edit.tooltip_text = attribute_name
 	line_edit.text_submitted.connect(set_value.bind(true))
 	line_edit.text_changed.connect(setup_font)
-	line_edit.text_change_canceled.connect(func(): setup_font(line_edit.text))
+	line_edit.text_change_canceled.connect(func() -> void: setup_font(line_edit.text))
 	line_edit.focus_entered.connect(_on_line_edit_focus_entered)
 	points_container.draw.connect(points_draw)
 	points_container.gui_input.connect(_on_points_gui_input)
@@ -81,7 +78,7 @@ func get_inner_rect(index: int) -> Rect2:
 
 func _on_element_attribute_changed(attribute_changed: String) -> void:
 	if attribute_name == attribute_changed:
-		sync_to_attribute()
+		sync()
 
 func update_translation() -> void:
 	line_edit.placeholder_text = Translator.translate("No points")
@@ -95,7 +92,14 @@ func setup_font(new_text: String) -> void:
 	else:
 		line_edit.remove_theme_font_override("font")
 
-func sync(new_value: String) -> void:
+var last_synced_value := " "  # Invalid initial string.
+
+func sync() -> void:
+	var new_value := element.get_attribute_value(attribute_name)
+	if last_synced_value == new_value:
+		return
+	last_synced_value = new_value
+	
 	line_edit.text = new_value
 	setup_font(new_value)
 	# A plus button for adding a first point if empty.
@@ -194,7 +198,7 @@ func _on_points_gui_input(event: InputEvent) -> void:
 				if event.double_click:
 					State.normal_select(element.xid, 0)
 					State.shift_select(element.xid,
-							element.get_attribute(attribute_name).get_list_size() / 2)
+							element.get_attribute(attribute_name).get_list_size() / 2 - 1)
 				elif event.is_command_or_control_pressed():
 					State.ctrl_select(element.xid, cmd_idx)
 				elif event.shift_pressed:
@@ -346,7 +350,7 @@ func setup_point_controls(idx: int) -> Control:
 
 
 func numfield(cmd_idx: int) -> BetterLineEdit:
-	var new_field := MiniNumberField.instantiate()
+	var new_field := MiniNumberFieldScene.instantiate()
 	new_field.focus_entered.connect(State.normal_select.bind(element.xid, cmd_idx))
 	return new_field
 

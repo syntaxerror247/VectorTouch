@@ -5,9 +5,9 @@ var type := Type.NONE
 
 signal value_changed
 
-const ColorEdit = preload("res://src/ui_widgets/color_edit.tscn")
-const Dropdown = preload("res://src/ui_widgets/enum_dropdown.tscn")
-const NumberDropdown = preload("res://src/ui_widgets/number_dropdown.tscn")
+const ColorEditScene = preload("res://src/ui_widgets/color_edit.tscn")
+const DropdownScene = preload("res://src/ui_widgets/dropdown.tscn")
+const NumberDropdownScene = preload("res://src/ui_widgets/number_dropdown.tscn")
 
 var getter: Callable
 var setter: Callable
@@ -33,6 +33,7 @@ var ci := get_canvas_item()
 func permanent_disable_checkbox(checkbox_state: bool) -> void:
 	disabled = true
 	widget.set_pressed_no_signal(checkbox_state)
+	widget.text = "On" if checkbox_state else "Off"
 
 func setup_checkbox() -> void:
 	widget = CheckBox.new()
@@ -46,7 +47,7 @@ func setup_checkbox() -> void:
 	panel_width = 76
 
 func setup_color(enable_alpha: bool) -> void:
-	widget = ColorEdit.instantiate()
+	widget = ColorEditScene.instantiate()
 	widget.enable_alpha = enable_alpha
 	widget.enable_palettes = false
 	widget.value = getter.call().to_html(enable_alpha)
@@ -55,9 +56,13 @@ func setup_color(enable_alpha: bool) -> void:
 	type = Type.COLOR
 	panel_width = 114 if enable_alpha else 100
 
-func setup_dropdown(values: PackedStringArray) -> void:
-	widget = Dropdown.instantiate()
+# TODO Typed Dictionary wonkiness
+func setup_dropdown(values: Array[Variant],
+value_text_map: Dictionary) -> void:  # Dictionary[Variant, String]
+	widget = DropdownScene.instantiate()
 	widget.values = values
+	widget.restricted = true
+	widget.value_text_map = value_text_map
 	add_child(widget)
 	widget.value_changed.connect(_dropdown_modification)
 	type = Type.DROPDOWN
@@ -65,7 +70,7 @@ func setup_dropdown(values: PackedStringArray) -> void:
 
 func setup_number_dropdown(values: Array[float], is_integer: bool, restricted: bool,
 min_value: float, max_value: float) -> void:
-	widget = NumberDropdown.instantiate()
+	widget = NumberDropdownScene.instantiate()
 	widget.values = values
 	widget.is_integer = is_integer
 	widget.restricted = restricted
@@ -161,11 +166,11 @@ func _draw() -> void:
 	if is_hovered:
 		get_theme_stylebox("hover", "FlatButton").draw(ci, Rect2(Vector2.ZERO, size))
 	
-	var color := Color(1, 1, 1, 0.9)
+	var color := ThemeUtils.common_text_color
 	if disabled:
 		color = ThemeUtils.common_subtle_text_color
 	elif dim_text:
-		color = Color(1, 1, 1, 0.5)
+		color = ThemeUtils.common_dimmer_text_color
 	
 	var non_panel_width := size.x - panel_width
 	var text_obj := TextLine.new()

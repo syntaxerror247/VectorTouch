@@ -9,9 +9,9 @@ extends VBoxContainer
 
 func _ready() -> void:
 	Configs.theme_changed.connect(setup_theme)
+	setup_theme()
 	State.parsing_finished.connect(update_error)
 	Configs.highlighting_colors_changed.connect(update_syntax_highlighter)
-	setup_theme()
 	update_syntax_highlighter()
 	code_edit.clear_undo_history()
 	State.svg_changed.connect(auto_update_text)
@@ -26,25 +26,20 @@ func update_error(err_id: SVGParser.ParseError) -> void:
 	if err_id == SVGParser.ParseError.OK:
 		if error_bar.visible:
 			error_bar.hide()
-			var error_bar_real_height := error_bar.size.y - 2
-			code_edit.custom_minimum_size.y += error_bar_real_height
-			code_edit.size.y += error_bar_real_height
 			setup_theme()
 	else:
 		# When the error is shown, the code editor's theme is changed to match up.
 		if not error_bar.visible:
 			error_bar.show()
 			error_label.text = SVGParser.get_error_string(err_id)
-			var error_bar_real_height := error_bar.size.y - 2
-			code_edit.custom_minimum_size.y -= error_bar_real_height
-			code_edit.size.y -= error_bar_real_height
 			setup_theme()
 
 func setup_theme() -> void:
 	# Set up the code edit.
 	code_edit.begin_bulk_theme_override()
-	for theming in ["normal", "focus", "hover"]:
-		var stylebox := get_theme_stylebox(theming, "TextEdit").duplicate()
+	const CONST_ARR_1: PackedStringArray = ["normal", "focus", "hover"]
+	for theme_type in CONST_ARR_1:
+		var stylebox := get_theme_stylebox(theme_type, "TextEdit").duplicate()
 		stylebox.corner_radius_top_right = 0
 		stylebox.corner_radius_top_left = 0
 		stylebox.border_width_top = 2
@@ -52,15 +47,16 @@ func setup_theme() -> void:
 			stylebox.corner_radius_bottom_right = 0
 			stylebox.corner_radius_bottom_left = 0
 			stylebox.border_width_bottom = 1
-		code_edit.add_theme_stylebox_override(theming, stylebox)
+		code_edit.add_theme_stylebox_override(theme_type, stylebox)
 	code_edit.end_bulk_theme_override()
 	# Make it so the scrollbar doesn't overlap with the code editor's border.
 	var scrollbar := code_edit.get_v_scroll_bar()
 	scrollbar.begin_bulk_theme_override()
-	for theming in ["grabber", "grabber_highlight", "grabber_pressed"]:
-		var stylebox := get_theme_stylebox(theming, "VScrollBar").duplicate()
+	const CONST_ARR_2: PackedStringArray = ["normal", "focus", "hover"]
+	for theme_type in CONST_ARR_2:
+		var stylebox := get_theme_stylebox(theme_type, "VScrollBar").duplicate()
 		stylebox.expand_margin_right = -2.0
-		scrollbar.add_theme_stylebox_override(theming, stylebox)
+		scrollbar.add_theme_stylebox_override(theme_type, stylebox)
 	var bg_stylebox := get_theme_stylebox("scroll", "VScrollBar").duplicate()
 	bg_stylebox.expand_margin_right = -2.0
 	bg_stylebox.content_margin_left += 1.0

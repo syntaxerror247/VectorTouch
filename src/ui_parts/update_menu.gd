@@ -3,7 +3,7 @@ extends PanelContainer
 @onready var http: HTTPRequest = $HTTPRequest
 @onready var status_label: RichTextLabel = $VBoxContainer/Status
 @onready var current_version_label: Label = $VBoxContainer/CurrentVersionLabel
-@onready var prereleases_checkbox: CheckBox = $VBoxContainer/IncludePrereleases
+@onready var prereleases_checkbox: CheckButton = $VBoxContainer/IncludePrereleases
 @onready var retry_button: Button = $VBoxContainer/RetryButton
 @onready var close_button: Button = $VBoxContainer/CloseButton
 
@@ -18,7 +18,7 @@ func _ready() -> void:
 	prereleases_checkbox.toggled.connect(display_results.unbind(1))
 	
 	close_button.text = Translator.translate("Close")
-	prereleases_checkbox.text = Translator.translate("Include prereleases")
+	prereleases_checkbox.text = Translator.translate("Show prereleases")
 	retry_button.text = Translator.translate("Retry")
 	current_version_label.text = Translator.translate("Current Version") + ": " +\
 			current_version
@@ -41,7 +41,7 @@ _headers: PackedStringArray, body: PackedByteArray) -> void:
 				display_error_message("Response code %d" % response_code)
 				return
 			
-			var json = JSON.parse_string(body.get_string_from_utf8())
+			var json: Variant = JSON.parse_string(body.get_string_from_utf8())
 			if json == null:
 				display_error_message("Failed to decode JSON")
 				return

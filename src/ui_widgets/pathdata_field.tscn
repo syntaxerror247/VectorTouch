@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dqy5lv33sy5r7"]
 
-[ext_resource type="Script" path="res://src/ui_widgets/pathdata_field.gd" id="1_22rk2"]
-[ext_resource type="Script" path="res://src/ui_widgets/BetterLineEdit.gd" id="2_48xgh"]
+[ext_resource type="Script" uid="uid://p4nyhlbpwxe2" path="res://src/ui_widgets/pathdata_field.gd" id="1_22rk2"]
+[ext_resource type="Script" uid="uid://1hox6gd5pxku" path="res://src/ui_widgets/BetterLineEdit.gd" id="2_48xgh"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2f3ln"]
 content_margin_left = 5.0
@@ -100,7 +100,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="PathdataField" type="VBoxContainer"]
-offset_right = 358.0
+offset_right = 250.0
 offset_bottom = 45.0
 theme_override_constants/separation = 2
 script = ExtResource("1_22rk2")
@@ -112,7 +112,7 @@ relative_button_hovered = SubResource("StyleBoxFlat_7fw87")
 relative_button_pressed = SubResource("StyleBoxFlat_l7drx")
 
 [node name="LineEdit" type="LineEdit" parent="."]
-custom_minimum_size = Vector2(358, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 focus_mode = 1
@@ -120,6 +120,6 @@ script = ExtResource("2_48xgh")
 mono_font_tooltip = true
 
 [node name="Commands" type="Control" parent="."]
-custom_minimum_size = Vector2(344, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_horizontal = 8

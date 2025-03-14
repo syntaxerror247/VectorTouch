@@ -1,10 +1,8 @@
 # This singleton handles information that's session-wide, but not saved.
 extends Node
 
-const OptionsDialog = preload("res://src/ui_widgets/options_dialog.tscn")
-const PathCommandPopup = preload("res://src/ui_widgets/path_popup.tscn")
-
-const DEFAULT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"></svg>'
+const OptionsDialogScene = preload("res://src/ui_widgets/options_dialog.tscn")
+const PathCommandPopupScene = preload("res://src/ui_widgets/path_popup.tscn")
 
 const path_actions_dict: Dictionary[String, String] = {
 	"move_absolute": "M", "move_relative": "m",
@@ -43,8 +41,11 @@ var _update_pending := false
 
 # "unstable_text" is the current state, which might have errors (i.e., while using the
 # code editor). "text" is the last state without errors.
-# These both differ from "Configs.svg_text" which is the state as saved to file,
+# These both differ from the TabData svg_text, which is the state as saved to file,
 # which doesn't happen while dragging handles or typing in the code editor for example.
+# "last_saved_svg_text" is a variable set temporarily when a save is requested, so that
+# any changes made between the request and the deferred sync don't go in the undo stack.
+var last_saved_svg_text := ""
 var unstable_svg_text := ""
 var svg_text := ""
 var root_element := ElementRoot.new()
@@ -55,7 +56,7 @@ var transient_tab_path := "":
 		if transient_tab_path != new_value:
 			transient_tab_path = new_value
 			Configs.tabs_changed.emit()
-			Configs.active_tab_file_path_changed.emit()
+			Configs.active_tab_status_changed.emit()
 			setup_from_tab()
 
 func _enter_tree() -> void:
@@ -88,19 +89,20 @@ func setup_from_tab() -> void:
 	var new_text := active_tab.get_svg_text()
 	
 	if not transient_tab_path.is_empty():
-		apply_svg_text(DEFAULT_SVG, false)
+		apply_svg_text(TabData.DEFAULT_SVG, false)
 		return
 	
 	if not new_text.is_empty():
 		apply_svg_text(new_text)
 		return
 	
-	if not active_tab.is_new and not FileAccess.file_exists(active_tab.get_edited_file_path()):
+	if active_tab.fully_loaded and not active_tab.empty_unsaved and\
+	FileAccess.file_exists(active_tab.get_edited_file_path()):
 		var user_facing_path := active_tab.svg_file_path
 		var message := Translator.translate(
 				"The last edited state of this tab could not be found.")
 		
-		var options_dialog := OptionsDialog.instantiate()
+		var options_dialog := OptionsDialogScene.instantiate()
 		HandlerGUI.add_dialog(options_dialog)
 		if user_facing_path.is_empty() or not FileAccess.file_exists(user_facing_path):
 			options_dialog.setup(Translator.translate("Alert!"), message)
@@ -109,16 +111,16 @@ func setup_from_tab() -> void:
 		else:
 			options_dialog.setup(Translator.translate("Alert!"),
 					message + "\n\n" + Translator.translate(
-					"The tab is bound to the file path {file_path}. Do you want to restore from this path?").\
+					"The tab is bound to the file path {file_path}. Do you want to restore the SVG from this path?").\
 					format({"file_path": user_facing_path}))
 			options_dialog.add_option(Translator.translate("Close tab"),
 					Configs.savedata.remove_active_tab)
 			options_dialog.add_option(Translator.translate("Restore"),
 					FileUtils.reset_svg, true)
-		apply_svg_text(DEFAULT_SVG, false)
+		apply_svg_text(TabData.DEFAULT_SVG, false)
 		return
 	
-	active_tab.setup_svg_text(DEFAULT_SVG)
+	active_tab.setup_svg_text(TabData.DEFAULT_SVG, active_tab.svg_file_path.is_empty())
 	sync_elements()
 
 
@@ -134,13 +136,17 @@ func _update() -> void:
 	svg_text = SVGParser.root_to_editor_text(root_element)
 	svg_changed.emit()
 
+
 # Ensure the save happens after the update.
 func queue_svg_save() -> void:
+	_update()
+	last_saved_svg_text = svg_text
 	_svg_save.call_deferred()
 
 func _svg_save() -> void:
 	unstable_svg_text = ""
-	Configs.savedata.get_active_tab().set_svg_text(svg_text)
+	Configs.savedata.get_active_tab().set_svg_text(last_saved_svg_text)
+	last_saved_svg_text = ""
 
 
 func sync_elements() -> void:
@@ -191,7 +197,6 @@ func get_export_text() -> String:
 
 signal hover_changed
 signal selection_changed
-signal proposed_drop_changed
 
 signal requested_scroll_to_element_editor(xid: PackedInt32Array, inner_idx: int)
 
@@ -216,10 +221,31 @@ var inner_selections: Array[int] = []
 var inner_selection_pivot := -1
 
 # When dragging elements in the inspector.
+var is_xnode_selection_dragged := false
 var proposed_drop_xid := PackedInt32Array()
+
+signal xnode_dragging_state_changed
+signal proposed_drop_changed
+
+func set_selection_dragged(new_value: bool) -> void:
+	if is_xnode_selection_dragged != new_value:
+		is_xnode_selection_dragged = new_value
+		xnode_dragging_state_changed.emit()
+
+func set_proposed_drop_xid(xid: PackedInt32Array) -> void:
+	if proposed_drop_xid != xid:
+		proposed_drop_xid = xid.duplicate()
+		proposed_drop_changed.emit()
+
+func clear_proposed_drop_xid() -> void:
+	if not proposed_drop_xid.is_empty():
+		proposed_drop_xid.clear()
+		proposed_drop_changed.emit()
 
 
 signal zoom_changed
+@warning_ignore("unused_signal")
+signal view_changed
 signal viewport_size_changed
 
 var zoom := 0.0
@@ -234,6 +260,30 @@ func set_viewport_size(new_value: Vector2i) -> void:
 	if viewport_size != new_value:
 		viewport_size = new_value
 		viewport_size_changed.emit()
+
+
+var view_rasterized := false
+var show_grid := true
+var show_handles := true
+
+signal view_rasterized_changed
+signal show_grid_changed
+signal show_handles_changed
+
+func set_view_rasterized(new_value: bool) -> void:
+	if view_rasterized != new_value:
+		view_rasterized = new_value
+		view_rasterized_changed.emit()
+
+func set_show_grid(new_value: bool) -> void:
+	if show_grid != new_value:
+		show_grid = new_value
+		show_grid_changed.emit()
+
+func set_show_handles(new_value: bool) -> void:
+	if show_handles != new_value:
+		show_handles = new_value
+		show_handles_changed.emit()
 
 
 # Override the selected elements with a single new selected element.
@@ -255,6 +305,7 @@ func normal_select(xid: PackedInt32Array, inner_idx := -1) -> void:
 	else:
 		var old_inner_selections := inner_selections.duplicate()
 		var old_semi_selected_xid := semi_selected_xid.duplicate()
+		xid = xid.duplicate()
 		_clear_selection_no_signal()
 		
 		if semi_selected_xid == xid and\
@@ -361,7 +412,8 @@ func shift_select(xid: PackedInt32Array, inner_idx := -1) -> void:
 func select_all() -> void:
 	_clear_inner_selection_no_signal()
 	var xnode_list: Array[XNode] = root_element.get_all_xnode_descendants()
-	var xid_list: Array = xnode_list.map(func(xnode): return xnode.xid)
+	var xid_list: Array = xnode_list.map(
+			func(xnode: XNode) -> PackedInt32Array: return xnode.xid)
 	# The order might not be the same, so ensure like this.
 	if XIDUtils.are_xid_lists_same(xid_list, selected_xids):
 		return
@@ -489,16 +541,20 @@ func is_selected(xid: PackedInt32Array, inner_idx := -1, propagate := false) -> 
 		else:
 			return semi_selected_xid == xid and inner_idx in inner_selections
 
+# Returns whether the selection matches a subpath.
+func is_selection_subpath() -> bool:
+	if semi_selected_xid.is_empty() or inner_selections.is_empty():
+		return false
 
-func set_proposed_drop_xid(xid: PackedInt32Array) -> void:
-	if proposed_drop_xid != xid:
-		proposed_drop_xid = xid.duplicate()
-		proposed_drop_changed.emit()
+	var element_ref := root_element.get_xnode(semi_selected_xid)
+	if not element_ref is ElementPath:
+		return false
 
-func clear_proposed_drop_xid() -> void:
-	if not proposed_drop_xid.is_empty():
-		proposed_drop_xid.clear()
-		proposed_drop_changed.emit()
+	var subpath: Vector2i = element_ref.get_attribute("d").get_subpath(inner_selections[0])
+	for i in range(subpath.x, subpath.y):
+		if not i in inner_selections:
+			return false
+	return true
 
 
 func _on_xnodes_added(xids: Array[PackedInt32Array]) -> void:
@@ -585,7 +641,6 @@ func respond_to_key_input(event: InputEventKey) -> void:
 						normal_select(selected_xids[0], path_cmd_count)
 						handle_added.emit()
 						break
-				
 		return
 	# If path commands are selected, insert after the last one.
 	for action_name in path_actions_dict.keys():
@@ -596,8 +651,10 @@ func respond_to_key_input(event: InputEventKey) -> void:
 				var path_cmd_char := path_actions_dict[action_name]
 				var last_selection: int = inner_selections.max()
 				# Z after a Z is syntactically invalid.
-				if path_attrib.get_command(last_selection) is PathCommand.CloseCommand and\
-				path_cmd_char in "Zz":
+				if path_cmd_char in "Zz" and (path_attrib.get_command(last_selection) is\
+				PathCommand.CloseCommand or (path_attrib.get_command_count() >\
+				last_selection + 1 and path_attrib.get_command(last_selection + 1) is\
+				PathCommand.CloseCommand)):
 					return
 				path_attrib.insert_command(last_selection + 1, path_cmd_char, Vector2.ZERO)
 				normal_select(semi_selected_xid, last_selection + 1)
@@ -628,11 +685,20 @@ func delete_selected() -> void:
 		queue_svg_save()
 
 func move_up_selected() -> void:
-	root_element.move_xnodes_in_parent(selected_xids, false)
-	queue_svg_save()
+	_move_selected(false)
 
 func move_down_selected() -> void:
-	root_element.move_xnodes_in_parent(selected_xids, true)
+	_move_selected(true)
+
+func _move_selected(down: bool) -> void:
+	if not selected_xids.is_empty():
+		root_element.move_xnodes_in_parent(selected_xids, down)
+	elif not semi_selected_xid.is_empty():
+		var xnode := root_element.get_xnode(semi_selected_xid)
+		if not xnode is ElementPath:
+			return
+		# TODO
+		#xnode.get_attribute("d").move_subpath(inner_selections[0], down)
 	queue_svg_save()
 
 func view_in_list(xid: PackedInt32Array, inner_index := -1) -> void:
@@ -701,8 +767,9 @@ func get_selection_context(popup_method: Callable, context: Context) -> ContextP
 				"duplicate"))
 		
 		var xnode := root_element.get_xnode(selected_xids[0])
-		if (selected_xids.size() == 1 and not xnode.is_element()) or\
-		(xnode.is_element() and not xnode.possible_conversions.is_empty()):
+		if selected_xids.size() == 1 and ((not xnode.is_element() and\
+		xnode.get_type() != BasicXNode.NodeType.UNKNOWN) or (xnode.is_element() and\
+		not xnode.possible_conversions.is_empty())):
 			btn_arr.append(ContextPopup.create_button(
 					Translator.translate("Convert To"),
 					popup_convert_to_context.bind(popup_method), false,
@@ -746,6 +813,20 @@ func get_selection_context(popup_method: Callable, context: Context) -> ContextP
 								Translator.translate("Convert To"),
 								popup_convert_to_context.bind(popup_method), false,
 								load("res://assets/icons/Reload.svg")))
+				if is_selection_subpath():
+					# TODO
+					var can_move_up := false
+					var can_move_down := false
+					if can_move_up:
+						btn_arr.append(ContextPopup.create_button(
+								Translator.translate("Move Up"), # Change to "Move Subpath Up"
+								move_up_selected, false,
+								load("res://visual/icons/MoveUp.svg"), "move_up"))
+					if can_move_down:
+						btn_arr.append(ContextPopup.create_button(
+								Translator.translate("Move Down"), # Change to "Move Subpath Down"
+								move_down_selected, false,
+								load("res://visual/icons/MoveDown.svg"), "move_down"))
 			"polygon", "polyline":
 				if inner_selections.size() == 1:
 					btn_arr.append(ContextPopup.create_button(
@@ -788,12 +869,12 @@ func popup_convert_to_context(popup_method: Callable) -> void:
 		var selection_idx: int = inner_selections.max()
 		var cmd_char := path_attrib.get_command(selection_idx).command_char
 		
-		var command_picker = PathCommandPopup.instantiate()
+		var command_picker := PathCommandPopupScene.instantiate()
 		popup_method.call(command_picker)
 		command_picker.force_relativity(Utils.is_string_lower(cmd_char))
 		
 		var cmd_char_upper := cmd_char.to_upper()
-		var disabled_commands := PackedStringArray()
+		var disabled_commands: PackedStringArray
 		if selection_idx == 0:
 			disabled_commands = PackedStringArray(["L", "H", "V", "A", "Z", "Q", "T", "C", "S"])
 		else:
@@ -812,21 +893,19 @@ func popup_insert_command_after_context(popup_method: Callable) -> void:
 	var selection_idx: int = inner_selections.max()
 	var cmd_char := path_attrib.get_command(selection_idx).command_char
 	
-	var command_picker = PathCommandPopup.instantiate()
+	var command_picker := PathCommandPopupScene.instantiate()
 	popup_method.call(command_picker)
 	command_picker.path_command_picked.connect(insert_path_command_after_selection)
 	# Disable invalid commands. Z is syntactically invalid, so disallow it even harder.
-	var warned_commands := PackedStringArray()
-	var disabled_commands := PackedStringArray()
-	var disable_z := false
+	var warned_commands: PackedStringArray
+	var disabled_commands: PackedStringArray
 	match cmd_char.to_upper():
 		"M": warned_commands = PackedStringArray(["M", "Z", "T"])
-		"Z": disable_z = true
 		"L", "H", "V", "A": warned_commands = PackedStringArray(["S", "T"])
 		"C", "S": warned_commands = PackedStringArray(["T"])
 		"Q", "T": warned_commands = PackedStringArray(["S"])
 	
-	if disable_z or (path_attrib.get_command_count() > selection_idx + 1 and\
+	if (cmd_char in "Zz") or (path_attrib.get_command_count() > selection_idx + 1 and\
 	path_attrib.get_command(selection_idx + 1).command_char.to_upper() == "Z"):
 		disabled_commands = PackedStringArray(["Z"])
 	

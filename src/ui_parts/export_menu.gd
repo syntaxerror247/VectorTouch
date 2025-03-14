@@ -1,23 +1,24 @@
 extends PanelContainer
 
-const NumberEditType = preload("res://src/ui_widgets/number_edit.gd")
-const DropdownType = preload("res://src/ui_widgets/dropdown.gd")
+const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
+const Dropdown = preload("res://src/ui_widgets/dropdown.gd")
+const PreviewRect = preload("res://src/ui_widgets/preview_rect.gd")
 
-var UR := UndoRedo.new()
+var undo_redo := UndoRedoRef.new()
 var export_data := ImageExportData.new()
 var dimensions := Vector2.ZERO
 
 @onready var dimensions_label: Label = %DimensionsLabel
-@onready var texture_preview: CenterContainer = %TexturePreview
+@onready var texture_preview: PreviewRect = %TexturePreview
 @onready var format_hbox: HBoxContainer = %FormatHBox
-@onready var format_dropdown: DropdownType = %FormatHBox/Dropdown
+@onready var format_dropdown: Dropdown = %FormatHBox/Dropdown
 @onready var final_size_label: Label = %FinalSizeLabel
-@onready var scale_edit: NumberEditType = %Scale
-@onready var width_edit: NumberEditType = %Width
-@onready var height_edit: NumberEditType = %Height
+@onready var scale_edit: NumberEdit = %Scale
+@onready var width_edit: NumberEdit = %Width
+@onready var height_edit: NumberEdit = %Height
 @onready var size_container: CenterContainer = %SizeContainer
 @onready var lossless_checkbox: CheckBox = %LosslessCheckBox
-@onready var quality_edit: NumberEditType = %Quality
+@onready var quality_edit: NumberEdit = %Quality
 @onready var quality_hbox: HBoxContainer = %QualityHBox
 @onready var cancel_button: Button = %ButtonContainer/CancelButton
 @onready var export_button: Button = %ButtonContainer/ExportButton
@@ -26,8 +27,6 @@ var dimensions := Vector2.ZERO
 @onready var quality_related_container: HBoxContainer = %QualityRelatedContainer
 @onready var titled_panel: VBoxContainer = %TitledPanel
 
-func _exit_tree() -> void:
-	UR.free()
 
 func _ready() -> void:
 	cancel_button.pressed.connect(queue_free)
@@ -41,6 +40,7 @@ func _ready() -> void:
 	
 	dimensions = State.root_element.get_size()
 	var bigger_dimension := maxf(dimensions.x, dimensions.y)
+	
 	scale_edit.min_value = 1 / minf(dimensions.x, dimensions.y)
 	scale_edit.max_value = 16384 / bigger_dimension
 	
@@ -55,11 +55,13 @@ func _ready() -> void:
 	var scaling_factor: float = texture_preview.MAX_IMAGE_DIMENSION / bigger_dimension
 	info_tooltip.tooltip_text = Translator.translate(
 			"Preview image size is limited to {dimensions}").format(
-			{"dimensions": get_dimensions_text(dimensions * scaling_factor, true)})
+			{"dimensions": get_dimensions_text(Vector2(
+					maxf(dimensions.x * scaling_factor, 1.0),
+					maxf(dimensions.y * scaling_factor, 1.0)), true)})
 	
 	if Configs.savedata.get_active_tab().svg_file_path.is_empty():
 		file_title.add_theme_color_override("font_color", ThemeUtils.common_subtle_text_color)
-		file_title.text = Configs.savedata.get_active_tab().get_presented_name()
+		file_title.text = Configs.savedata.get_active_tab().presented_name
 	
 	final_size_label.text = Translator.translate("Size") + ": " +\
 			String.humanize_size(State.get_export_text().length())
@@ -79,51 +81,51 @@ func _on_export_button_pressed() -> void:
 
 func _on_dropdown_value_changed(new_value: String) -> void:
 	var current_format := export_data.format
-	UR.create_action("")
-	UR.add_do_property(export_data, "format", new_value)
-	UR.add_undo_property(export_data, "format", current_format)
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_property(export_data, "format", new_value)
+	undo_redo.add_undo_property(export_data, "format", current_format)
+	undo_redo.commit_action()
 
 func _on_lossless_check_box_toggled(toggled_on: bool) -> void:
 	var current_lossy := export_data.lossy
-	UR.create_action("")
-	UR.add_do_property(export_data, "lossy", not toggled_on)
-	UR.add_undo_property(export_data, "lossy", current_lossy)
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_property(export_data, "lossy", not toggled_on)
+	undo_redo.add_undo_property(export_data, "lossy", current_lossy)
+	undo_redo.commit_action()
 
 func _on_quality_value_changed(new_value: float) -> void:
 	var current_quality := export_data.quality
-	UR.create_action("")
-	UR.add_do_property(export_data, "quality", new_value / 100)
-	UR.add_undo_property(export_data, "quality", current_quality)
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_property(export_data, "quality", new_value / 100)
+	undo_redo.add_undo_property(export_data, "quality", current_quality)
+	undo_redo.commit_action()
 
 func _on_scale_edit_value_changed(new_value: float) -> void:
 	if new_value == export_data.upscale_amount:
 		return
 	var current_upscale_amount := export_data.upscale_amount
-	UR.create_action("")
-	UR.add_do_property(export_data, "upscale_amount", new_value)
-	UR.add_undo_property(export_data, "upscale_amount", current_upscale_amount)
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_property(export_data, "upscale_amount", new_value)
+	undo_redo.add_undo_property(export_data, "upscale_amount", current_upscale_amount)
+	undo_redo.commit_action()
 
 func _on_width_edit_value_changed(new_value: float) -> void:
 	if roundi(dimensions.x * export_data.upscale_amount) == roundi(new_value):
 		return
 	var current_upscale_amount := export_data.upscale_amount
-	UR.create_action("")
-	UR.add_do_property(export_data, "upscale_amount", new_value / dimensions.x)
-	UR.add_undo_property(export_data, "upscale_amount", current_upscale_amount)
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_property(export_data, "upscale_amount", new_value / dimensions.x)
+	undo_redo.add_undo_property(export_data, "upscale_amount", current_upscale_amount)
+	undo_redo.commit_action()
 
 func _on_height_edit_value_changed(new_value: float) -> void:
 	if roundi(dimensions.y * export_data.upscale_amount) == roundi(new_value):
 		return
 	var current_upscale_amount := export_data.upscale_amount
-	UR.create_action("")
-	UR.add_do_property(export_data, "upscale_amount", new_value / dimensions.y)
-	UR.add_undo_property(export_data, "upscale_amount", current_upscale_amount)
-	UR.commit_action()
+	undo_redo.create_action("")
+	undo_redo.add_do_property(export_data, "upscale_amount", new_value / dimensions.y)
+	undo_redo.add_undo_property(export_data, "upscale_amount", current_upscale_amount)
+	undo_redo.commit_action()
 
 # Everything gets updated at once when export config changes for simplicity.
 func update() -> void:
@@ -170,10 +172,10 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	if ShortcutUtils.is_action_pressed(event, "redo"):
-		if UR.has_redo():
-			UR.redo()
+		if undo_redo.has_redo():
+			undo_redo.redo()
 		accept_event()
 	elif ShortcutUtils.is_action_pressed(event, "undo"):
-		if UR.has_undo():
-			UR.undo()
+		if undo_redo.has_undo():
+			undo_redo.undo()
 		accept_event()
