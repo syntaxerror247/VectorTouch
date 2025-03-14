@@ -9,16 +9,16 @@ on:
 
 env:
   # Which godot version to use for exporting.
-  GODOT_VERSION: 4.4
+  GODOT_VERSION: 4.4.1
   # Which godot release to use for exporting. (stable/rc/beta/alpha)
-  GODOT_RELEASE: beta1
+  GODOT_RELEASE: rc1
   # Used in the editor config file name. Do not change this for patch releases.
   GODOT_FEATURE_VERSION: 4.4
   # Commit hash
-  GODOT_COMMIT_HASH: d33da79d3
+  GODOT_COMMIT_HASH: daa4b058ee9272dd4ee9033bb093afb21ad558b7
   PROJECT_NAME: GodSVG Mobile
+  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes swappy=no build_profile=../godsvg/.github/disabled_classes.build
   GODOT_REPO: https://github.com/godotengine/godot.git
-  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes swappy=no
 
 jobs:
   format:
@@ -88,6 +88,11 @@ jobs:
           git fetch
           git checkout $GODOT_COMMIT_HASH
 
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: godsvg
+
       - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
         name: Build Godot template for Android
         run: |
@@ -105,11 +110,6 @@ jobs:
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: godsvg
 
       - name: Export debug project
         env:

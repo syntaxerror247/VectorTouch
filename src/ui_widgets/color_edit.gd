@@ -1,8 +1,8 @@
 # A color editor, not tied to any attribute.
 extends LineEditButton
 
-const ColorPopup = preload("res://src/ui_widgets/color_popup.tscn")
-const ColorPickerPopup = preload("res://src/ui_widgets/color_picker_popup.tscn")
+const ColorPopupScene = preload("res://src/ui_widgets/color_popup.tscn")
+const ColorPickerPopupScene = preload("res://src/ui_widgets/color_picker_popup.tscn")
 const checkerboard = preload("res://assets/icons/backgrounds/ColorButtonBG.svg")
 
 @onready var color_picker: Control
@@ -18,28 +18,28 @@ var value: String:
 			if new_value != value:
 				value = new_value
 				value_changed.emit(value)
-		sync(value)
+		sync()
 
 
 func _ready() -> void:
-	text_submitted.connect(func(x): value = x)
+	text_submitted.connect(func(x: String) -> void: value = x)
 	pressed.connect(_on_pressed)
 	text_changed.connect(_on_text_changed)
-	text_change_canceled.connect(func(): sync(value))
+	text_change_canceled.connect(sync)
 	button_gui_input.connect(queue_redraw.unbind(1))
 	if enable_alpha:
 		custom_minimum_size.x += 14.0
-	sync(value)
+	sync()
 
 
-func sync(new_value: String) -> void:
-	text = new_value.trim_prefix("#")
+func sync() -> void:
+	text = value.trim_prefix("#")
 	reset_font_color()
 	queue_redraw()
 
 func _on_pressed() -> void:
-	color_picker = ColorPopup.instantiate() if enable_palettes\
-			else ColorPickerPopup.instantiate()
+	color_picker = ColorPopupScene.instantiate() if enable_palettes\
+			else ColorPickerPopupScene.instantiate()
 	if enable_alpha:
 		color_picker.enable_alpha = true
 	color_picker.current_value = ColorParser.add_hash_if_hex(value)
@@ -48,7 +48,7 @@ func _on_pressed() -> void:
 
 func _on_text_changed(new_text: String) -> void:
 	font_color = Configs.savedata.get_validity_color(
-			ColorParser.is_valid(ColorParser.add_hash_if_hex(new_text), enable_alpha))
+			not ColorParser.is_valid(ColorParser.add_hash_if_hex(new_text), enable_alpha))
 
 func _draw() -> void:
 	super()

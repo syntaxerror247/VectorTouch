@@ -18,8 +18,8 @@ config/use_custom_user_dir=true
 config/features=PackedStringArray("4.4")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0.1065, 0.1181, 0.15, 1)
-boot_splash/image="res://assets/logos/splash.png"
 boot_splash/fullsize=false
+boot_splash/image="res://assets/logos/splash.png"
 config/icon="res://assets/logos/icon.png"
 
 [audio]
@@ -102,6 +102,18 @@ close_tab={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"command_or_control_autoremap":true,"alt_pressed":false,"shift_pressed":false,"pressed":false,"keycode":87,"physical_keycode":0,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
 ]
 }
+close_tabs_to_left={
+"deadzone": 0.2,
+"events": []
+}
+close_tabs_to_right={
+"deadzone": 0.2,
+"events": []
+}
+close_all_other_tabs={
+"deadzone": 0.2,
+"events": []
+}
 new_tab={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"command_or_control_autoremap":true,"alt_pressed":false,"shift_pressed":false,"pressed":false,"keycode":84,"physical_keycode":0,"key_label":0,"unicode":116,"location":0,"echo":false,"script":null)
@@ -133,7 +145,7 @@ zoom_out={
 ]
 }
 zoom_reset={
-"deadzone": 0.5,
+"deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"command_or_control_autoremap":true,"alt_pressed":false,"shift_pressed":false,"pressed":false,"keycode":48,"physical_keycode":0,"key_label":0,"unicode":48,"location":0,"echo":false,"script":null)
 ]
 }
@@ -344,7 +356,7 @@ pointing/android/enable_pan_and_scale_gestures=true
 [internationalization]
 
 rendering/root_node_auto_translate=false
-locale/translations=PackedStringArray("res://assets/translations/bg.po", "res://assets/translations/de.po", "res://assets/translations/en.po", "res://assets/translations/fr.po", "res://assets/translations/nl.po", "res://assets/translations/ru.po", "res://assets/translations/uk.po", "res://assets/translations/zh.po")
+locale/translations=PackedStringArray("res://translations/bg.po", "res://translations/de.po", "res://translations/et.po", "res://translations/en.po", "res://translations/fr.po", "res://translations/nl.po", "res://translations/pt_BR.po", "res://translations/ru.po", "res://translations/uk.po", "res://translations/zh_CN.po")
 
 [physics]
 

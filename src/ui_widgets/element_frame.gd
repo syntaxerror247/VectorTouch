@@ -16,7 +16,8 @@ const element_content_types: Dictionary[String, PackedScene] = {
 	"linearGradient": preload("res://src/ui_widgets/element_content_linear_gradient.tscn"),
 	"radialGradient": preload("res://src/ui_widgets/element_content_radial_gradient.tscn"),
 }
-const ElementContentUnrecognized = preload("res://src/ui_widgets/element_content_unrecognized.tscn")
+const ElementContentUnrecognizedScene =\
+		preload("res://src/ui_widgets/element_content_unrecognized.tscn")
 
 @onready var main_container: VBoxContainer = $MainContainer
 @onready var title_bar: Control = $TitleBar
@@ -35,6 +36,7 @@ func _ready() -> void:
 	State.selection_changed.connect(determine_selection_highlight)
 	State.hover_changed.connect(determine_selection_highlight)
 	State.proposed_drop_changed.connect(queue_redraw)
+	State.xnode_dragging_state_changed.connect(_on_xnodes_dragging_state_changed)
 	title_bar.draw.connect(_on_title_bar_draw)
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
@@ -56,13 +58,15 @@ func _ready() -> void:
 			unknown_container = HFlowContainer.new()
 			main_container.add_child(unknown_container)
 			main_container.move_child(unknown_container, 0)
-		unknown_container.add_child(AttributeFieldBuilder.create(attribute.name, element))
+		var unknown_field := AttributeFieldBuilder.create(attribute.name, element)
+		unknown_field.focus_entered.connect(State.normal_select.bind(element.xid))
+		unknown_container.add_child(unknown_field)
 	
 	var element_content: Control
 	if element.name in element_content_types:
 		element_content = element_content_types[element.name].instantiate()
 	else:
-		element_content = ElementContentUnrecognized.instantiate()
+		element_content = ElementContentUnrecognizedScene.instantiate()
 	element_content.element = element
 	main_container.add_child(element_content)
 	
@@ -81,14 +85,15 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	if suppress_drag or State.selected_xids.is_empty():
 		return null
 	
+	State.set_selection_dragged(true)
 	var data: Array[PackedInt32Array] = XIDUtils.filter_descendants(
 			State.selected_xids.duplicate(true))
 	set_drag_preview(XNodeChildrenBuilder.generate_drag_preview(data))
 	return data
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_DRAG_END:
-		modulate = Color(1, 1, 1)
+func _on_xnodes_dragging_state_changed() -> void:
+	modulate.a = 0.55 if (State.is_xnode_selection_dragged and\
+			element.xid in State.selected_xids) else 1.0
 
 
 func _on_title_button_pressed() -> void:
@@ -167,18 +172,25 @@ func _on_mouse_exited() -> void:
 
 
 func get_inner_rect(idx: int) -> Rect2:
-	if element is ElementPath:
-		var inner_rect: Rect2 = main_container.get_child(0).path_field.get_inner_rect(idx)
-		inner_rect.position += main_container.position
-		inner_rect.position += main_container.get_child(0).position
-		inner_rect.position += main_container.get_child(0).path_field.position
-		return inner_rect
-	elif element is ElementPolygon or element is ElementPolyline:
-		var inner_rect: Rect2 = main_container.get_child(0).points_field.get_inner_rect(idx)
-		inner_rect.position += main_container.position
-		inner_rect.position += main_container.get_child(0).position
-		inner_rect.position += main_container.get_child(0).points_field.position
-		return inner_rect
+	if element is ElementPath or element is ElementPolygon or element is ElementPolyline:
+		var attributes_container := main_container.get_child(0)
+		for attribute in element.get_all_attributes():
+			if not DB.is_attribute_recognized(element.name, attribute.name):
+				attributes_container = main_container.get_child(1)
+				break
+		
+		if element is ElementPath:
+			var inner_rect: Rect2 = attributes_container.path_field.get_inner_rect(idx)
+			inner_rect.position += main_container.position
+			inner_rect.position += attributes_container.position
+			inner_rect.position += attributes_container.path_field.position
+			return inner_rect
+		elif element is ElementPolygon or element is ElementPolyline:
+			var inner_rect: Rect2 = main_container.get_child(0).points_field.get_inner_rect(idx)
+			inner_rect.position += main_container.position
+			inner_rect.position += main_container.get_child(0).position
+			inner_rect.position += main_container.get_child(0).points_field.position
+			return inner_rect
 	return Rect2()
 
 func determine_selection_highlight() -> void:

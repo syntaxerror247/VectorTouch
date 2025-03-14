@@ -111,8 +111,10 @@ func _draw() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if (has_focus() and event is InputEventMouseButton and event.is_pressed() and\
-	not get_global_rect().has_point(event.position) and HandlerGUI.popup_stack.is_empty()):
+	if (has_focus() and event is InputEventMouseButton and (event.button_index in\
+	[MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]) and\
+	event.is_pressed() and not get_global_rect().has_point(event.position) and\
+	HandlerGUI.popup_stack.is_empty()):
 		release_focus()
 
 func _gui_input(event: InputEvent) -> void:
@@ -133,10 +135,10 @@ func _gui_input(event: InputEvent) -> void:
 			if editable:
 				btn_arr.append(ContextPopup.create_button(
 						Translator.translate("Undo"), undo,
-						!has_undo(), load("res://assets/icons/Undo.svg"), "ui_undo"))
+						not has_undo(), load("res://assets/icons/Undo.svg"), "ui_undo"))
 				btn_arr.append(ContextPopup.create_button(
 						Translator.translate("Redo"), redo,
-						!has_redo(), load("res://assets/icons/Redo.svg"), "ui_redo"))
+						not has_redo(), load("res://assets/icons/Redo.svg"), "ui_redo"))
 				if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
 					separator_arr = PackedInt32Array([2])
 					btn_arr.append(ContextPopup.create_button(

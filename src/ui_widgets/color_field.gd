@@ -1,6 +1,8 @@
 # An editor to be tied to a color attribute.
 extends LineEditButton
 
+const ColorPopup = preload("res://src/ui_widgets/color_popup.gd")
+
 var element: Element
 var attribute_name: String:  # May propagate.
 	set(new_value):
@@ -13,10 +15,10 @@ var cached_allow_url: bool
 var cached_allow_none: bool
 var cached_allow_current_color: bool
 
-const ColorPopup = preload("res://src/ui_widgets/color_popup.tscn")
+const ColorPopupScene = preload("res://src/ui_widgets/color_popup.tscn")
 const checkerboard = preload("res://assets/icons/backgrounds/ColorButtonBG.svg")
 
-@onready var color_popup: Control
+@onready var color_popup: ColorPopup
 
 var gradient_texture: GradientTexture2D
 
@@ -24,11 +26,11 @@ func set_value(new_value: String, save := false) -> void:
 	if not new_value.is_empty():
 		# Validate the value.
 		if not is_valid(new_value):
-			sync_to_attribute()
+			sync()
 			return
 	new_value = ColorParser.add_hash_if_hex(new_value)
-	sync(element.get_attribute(attribute_name).format(new_value))
 	element.set_attribute(attribute_name, new_value)
+	sync()
 	if save:
 		State.queue_svg_save()
 
@@ -37,15 +39,15 @@ func setup_placeholder() -> void:
 
 
 func _ready() -> void:
-	Configs.basic_colors_changed.connect(resync)
-	sync_to_attribute()
+	Configs.basic_colors_changed.connect(sync)
+	sync()
 	element.attribute_changed.connect(_on_element_attribute_changed)
 	if attribute_name in DB.propagated_attributes:
 		element.ancestor_attribute_changed.connect(_on_element_ancestor_attribute_changed)
 	text_submitted.connect(set_value.bind(true))
 	focus_entered.connect(reset_font_color)
 	text_changed.connect(_on_text_changed)
-	text_change_canceled.connect(sync_to_attribute)
+	text_change_canceled.connect(sync)
 	pressed.connect(_on_pressed)
 	button_gui_input.connect(_on_button_gui_input)
 	# URLs and currentColor require to always listen for changes to the SVG.
@@ -57,28 +59,25 @@ func _ready() -> void:
 
 func _on_element_attribute_changed(attribute_changed: String) -> void:
 	if attribute_name == attribute_changed:
-		sync_to_attribute()
+		sync()
 
 func _on_element_ancestor_attribute_changed(attribute_changed: String) -> void:
 	if attribute_name == attribute_changed:
 		setup_placeholder()
-		resync()
-
-func sync_to_attribute() -> void:
-	set_value(element.get_attribute_value(attribute_name, true))
+		sync()
 
 # Redraw in case the gradient might have changed.
 func _on_svg_changed() -> void:
 	if cached_allow_url and\
-	ColorParser.is_valid_url(element.get_attribute_value(attribute_name, false)):
+	ColorParser.is_valid_url(element.get_implied_attribute_value(attribute_name)):
 		update_gradient_texture()
 		queue_redraw()
-	elif element.get_attribute_value(attribute_name, true) == "currentColor":
+	elif element.get_attribute_value(attribute_name) == "currentColor":
 		queue_redraw()
 
 func _on_pressed() -> void:
-	color_popup = ColorPopup.instantiate()
-	color_popup.current_value = element.get_attribute_value(attribute_name, true)
+	color_popup = ColorPopupScene.instantiate()
+	color_popup.current_value = element.get_attribute_value(attribute_name)
 	color_popup.effective_color = ColorParser.text_to_color(
 			element.get_attribute_true_color(attribute_name))
 	color_popup.show_url = cached_allow_url
@@ -111,7 +110,7 @@ func _draw() -> void:
 	checkerboard.draw(ci, Vector2(h_offset, 1))
 	# Draw the color or gradient.
 	var drawn := false
-	var color_value := element.get_attribute_value(attribute_name, false)
+	var color_value := element.get_implied_attribute_value(attribute_name)
 	if cached_allow_url and ColorParser.is_valid_url(color_value):
 		var id := color_value.substr(5, color_value.length() - 6)
 		var gradient_element := State.root_element.get_element_by_id(id)
@@ -167,10 +166,8 @@ func is_valid(color_text: String) -> bool:
 func _on_text_changed(new_text: String) -> void:
 	font_color = Configs.savedata.get_validity_color(!is_valid(new_text))
 
-func resync() -> void:
-	sync(text)
-
-func sync(new_value: String) -> void:
+func sync() -> void:
+	var new_value := element.get_attribute_value(attribute_name)
 	reset_font_color()
 	if ColorParser.add_hash_if_hex(new_value) == element.get_default(attribute_name):
 		font_color = Configs.savedata.basic_color_warning
@@ -181,7 +178,7 @@ func sync(new_value: String) -> void:
 
 # TODO remove this method when #94584 is fixed.
 func update_gradient_texture() -> void:
-	var color_value := element.get_attribute_value(attribute_name, false)
+	var color_value := element.get_implied_attribute_value(attribute_name)
 	if ColorParser.is_valid_url(color_value):
 		var id := color_value.substr(5, color_value.length() - 6)
 		var gradient_element := State.root_element.get_element_by_id(id)

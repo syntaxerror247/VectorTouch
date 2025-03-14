@@ -8,8 +8,13 @@ const autoscroll_speed = 1500.0
 @onready var xnodes: VBoxContainer = %RootChildren
 @onready var covering_rect: Control = $MoveToOverlay
 
-func _ready():
+func _ready() -> void:
 	State.requested_scroll_to_element_editor.connect(scroll_to_view_element_editor)
+	set_dragging(false)
+
+func set_dragging(new_state: bool) -> void:
+	covering_rect.visible = new_state
+	set_process(new_state)
 
 func _process(delta: float) -> void:
 	if State.proposed_drop_xid.is_empty():
@@ -73,22 +78,14 @@ func update_proposed_xid() -> void:
 		State.set_proposed_drop_xid(prev_xid + PackedInt32Array([0]))
 
 
-var dragged_xnode_editors: Array[Control] = []
-
 func _notification(what: int) -> void:
 	if is_inside_tree() and HandlerGUI.menu_stack.is_empty():
 		if what == NOTIFICATION_DRAG_BEGIN:
-			covering_rect.show()
-			for selected_xid in State.selected_xids:
-				var xnode_editor := get_xnode_editor(selected_xid)
-				dragged_xnode_editors.append(xnode_editor)
-				xnode_editor.modulate.a = 0.55
+			set_dragging(true)
 			update_proposed_xid()
 		elif what == NOTIFICATION_DRAG_END:
-			covering_rect.hide()
-			for xnode_editor in dragged_xnode_editors:
-				xnode_editor.modulate.a = 1.0
-			dragged_xnode_editors.clear()
+			set_dragging(false)
+			State.set_selection_dragged(false)
 			State.clear_proposed_drop_xid()
 
 func _gui_input(event: InputEvent) -> void:
@@ -105,8 +102,10 @@ func _gui_input(event: InputEvent) -> void:
 				location += 1
 			# Create the context popup.
 			var btn_array: Array[Button] = []
-			for element_name in ["path", "circle", "ellipse", "rect", "line", "polygon",
-			"polyline", "g", "linearGradient", "radialGradient", "stop"]:
+			const CONST_ARR: PackedStringArray = ["path", "circle", "ellipse", "rect",
+					"line", "polygon", "polyline", "g", "linearGradient", "radialGradient",
+					"stop"]
+			for element_name in CONST_ARR:
 				var btn := ContextPopup.create_button(element_name,
 						add_element.bind(element_name, location), false,
 						DB.get_element_icon(element_name))
@@ -126,17 +125,15 @@ func add_element(element_name: String, element_idx: int) -> void:
 			PackedInt32Array([element_idx]))
 	State.queue_svg_save()
 
-func get_xnode_editor(xid: PackedInt32Array) -> Control:
+
+func get_xnode_editor_rect(xid: PackedInt32Array, inner_index := -1) -> Rect2:
 	if xid.is_empty():
-		return null
+		return Rect2()
 	
 	var xnode_editor: Control = xnodes.get_child(xid[0])
 	for i in range(1, xid.size()):
 		xnode_editor = xnode_editor.child_xnodes_container.get_child(xid[i])
-	return xnode_editor
-
-func get_xnode_editor_rect(xid: PackedInt32Array, inner_index := -1) -> Rect2:
-	var xnode_editor := get_xnode_editor(xid)
+	
 	if not is_instance_valid(xnode_editor):
 		return Rect2()
 	

@@ -8,6 +8,9 @@ const _shortcut_categories_dict: Dictionary[String, Dictionary] = {
 		"save": true,
 		"save_as": true,
 		"close_tab": true,
+		"close_tabs_to_left": true,
+		"close_tabs_to_right": true,
+		"close_all_other_tabs": true,
 		"new_tab": true,
 		"select_next_tab": true,
 		"select_previous_tab": true,
@@ -77,24 +80,34 @@ static func fn_call(shortcut: String) -> void:
 	fn(shortcut).call()
 
 # The methods that should be called if these shortcuts aren't handled.
+# Should bind only constants, otherwise the binds can get outdated before being used.
 static func fn(shortcut: String) -> Callable:
 	match shortcut:
 		"save": return FileUtils.save_svg
 		"save_as": return FileUtils.save_svg_as
 		"export": return HandlerGUI.open_export
 		"import": return FileUtils.open_svg_import_dialog
-		"close_tab": return Configs.savedata.remove_active_tab
+		"close_tab": return FileUtils.close_tabs.bind(
+				Configs.savedata.get_active_tab_index())
+		"close_tabs_to_left": return FileUtils.close_tabs.bind(
+				Configs.savedata.get_active_tab_index(), FileUtils.TabCloseMode.TO_LEFT)
+		"close_tabs_to_right": return FileUtils.close_tabs.bind(
+				Configs.savedata.get_active_tab_index(), FileUtils.TabCloseMode.TO_RIGHT)
+		"close_all_other_tabs": return FileUtils.close_tabs.bind(
+				Configs.savedata.get_active_tab_index(), FileUtils.TabCloseMode.ALL_OTHERS)
 		"new_tab": return Configs.savedata.add_empty_tab
-		"select_next_tab": return func(): Configs.savedata.set_active_tab_index(posmod(
-				Configs.savedata.get_active_tab_index() + 1, Configs.savedata.get_tab_count()))
-		"select_previous_tab": return func(): Configs.savedata.set_active_tab_index(posmod(
-				Configs.savedata.get_active_tab_index() - 1, Configs.savedata.get_tab_count()))
+		"select_next_tab": return func() -> void: Configs.savedata.set_active_tab_index(
+				posmod(Configs.savedata.get_active_tab_index() + 1,
+				Configs.savedata.get_tab_count()))
+		"select_previous_tab": return func() -> void: Configs.savedata.set_active_tab_index(
+				posmod(Configs.savedata.get_active_tab_index() - 1,
+				Configs.savedata.get_tab_count()))
 		"copy_svg_text": return DisplayServer.clipboard_set.bind(State.svg_text)
 		"optimize": return State.optimize
 		"reset_svg": return FileUtils.reset_svg
-		"open_externally": return FileUtils.open_svg.bind(
+		"open_externally": return func() -> void: FileUtils.open_svg(
 				Configs.savedata.get_active_tab().svg_file_path)
-		"open_in_folder": return FileUtils.open_svg_folder.bind(
+		"open_in_folder": return func() -> void: FileUtils.open_svg_folder(
 				Configs.savedata.get_active_tab().svg_file_path)
 		"redo": return Configs.savedata.get_active_tab().redo
 		"undo": return Configs.savedata.get_active_tab().undo

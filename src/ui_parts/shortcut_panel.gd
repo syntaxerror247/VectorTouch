@@ -2,7 +2,14 @@ extends PanelContainer
 
 enum Layout {HORIZONTAL_STRIP, HORIZONTAL_TWO_ROWS, VERTICAL_STRIP}
 
-const ShortcutPanelConfig = preload("res://src/ui_parts/shortcut_panel_config.tscn")
+static func get_preset_value_text_map() -> Dictionary:
+	return {
+		Layout.HORIZONTAL_STRIP: Translator.translate("Horizontal strip"),
+		Layout.VERTICAL_STRIP: Translator.translate("Vertical strip"),
+		Layout.HORIZONTAL_TWO_ROWS: Translator.translate("Horizontal with two rows"),
+	}
+
+const ShortcutPanelConfigScene = preload("res://src/ui_parts/shortcut_panel_config.tscn")
 
 const dot_pattern = preload("res://assets/icons/DotPatternSegment.svg")
 const config_icon = preload("res://assets/icons/Config.svg")
@@ -94,8 +101,10 @@ func update_layout() -> void:
 	
 	var margin_container := MarginContainer.new()
 	margin_container.begin_bulk_theme_override()
-	for margin in ["margin_left", "margin_right", "margin_top", "margin_bottom"]:
-		margin_container.add_theme_constant_override(margin, 4)
+	const CONST_ARR: PackedStringArray = ["margin_left", "margin_right", "margin_top",
+			"margin_bottom"]
+	for theme_type in CONST_ARR:
+		margin_container.add_theme_constant_override(theme_type, 4)
 	margin_container.begin_bulk_theme_override()
 	main_container.add_child(margin_container)
 	
@@ -143,7 +152,7 @@ func simulate_key_press(action_name: String) -> void:
 			return
 
 func _on_config_button_pressed() -> void:
-	HandlerGUI.add_menu(ShortcutPanelConfig.instantiate())
+	HandlerGUI.add_menu(ShortcutPanelConfigScene.instantiate())
 
 func sync_relative_position() -> void:
 	set_position_relative(position_window_relative)

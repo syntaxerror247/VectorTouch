@@ -11,12 +11,11 @@ const MAX_VALUE := 1.0
 
 func set_value(new_value: String, save := false) -> void:
 	if not new_value.is_empty():
-		new_value = new_value.strip_edges()
-		if not new_value.ends_with("%"):
+		if not AttributeNumeric.text_check_percentage(new_value):
 			var numeric_value := NumstringParser.evaluate(new_value)
 			# Validate the value.
 			if !is_finite(numeric_value):
-				sync_to_attribute()
+				sync()
 				return
 			
 			if numeric_value > MAX_VALUE:
@@ -25,8 +24,8 @@ func set_value(new_value: String, save := false) -> void:
 				numeric_value = MIN_VALUE
 			new_value = element.get_attribute(attribute_name).num_to_text(numeric_value)
 	
-	sync(new_value)
 	element.set_attribute(attribute_name, new_value)
+	sync()
 	if save:
 		State.queue_svg_save()
 
@@ -38,14 +37,14 @@ func setup_placeholder() -> void:
 
 
 func _ready() -> void:
-	Configs.basic_colors_changed.connect(resync)
-	sync_to_attribute()
+	Configs.basic_colors_changed.connect(sync)
+	sync()
 	element.attribute_changed.connect(_on_element_attribute_changed)
 	if attribute_name in DB.propagated_attributes:
 		element.ancestor_attribute_changed.connect(_on_element_ancestor_attribute_changed)
 	text_submitted.connect(set_value.bind(true))
 	focus_entered.connect(reset_font_color)
-	text_change_canceled.connect(sync_to_attribute)
+	text_change_canceled.connect(sync)
 	button_gui_input.connect(_on_slider_gui_input)
 	tooltip_text = attribute_name
 	setup_placeholder()
@@ -53,20 +52,15 @@ func _ready() -> void:
 
 func _on_element_attribute_changed(attribute_changed: String) -> void:
 	if attribute_name == attribute_changed:
-		sync_to_attribute()
+		sync()
 
 func _on_element_ancestor_attribute_changed(attribute_changed: String) -> void:
 	if attribute_name == attribute_changed:
 		setup_placeholder()
-		resync()
+		sync()
 
-func sync_to_attribute() -> void:
-	set_value(element.get_attribute_value(attribute_name, true))
-
-func resync() -> void:
-	sync(text)
-
-func sync(new_value: String) -> void:
+func sync() -> void:
+	var new_value := element.get_attribute_value(attribute_name)
 	text = new_value
 	reset_font_color()
 	if new_value == element.get_default(attribute_name):
@@ -76,7 +70,7 @@ func sync(new_value: String) -> void:
 
 # Slider
 
-var initial_slider_value: float
+var initial_slider_value: String
 var slider_dragged := false:
 	set(new_value):
 		if slider_dragged != new_value:
@@ -89,6 +83,7 @@ var slider_dragged := false:
 				# Couldn't replicate this in a minimal project.
 				remove_child(temp_button)
 				add_child(temp_button)
+
 
 var slider_hovered := false:
 	set(new_value):
@@ -133,12 +128,12 @@ func _on_slider_gui_input(event: InputEvent) -> void:
 	else:
 		temp_button.mouse_filter = Utils.mouse_filter_pass_non_drag_events(event)
 	
+	if event is InputEventMouseMotion and event.button_mask == 0:
+		slider_hovered = true
 	if not slider_dragged:
-		if event is InputEventMouseMotion and event.button_mask == 0:
-			slider_hovered = true
 		if Utils.is_event_drag_start(event):
 			slider_dragged = true
-			initial_slider_value = element.get_attribute_num(attribute_name)
+			initial_slider_value = element.get_attribute_value(attribute_name)
 			set_num(get_slider_value_at_y(event.position.y))
 	else:
 		if Utils.is_event_drag(event):
@@ -146,13 +141,14 @@ func _on_slider_gui_input(event: InputEvent) -> void:
 		elif Utils.is_event_drag_end(event):
 			slider_dragged = false
 			var final_slider_value := get_slider_value_at_y(event.position.y)
-			if initial_slider_value != final_slider_value:
+			if initial_slider_value !=\
+			element.get_attribute(attribute_name).num_to_text(final_slider_value):
 				set_num(final_slider_value, true)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if slider_dragged and Utils.is_event_drag_cancel(event):
 		slider_dragged = false
-		set_num(initial_slider_value)
+		set_value(initial_slider_value)
 		accept_event()
 
 func get_slider_value_at_y(y_coord: float) -> float:

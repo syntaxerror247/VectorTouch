@@ -53,7 +53,8 @@ func render_handle_textures() -> void:
 			s * 4, s * 4, s * 2.4, "%s", "%s", s * 1.2],
 	}
 	
-	for handle_type in [Handle.Display.BIG, Handle.Display.SMALL]:
+	const CONST_ARR: Array[Handle.Display] = [Handle.Display.BIG, Handle.Display.SMALL]
+	for handle_type in CONST_ARR:
 		var handle_type_svg := handles_dict[handle_type]
 		img.load_svg_from_string(handle_type_svg % [inside_str, normal_str])
 		img.fix_alpha_edges()
@@ -93,8 +94,14 @@ func _ready() -> void:
 	State.hover_changed.connect(queue_redraw)
 	State.zoom_changed.connect(queue_redraw)
 	State.handle_added.connect(_on_handle_added)
+	State.show_handles_changed.connect(toggle_visibility)
+	State.view_changed.connect(HandlerGUI.throw_mouse_motion_event)
 	queue_update_handles()
 
+
+func toggle_visibility() -> void:
+	visible = not visible
+	HandlerGUI.throw_mouse_motion_event()
 
 func queue_update_handles() -> void:
 	update_handles.call_deferred()
@@ -168,7 +175,7 @@ func generate_path_handles(element: Element) -> Array[Handle]:
 
 func generate_polyhandles(element: Element) -> Array[Handle]:
 	var polyhandles: Array[Handle] = []
-	for idx in element.get_attribute("points").get_list_size() / 2:
+	for idx: int in element.get_attribute("points").get_list_size() / 2:
 		polyhandles.append(PolyHandle.new(element, idx))
 	return polyhandles
 
@@ -668,15 +675,18 @@ var should_deselect_all := false
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
+		dragged_handle = null
 		hovered_handle = null
-		State.clear_all_hovered()
-		return
+		# Mouse events on the viewport clear hovered, but other events don't.
+		if ((event is InputEventMouseMotion and event.button_mask == 0) or\
+		(event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT,
+		MOUSE_BUTTON_RIGHT]))):
+			State.clear_all_hovered()
 	
 	# Set the nearest handle as hovered, if any handles are within range.
-	if (event is InputEventMouseMotion and !is_instance_valid(dragged_handle) and\
+	if visible and ((event is InputEventMouseMotion and !is_instance_valid(dragged_handle) and\
 	event.button_mask == 0) or (event is InputEventMouseButton and\
-	(event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_WHEEL_DOWN,
-	MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_LEFT, MOUSE_BUTTON_WHEEL_RIGHT])):
+	(event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]))):
 		var nearest_handle := find_nearest_handle(event.position / State.zoom +\
 				get_parent().view.position)
 		if is_instance_valid(nearest_handle):
@@ -697,7 +707,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 		
 		should_deselect_all = false
-		if is_instance_valid(dragged_handle):
+		if visible and is_instance_valid(dragged_handle):
 			# Move the handle that's being dragged.
 			var event_pos := get_event_pos(event)
 			var new_pos := Utils64Bit.transform_vector_mult(
@@ -711,7 +721,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			# React to LMB actions.
-			if is_instance_valid(hovered_handle) and event.is_pressed():
+			if visible and is_instance_valid(hovered_handle) and event.is_pressed():
 				dragged_handle = hovered_handle
 				var inner_idx := -1
 				var dragged_xid := dragged_handle.element.xid
@@ -730,14 +740,14 @@ func _unhandled_input(event: InputEvent) -> void:
 					elif dragged_handle is PolyHandle:
 						State.normal_select(dragged_xid, 0)
 						State.shift_select(dragged_xid,
-								dragged_handle.element.get_attribute("points").get_list_size() / 2)
+								dragged_handle.element.get_attribute("points").get_list_size() / 2 - 1)
 				elif event.is_command_or_control_pressed():
 					State.ctrl_select(dragged_xid, inner_idx)
 				elif event.shift_pressed:
 					State.shift_select(dragged_xid, inner_idx)
 				else:
 					State.normal_select(dragged_xid, inner_idx)
-			elif is_instance_valid(dragged_handle) and event.is_released():
+			elif visible and is_instance_valid(dragged_handle) and event.is_released():
 				if was_handle_moved:
 					var new_pos := Utils64Bit.transform_vector_mult(
 							Utils64Bit.get_transform_affine_inverse(dragged_handle.precise_transform),
@@ -758,7 +768,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				State.clear_all_selections()
 				HandlerGUI.popup_under_pos(create_element_context(
 						State.root_element.world_to_canvas_64_bit(event_pos)), popup_pos, vp)
-			else:
+			elif visible:
 				var hovered_xid := hovered_handle.element.xid
 				var inner_idx := -1
 				if hovered_handle is PathHandle:
@@ -817,14 +827,16 @@ func _on_handle_added() -> void:
 		return
 	
 	update_handles()
+	var first_inner_selection := State.inner_selections[0]
 	if State.root_element.get_xnode(State.semi_selected_xid).get_attribute("d").\
-	get_commands()[State.inner_selections[0]].command_char in "Zz":
+	get_commands()[first_inner_selection].command_char in "Zz":
+		dragged_handle = null
 		State.queue_svg_save()
 		return
 	
 	for handle in handles:
 		if handle is PathHandle and handle.element.xid == State.semi_selected_xid and\
-		handle.command_index == State.inner_selections[0]:
+		handle.command_index == first_inner_selection:
 			State.set_hovered(handle.element.xid, handle.command_index)
 			dragged_handle = handle
 			# Move the handle that's being dragged.
@@ -839,7 +851,9 @@ func _on_handle_added() -> void:
 # Creates a popup for adding a shape at a position.
 func create_element_context(precise_pos: PackedFloat64Array) -> ContextPopup:
 	var btn_array: Array[Button] = []
-	for shape in ["path", "circle", "ellipse", "rect", "line", "polygon", "polyline"]:
+	const CONST_ARR: PackedStringArray = ["path", "circle", "ellipse", "rect", "line",
+			"polygon", "polyline"]
+	for shape in CONST_ARR:
 		var btn := ContextPopup.create_button(shape,
 				add_shape_at_pos.bind(shape, precise_pos), false, DB.get_element_icon(shape))
 		btn.add_theme_font_override("font", ThemeUtils.mono_font)

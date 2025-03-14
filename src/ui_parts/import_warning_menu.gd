@@ -1,5 +1,7 @@
 extends PanelContainer
 
+var import_success := false
+
 signal imported
 signal canceled
 
@@ -11,11 +13,19 @@ signal canceled
 
 var imported_text := ""
 
+func _exit_tree() -> void:
+	if import_success:
+		imported.emit()
+	else:
+		canceled.emit()
+
+func finish_import() -> void:
+	import_success = true
+	queue_free()
+
 func _ready() -> void:
-	imported.connect(queue_free)
-	ok_button.pressed.connect(imported.emit)
-	canceled.connect(queue_free)
-	cancel_button.pressed.connect(canceled.emit)
+	ok_button.pressed.connect(finish_import)
+	cancel_button.pressed.connect(queue_free)
 	
 	# Convert forward and backward to show how GodSVG would display the given SVG.
 	var imported_text_parse_result := SVGParser.text_to_root(imported_text)
@@ -38,14 +48,14 @@ func _ready() -> void:
 	else:
 		var svg_warnings := get_svg_warnings(imported_text_parse_result.svg)
 		if svg_warnings.is_empty():
-			imported.emit()
+			finish_import()
 		else:
 			warnings_label.add_theme_color_override("default_color",
 					Configs.savedata.basic_color_warning)
 			for warning in svg_warnings:
 				warnings_label.text += warning + "\n"
 	ok_button.grab_focus()
-	$VBoxContainer/Title.text = Translator.translate("Import Problems")
+	$VBoxContainer/TitleLabel.text = Translator.translate("Import Problems")
 	ok_button.text = Translator.translate("Import")
 	cancel_button.text = Translator.translate("Cancel")
 
@@ -68,8 +78,7 @@ func get_svg_warnings(root_element: ElementRoot) -> PackedStringArray:
 					unrecognized_attributes.append(attribute.name)
 	var warnings := PackedStringArray()
 	for element in unrecognized_elements:
-		warnings.append("%s: %s" % [Translator.translate("Unrecognized element"),
-				element])
+		warnings.append("%s: %s" % [Translator.translate("Unrecognized element"), element])
 	for attribute in unrecognized_attributes:
 		warnings.append("%s: %s" % [Translator.translate("Unrecognized attribute"),
 				attribute])

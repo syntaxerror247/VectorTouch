@@ -22,6 +22,7 @@ func _ready() -> void:
 	State.svg_resized.connect(queue_redraw)
 	State.zoom_changed.connect(change_zoom)
 	State.zoom_changed.connect(queue_redraw)
+	State.show_grid_changed.connect(toggle_visibility)
 
 func exit_tree() -> void:
 	RenderingServer.free_rid(surface)
@@ -29,9 +30,16 @@ func exit_tree() -> void:
 func change_zoom() -> void:
 	zoom = State.zoom
 
+func toggle_visibility() -> void:
+	visible = not visible
+
 
 func update() -> void:
-	position = unsnapped_position.snapped(Vector2(1, 1) / zoom)
+	var new_position := unsnapped_position.snapped(Vector2(1, 1) / zoom)
+	if position != new_position:
+		position = unsnapped_position.snapped(Vector2(1, 1) / zoom)
+		State.view_changed.emit()
+	
 	get_viewport().canvas_transform = Transform2D(0.0, Vector2(zoom, zoom),
 			0.0, -position * zoom)
 	queue_redraw()

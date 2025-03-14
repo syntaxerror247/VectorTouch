@@ -20,8 +20,8 @@ const STRIP_HEIGHT = 22.0
 
 signal focused
 
-const MiniNumberField = preload("mini_number_field.tscn")
-const FlagField = preload("flag_field.tscn")
+const MiniNumberFieldScene = preload("mini_number_field.tscn")
+const FlagFieldScene = preload("flag_field.tscn")
 
 const more_icon = preload("res://assets/icons/SmallMore.svg")
 const plus_icon = preload("res://assets/icons/Plus.svg")
@@ -52,23 +52,20 @@ var add_move_button: Control
 
 func set_value(new_value: String, save := false) -> void:
 	element.set_attribute(attribute_name, new_value)
-	sync(element.get_attribute_value(attribute_name, true))
+	sync()
 	if save:
 		State.queue_svg_save()
-
-func sync_to_attribute() -> void:
-	set_value(element.get_attribute_value(attribute_name, true))
 
 
 func setup() -> void:
 	Configs.language_changed.connect(update_translation)
-	sync_to_attribute()
+	sync()
 	element.attribute_changed.connect(_on_element_attribute_changed)
 	line_edit.tooltip_text = attribute_name
 	line_edit.text_submitted.connect(set_value.bind(true))
 	line_edit.text_changed.connect(setup_font)
-	line_edit.text_change_canceled.connect(func(): setup_font(line_edit.text))
-	line_edit.text_change_canceled.connect(sync_to_attribute)
+	line_edit.text_change_canceled.connect(func() -> void: setup_font(line_edit.text))
+	line_edit.text_change_canceled.connect(sync)
 	line_edit.focus_entered.connect(_on_line_edit_focus_entered)
 	commands_container.draw.connect(_commands_draw)
 	commands_container.gui_input.connect(_on_commands_gui_input)
@@ -90,7 +87,7 @@ func get_inner_rect(index: int) -> Rect2:
 
 func _on_element_attribute_changed(attribute_changed: String) -> void:
 	if attribute_name == attribute_changed:
-		sync_to_attribute()
+		sync()
 
 func update_translation() -> void:
 	line_edit.placeholder_text = Translator.translate("No path data")
@@ -104,7 +101,14 @@ func setup_font(new_text: String) -> void:
 	else:
 		line_edit.remove_theme_font_override("font")
 
-func sync(new_value: String) -> void:
+var last_synced_value := " "  # Invalid initial string.
+
+func sync() -> void:
+	var new_value := element.get_attribute_value(attribute_name)
+	if last_synced_value == new_value:
+		return
+	last_synced_value = new_value
+	
 	line_edit.text = new_value
 	setup_font(new_value)
 	# A plus button for adding a move command if empty.
@@ -269,7 +273,7 @@ func _commands_draw() -> void:
 				draw_numfield(rect, "rot", cmd)
 				rect.position.x = rect.end.x + 4
 				rect.size.x = 19
-				var flag_field := FlagField.instantiate()
+				var flag_field := FlagFieldScene.instantiate()
 				var is_large_arc: bool = (cmd.large_arc_flag == 0)
 				var is_sweep: bool = (cmd.sweep_flag == 0)
 				flag_field.get_theme_stylebox("normal" if is_large_arc\
@@ -377,7 +381,6 @@ func setup_path_command_controls(idx: int) -> Control:
 	relative_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	relative_button.begin_bulk_theme_override()
 	relative_button.add_theme_font_override("font", ThemeUtils.mono_font)
-	relative_button.add_theme_font_size_override("font_size", 13)
 	relative_button.add_theme_color_override("font_color", Color(1, 1, 1))
 	# Disabled styleboxes are unused, but must be set for the correct content margins.
 	if is_absolute:
@@ -425,8 +428,8 @@ func setup_path_command_controls(idx: int) -> Control:
 			field_rx.mode = field_rx.Mode.ONLY_POSITIVE
 			field_ry.mode = field_ry.Mode.ONLY_POSITIVE
 			field_rot.mode = field_rot.Mode.HALF_ANGLE
-			var field_large_arc := FlagField.instantiate()
-			var field_sweep := FlagField.instantiate()
+			var field_large_arc := FlagFieldScene.instantiate()
+			var field_sweep := FlagFieldScene.instantiate()
 			field_large_arc.gui_input.connect(_eat_double_clicks.bind(field_large_arc))
 			field_sweep.gui_input.connect(_eat_double_clicks.bind(field_sweep))
 			fields = [field_rx, field_ry, field_rot, field_large_arc, field_sweep,
@@ -476,7 +479,7 @@ func setup_path_command_controls(idx: int) -> Control:
 
 
 func numfield(cmd_idx: int) -> BetterLineEdit:
-	var new_field := MiniNumberField.instantiate()
+	var new_field := MiniNumberFieldScene.instantiate()
 	new_field.focus_entered.connect(State.normal_select.bind(element.xid, cmd_idx))
 	return new_field
 

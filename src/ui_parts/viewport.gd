@@ -1,6 +1,9 @@
 extends SubViewport
 
-const ZoomMenuType = preload("res://src/ui_parts/zoom_menu.gd")
+const ZoomMenu = preload("res://src/ui_parts/zoom_menu.gd")
+const Camera = preload("res://src/ui_widgets/camera.gd")
+const HandlesManager = preload("res://src/ui_parts/handles_manager.gd")
+const DisplayTexture = preload("res://src/ui_parts/display_texture.gd")
 
 const BUFFER_VIEW_SPACE = 0.8
 const ZOOM_RESET_BUFFER = 0.875
@@ -9,11 +12,11 @@ const ZOOM_RESET_BUFFER = 0.875
 var _zoom_to: Vector2
 
 @onready var display: TextureRect = $Checkerboard
-@onready var view: Control = $Camera
-@onready var controls: Control = $Controls
-@onready var display_texture: TextureRect = $Checkerboard/DisplayTexture
-@onready var reference_texture = $ReferenceTexture
-@onready var zoom_menu: ZoomMenuType = %ZoomMenu
+@onready var view: Camera = $Camera
+@onready var controls: HandlesManager = $Controls
+@onready var display_texture: DisplayTexture = $Checkerboard/DisplayTexture
+@onready var reference_texture: TextureRect = $ReferenceTexture
+@onready var zoom_menu: ZoomMenu = %ZoomMenu
 
 
 func _ready() -> void:
@@ -73,13 +76,13 @@ func _unhandled_input(event: InputEvent) -> void:
 				_zoom_to = get_mouse_position() / Vector2(size)
 			zoom_menu.set_zoom(State.zoom * (1.0 +\
 				(1 if Configs.savedata.invert_zoom else -1) *\
-				(wrap_mouse(event.relative).y if Configs.savedata.wrap_mouse else\
+				(wrap_mouse(event.relative).y if Configs.savedata.wraparound_panning else\
 				event.relative.y) / 128.0), _zoom_to)
 		# Panning with LMB or MMB. This gives a reliable way to adjust the view
 		# without dragging the things on it.
 		else:
 			set_view(view.unsnapped_position - (wrap_mouse(event.relative) if\
-					Configs.savedata.wrap_mouse else event.relative) / State.zoom)
+					Configs.savedata.wraparound_panning else event.relative) / State.zoom)
 	
 	elif event is InputEventPanGesture and not DisplayServer.get_name() == "Android":
 		# Zooming with Ctrl + touch?

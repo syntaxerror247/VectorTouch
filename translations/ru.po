@@ -3,8 +3,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2024-12-30 11:19+0200\n"
-"Last-Translator: volkov\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -33,12 +33,20 @@ msgid "Check for updates?"
 msgstr "Проверить обновления?"
 
 #: src/autoload/HandlerGUI.gd
-msgid "This requires GodSVG to connect to the internet."
-msgstr "Для этого необходимо подключение к Интернету."
+msgid ""
+"This will connect to github.com to compare version numbers. No other data is "
+"collected or transmitted."
+msgstr ""
+"Требуется подключение к github.com, чтобы сравнить номер версии. Никакие "
+"другие данные не собираются и не передаются."
 
 #: src/autoload/HandlerGUI.gd src/ui_widgets/alert_dialog.gd
 msgid "OK"
 msgstr "Хорошо"
+
+#: src/autoload/HandlerGUI.gd
+msgid "Do you want to proceed?"
+msgstr "Продолжить?"
 
 #: src/autoload/HandlerGUI.gd
 msgid "Export SVG"
@@ -50,12 +58,20 @@ msgid "Export"
 msgstr "Экспортовать"
 
 #: src/autoload/HandlerGUI.gd
+#, fuzzy
 msgid ""
-"The graphic can only be exported as SVG because its size is not defined. Do "
-"you want to proceed?"
+"The graphic can be exported only as SVG because its proportions are too "
+"extreme."
+msgstr ""
+"Изображение можно экспортировать только как SVG, поскольку его пропорции "
+"слишком экстремальные."
+
+#: src/autoload/HandlerGUI.gd
+msgid ""
+"The graphic can be exported only as SVG because its size is not defined."
 msgstr ""
 "Изображение можно экспортировать только как SVG, поскольку его размеры не "
-"заданы. Желаете продолжить?"
+"заданы."
 
 #: src/autoload/State.gd src/ui_parts/good_file_dialog.gd
 #: src/ui_widgets/alert_dialog.gd
@@ -63,13 +79,12 @@ msgid "Alert!"
 msgstr "Внимание!"
 
 #: src/autoload/State.gd src/ui_parts/tab_bar.gd src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Close tab"
-msgstr "Закрыть путь"
+msgstr "Закрыть вкладку"
 
 #: src/autoload/State.gd
 msgid "Restore"
-msgstr ""
+msgstr "Восстановить"
 
 #: src/autoload/State.gd
 msgid "View in List"
@@ -102,13 +117,15 @@ msgstr "Вставить после"
 
 #: src/autoload/State.gd
 msgid "The last edited state of this tab could not be found."
-msgstr ""
+msgstr "Последнее редактированное состояние этой вкладки невозможно найти."
 
 #: src/autoload/State.gd
 msgid ""
-"The tab is bound to the file path {file_path}. Do you want to restore from "
-"this path?"
+"The tab is bound to the file path {file_path}. Do you want to restore the "
+"SVG from this path?"
 msgstr ""
+"Вкладка связана с путем к файлу {file_path}. Вы желаете восстановить SVG из "
+"этого пути?"
 
 #: src/config_classes/Formatter.gd
 msgid "Compact"
@@ -147,8 +164,12 @@ msgid "6-digit hex"
 msgstr "6 цифровое шестандцатяричное значение"
 
 #: src/config_classes/TabData.gd
+msgid "Empty"
+msgstr "Пусто"
+
+#: src/config_classes/TabData.gd
 msgid "Unsaved"
-msgstr ""
+msgstr "Не сохранено"
 
 #: src/data_classes/BasicXNode.gd
 msgid "Comment"
@@ -172,15 +193,15 @@ msgstr "В этой группе только один элемент."
 
 #: src/data_classes/GradientUtils.gd
 msgid "No \"id\" attribute defined."
-msgstr "Атрибут \"id\" не определен."
+msgstr "Атрибут \"id\" не задан."
 
 #: src/data_classes/GradientUtils.gd
 msgid "No <stop> elements under this gradient."
-msgstr "Нет <stop> елементов под этим градиентом."
+msgstr "Нет <stop> элемента в этом градиенте."
 
 #: src/data_classes/GradientUtils.gd
 msgid "This gradient is a solid color."
-msgstr "Этот градиент это обычный цвет."
+msgstr "Этот градиент описывает сплошной цвет."
 
 #: src/data_classes/SVGParser.gd
 msgid "Doesn’t describe an SVG."
@@ -197,6 +218,22 @@ msgid "Close"
 msgstr "Закрыть"
 
 #: src/ui_parts/about_menu.gd
+msgid "Authors"
+msgstr "Авторы"
+
+#: src/ui_parts/about_menu.gd
+msgid "Donors"
+msgstr "Благотворители"
+
+#: src/ui_parts/about_menu.gd
+msgid "License"
+msgstr "Лицензия"
+
+#: src/ui_parts/about_menu.gd
+msgid "Third-party licenses"
+msgstr "Лицензии третьих лиц"
+
+#: src/ui_parts/about_menu.gd
 msgid "Project Founder and Manager"
 msgstr "Основатель и руководитель проекта"
 
@@ -209,10 +246,6 @@ msgid "Translators"
 msgstr "Переводчики"
 
 #: src/ui_parts/about_menu.gd
-msgid "Donors"
-msgstr "Благотворители"
-
-#: src/ui_parts/about_menu.gd
 msgid "Golden donors"
 msgstr "Золотые благотворители"
 
@@ -220,21 +253,29 @@ msgstr "Золотые благотворители"
 msgid "Diamond donors"
 msgstr "Алмазные благотворители"
 
-#: src/ui_parts/about_menu.gd
-msgid "Authors"
-msgstr "Авторы"
+#: src/ui_parts/code_editor.gd src/utils/TranslationUtils.gd
+msgid "Copy all text"
+msgstr "Скопировать весь текст"
 
-#: src/ui_parts/about_menu.gd
-msgid "License"
-msgstr "Лицензия"
+#: src/ui_parts/current_file_button.gd src/ui_parts/good_file_dialog.gd
+msgid "Save SVG"
+msgstr "Сохранить SVG"
 
-#: src/ui_parts/about_menu.gd
-msgid "Godot third-party components"
-msgstr "Компоненты Godot от третьих лиц"
+#: src/ui_parts/current_file_button.gd
+msgid "Save SVG as…"
+msgstr "Сохранить SVG как…"
 
-#: src/ui_parts/about_menu.gd
-msgid "Third-party licenses"
-msgstr "Лицензии третьих лиц"
+#: src/ui_parts/current_file_button.gd src/utils/TranslationUtils.gd
+msgid "Reset SVG"
+msgstr "Сбросить SVG"
+
+#: src/ui_parts/current_file_button.gd src/ui_parts/tab_bar.gd
+msgid "Open externally"
+msgstr "Открыть во внешней программе"
+
+#: src/ui_parts/current_file_button.gd src/ui_parts/tab_bar.gd
+msgid "Show in File Manager"
+msgstr "Показать в файловом менеджере"
 
 #: src/ui_parts/display.gd
 msgid "Visuals"
@@ -270,7 +311,7 @@ msgstr "Размер привязки"
 
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
-#: src/ui_widgets/confirm_dialog.gd
+#: src/ui_widgets/confirm_dialog.gd src/ui_widgets/options_dialog.gd
 msgid "Cancel"
 msgstr "Отменить"
 
@@ -332,22 +373,6 @@ msgstr "Настройки"
 msgid "Optimize"
 msgstr "Оптимизировать"
 
-#: src/ui_parts/global_actions.gd src/ui_parts/good_file_dialog.gd
-msgid "Save SVG"
-msgstr "Сохранить SVG"
-
-#: src/ui_parts/global_actions.gd src/utils/TranslationUtils.gd
-msgid "Reset SVG"
-msgstr "Сбросить SVG"
-
-#: src/ui_parts/global_actions.gd src/ui_parts/tab_bar.gd
-msgid "Open externally"
-msgstr ""
-
-#: src/ui_parts/global_actions.gd src/ui_parts/tab_bar.gd
-msgid "Show in File Manager"
-msgstr ""
-
 #: src/ui_parts/global_actions.gd
 msgid "About…"
 msgstr "Про программу…"
@@ -404,7 +429,8 @@ msgstr "Выбрать изображение"
 msgid "Select"
 msgstr "Выбрать"
 
-#: src/ui_parts/good_file_dialog.gd src/utils/TranslationUtils.gd
+#: src/ui_parts/good_file_dialog.gd src/utils/FileUtils.gd
+#: src/utils/TranslationUtils.gd
 msgid "Save"
 msgstr "Сохранить"
 
@@ -597,8 +623,8 @@ msgid "Invert zoom direction"
 msgstr "Инвертировать направление масштабирования"
 
 #: src/ui_parts/settings_menu.gd
-msgid "Wrap mouse"
-msgstr "Захватить мышу"
+msgid "Wrap-around panning"
+msgstr "Захват курсора при прокрутке"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Use CTRL for zooming"
@@ -625,8 +651,8 @@ msgid "UI scale"
 msgstr "Масштаб интерфейса"
 
 #: src/ui_parts/settings_menu.gd
-msgid "Auto UI scale"
-msgstr "Автоматический маштаб интерфейса пользователя"
+msgid "Changes the scale factor for the interface."
+msgstr "Изменить масштаб пользовательского интерфейса."
 
 #: src/ui_parts/settings_menu.gd
 msgid "Language"
@@ -636,7 +662,7 @@ msgstr "Язык"
 msgid "Import XML"
 msgstr "Импортировать XML"
 
-#: src/ui_parts/settings_menu.gd src/ui_widgets/palette_config.gd
+#: src/ui_parts/settings_menu.gd
 msgid "Paste XML"
 msgstr "Вставить XML"
 
@@ -662,7 +688,7 @@ msgstr "Помощь"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Reset all to default"
-msgstr "Восстановить по умолчанию"
+msgstr "Восстановить значения по умолчанию"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Preset"
@@ -674,7 +700,7 @@ msgstr "Сохранять коментарии"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Keep unrecognized XML structures"
-msgstr "Сохранять не распознанные XML"
+msgstr "Сохранять нераспознанные XML"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Add trailing newline"
@@ -710,7 +736,7 @@ msgstr "Удалить начальный ноль"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Use exponential when shorter"
-msgstr "Использовать экспоненту когда короткий"
+msgstr "Использовать экспоненту когда короче"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Colors"
@@ -757,14 +783,16 @@ msgid "Remove unnecessary parameters"
 msgstr "Удалить ненужные параметры"
 
 #: src/ui_parts/settings_menu.gd
-msgid "Swaps zoom in and zoom out with the mouse wheel."
-msgstr "Поменяет местами увеличение и уменьшение масштаба через колесико мыши."
+msgid "Swaps the scroll directions for zooming in and zooming out."
+msgstr "Поменяет местами направление прокрутки при масштабировании."
 
 #: src/ui_parts/settings_menu.gd
-msgid "Wraps the mouse cursor around when panning the viewport."
+msgid ""
+"Warps the cursor to the opposite side whenever it reaches a viewport "
+"boundary while panning."
 msgstr ""
-"Курсор будет телепортироваться от одного до противоположного края при "
-"передвижении окна просмотра."
+"Курсор будет телепортироваться от одного до противоположного края на границе "
+"окна просмотра."
 
 #: src/ui_parts/settings_menu.gd
 msgid ""
@@ -795,67 +823,49 @@ msgstr ""
 msgid "Changes the visual size and grabbing area of handles."
 msgstr "Изменит визуальный размер и область захвата ручек редактирования."
 
-#: src/ui_parts/settings_menu.gd
-msgid "Changes the scale of the visual user interface."
-msgstr "Изменить масштаб пользовательского интерфейса."
+#: src/ui_parts/shortcut_panel.gd
+msgid "Horizontal strip"
+msgstr "Горизонтальная полоса"
 
-#: src/ui_parts/settings_menu.gd
-msgid "Scales the user interface based on the screen size."
-msgstr "Масштабировать интерфейс пользователя в зависимости от размера экрана."
+#: src/ui_parts/shortcut_panel.gd
+msgid "Vertical strip"
+msgstr "Вертикальная полоска"
+
+#: src/ui_parts/shortcut_panel.gd
+msgid "Horizontal with two rows"
+msgstr "Горизонтальная с двумя колонками"
 
 #: src/ui_parts/shortcut_panel_config.gd
 msgid "Configure Shortcut Panel"
-msgstr ""
+msgstr "Настроить в панели сочетаний клавиш"
 
 #: src/ui_parts/shortcut_panel_config.gd
 msgid "Layout"
-msgstr ""
-
-#: src/ui_parts/shortcut_panel_config.gd
-#, fuzzy
-msgid "Horizontal strip"
-msgstr "Горизонтальная линия до"
-
-#: src/ui_parts/shortcut_panel_config.gd
-#, fuzzy
-msgid "Horizontal with two rows"
-msgstr "Горизонтальная линия до"
-
-#: src/ui_parts/shortcut_panel_config.gd
-#, fuzzy
-msgid "Vertical strip"
-msgstr "Вертикальная линия до"
+msgstr "Макет"
 
 #: src/ui_parts/tab_bar.gd
-#, fuzzy
 msgid "Create tab"
-msgstr "Создать"
-
-#: src/ui_parts/tab_bar.gd
-#, fuzzy
-msgid "Close all other tabs"
-msgstr "Скопировать весь текст"
-
-#: src/ui_parts/tab_bar.gd
-msgid "Close tabs to the left"
-msgstr ""
-
-#: src/ui_parts/tab_bar.gd
-msgid "Close tabs to the right"
-msgstr ""
+msgstr "Создать вкладку"
 
 #: src/ui_parts/tab_bar.gd src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Create a new tab"
-msgstr "Создать новую папку"
+msgstr "Создать новую вкладку"
 
 #: src/ui_parts/tab_bar.gd
-msgid "This SVG is not bound to a location on the computer yet."
-msgstr ""
+msgid "Scroll backwards"
+msgstr "Прокрутить назад"
+
+#: src/ui_parts/tab_bar.gd
+msgid "Scroll forwards"
+msgstr "Прокрутить вперед"
+
+#: src/ui_parts/tab_bar.gd
+msgid "This SVG is not bound to a file location yet."
+msgstr "Это SVG изображение еще не связано с расположением файла."
 
 #: src/ui_parts/update_menu.gd
-msgid "Include prereleases"
-msgstr "Включить пре-релизы"
+msgid "Show prereleases"
+msgstr "Показывать тестовые сборки"
 
 #: src/ui_parts/update_menu.gd
 msgid "Retry"
@@ -871,7 +881,7 @@ msgstr "Загрузка информации..."
 
 #: src/ui_parts/update_menu.gd
 msgid "Update check failed"
-msgstr "Не удалось проверит обновления"
+msgstr "Не удалось проверить обновления"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
@@ -883,11 +893,11 @@ msgstr "Новые версии"
 
 #: src/ui_parts/zoom_menu.gd src/utils/TranslationUtils.gd
 msgid "Zoom out"
-msgstr "Отдалить масштаб"
+msgstr "Уменьшить масштаб"
 
 #: src/ui_parts/zoom_menu.gd src/utils/TranslationUtils.gd
 msgid "Zoom in"
-msgstr "Приблизить масштаб"
+msgstr "Увеличить масштаб"
 
 #: src/ui_parts/zoom_menu.gd src/utils/TranslationUtils.gd
 msgid "Zoom reset"
@@ -919,10 +929,6 @@ msgstr "Вставить"
 msgid "Create"
 msgstr "Создать"
 
-#: src/ui_widgets/code_editor.gd src/utils/TranslationUtils.gd
-msgid "Copy all text"
-msgstr "Скопировать весь текст"
-
 #: src/ui_widgets/color_popup.gd
 msgid "Search color"
 msgstr "Искать цвет"
@@ -944,13 +950,12 @@ msgid "Unnamed"
 msgstr "Без названия"
 
 #: src/ui_widgets/good_color_picker.gd
-#, fuzzy
 msgid "Color keywords"
-msgstr "Цветовая пипетка"
+msgstr "Ключевые слова цвета"
 
 #: src/ui_widgets/good_color_picker.gd
 msgid "Eyedropper"
-msgstr ""
+msgstr "Пипетка"
 
 #: src/ui_widgets/palette_config.gd
 msgid "Unnamed palettes won't be shown."
@@ -962,19 +967,23 @@ msgstr "Несколько палитр не могут иметь одно и �
 
 #: src/ui_widgets/palette_config.gd
 msgid "This palette has identically defined colors."
-msgstr "Эти палитры имеют идентичные цвета."
+msgstr "В этой палитре имеются цвета с идентичными названиями."
 
 #: src/ui_widgets/palette_config.gd
 msgid "Rename"
 msgstr "Переименовать"
 
 #: src/ui_widgets/palette_config.gd
+msgid "Apply Preset"
+msgstr "Применить пресет"
+
+#: src/ui_widgets/palette_config.gd
 msgid "Copy as XML"
 msgstr "Скопировать как XML"
 
 #: src/ui_widgets/palette_config.gd
-msgid "Apply Preset"
-msgstr "Принять пресет"
+msgid "Save as XML"
+msgstr "Сохранить как XML"
 
 #: src/ui_widgets/path_popup.gd src/ui_widgets/pathdata_field.gd
 #: src/utils/TranslationUtils.gd
@@ -1023,7 +1032,7 @@ msgstr "Применить матрицу"
 
 #: src/ui_widgets/transform_popup.gd
 msgid "Insert Before"
-msgstr "Вставить после"
+msgstr "Вставить до"
 
 #: src/ui_widgets/transform_popup.gd
 msgid "New transform"
@@ -1051,56 +1060,93 @@ msgstr "Файл невозможно открыть."
 
 #: src/utils/FileUtils.gd
 msgid "Check if the file still exists in the selected file path."
-msgstr "Проверить, если файл все еще существует по выбранному пути."
+msgstr "Проверьте, что файл все еще существует по выбранному пути."
+
+#: src/utils/FileUtils.gd
+msgid "Save the file?"
+msgstr "Сохранить файл?"
+
+#: src/utils/FileUtils.gd
+msgid "Do you want to save this file?"
+msgstr "Вы хотите сохранить этот файл?"
+
+#: src/utils/FileUtils.gd
+msgid "Save the changes?"
+msgstr "Сохранить изменения?"
+
+#: src/utils/FileUtils.gd
+msgid "Your changes will be lost if you don't save them."
+msgstr "Ваши изменения будут утеряны если вы их не сохраните."
+
+#: src/utils/FileUtils.gd
+msgid "Don't save"
+msgstr "Не сохранять"
 
 #: src/utils/FileUtils.gd
 msgid "The imported file is already being edited inside GodSVG."
-msgstr ""
+msgstr "Импортированный файл уже редактируется в GodSVG."
 
 #: src/utils/FileUtils.gd
-msgid "If you want to apply the unsaved file state, use \"Reset SVG\" instead."
+msgid "If you want to revert your edits since the last save, use {reset_svg}."
 msgstr ""
+"Если вы хотите отменить внесенные после после сохранения изменения, "
+"воспользуйтесь {reset_svg}."
+
+#: src/utils/FileUtils.gd
+msgid "Do you want to save the changes made to {file_name}?"
+msgstr "Сохранить изменения в {file_name}?"
+
+#: src/utils/TranslationUtils.gd
+msgid "Save as"
+msgstr "Сохранить как"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close tabs to the left"
+msgstr "Закрыть вкладки слева"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close tabs to the right"
+msgstr "Закрыть вкладки справа"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close all other tabs"
+msgstr "Закрыть все остальные вкладки"
 
 #: src/utils/TranslationUtils.gd
 msgid "Select the next tab"
-msgstr ""
+msgstr "Выбрать следующую вкладку"
 
 #: src/utils/TranslationUtils.gd
 msgid "Select the previous tab"
-msgstr ""
+msgstr "Выбрать предыдущую вкладку"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Open SVG externally"
-msgstr "Открыть репозиторий GodSVG"
+msgstr "Открыть SVG в внешней программе"
 
 #: src/utils/TranslationUtils.gd
 msgid "Show SVG in File Manager"
-msgstr ""
+msgstr "Показать SVG в файловом менеджере"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Select all"
-msgstr "Выбрать"
+msgstr "Выбрать все"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Duplicate the selection"
-msgstr "Удалить все выбранные теги"
+msgstr "Дублировать выбранное"
 
 #: src/utils/TranslationUtils.gd
 msgid "Delete the selection"
 msgstr "Удалить все выбранные теги"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Move the selection up"
-msgstr "Подвинуть вверх все выбранные теги"
+msgstr "Подвинуть выбранное вверх"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Move the selection down"
-msgstr "Подвинуть вниз все выбранные элементы"
+msgstr "Подвинуть выбранное вниз"
 
 #: src/utils/TranslationUtils.gd
 msgid "Find"
@@ -1108,7 +1154,7 @@ msgstr "Найти"
 
 #: src/utils/TranslationUtils.gd
 msgid "Show rasterized SVG"
-msgstr "Показать растеризованый SVG"
+msgstr "Показать растеризованный SVG"
 
 #: src/utils/TranslationUtils.gd
 msgid "Toggle snapping"
@@ -1202,128 +1248,16 @@ msgstr ""
 msgid "The file extension is empty. Only {extension_list} files are supported."
 msgstr "Расширение файла пустое. Поддерживаются только {extension_list} файлы."
 
-#, fuzzy
-#~ msgid "Add new tab"
-#~ msgstr "Добавить новый тег"
-
-#~ msgid "Open file"
-#~ msgstr "Открыть файл"
-
-#~ msgid "Clear saving path"
-#~ msgstr "Очистить путь сохранения"
-
-#~ msgid "Clear SVG"
-#~ msgstr "Очистить SVG"
-
-#, fuzzy
-#~ msgid "Open SVG file"
-#~ msgstr "Открыть файл"
-
-#~ msgid "Select all elements"
-#~ msgstr "Выбрать все элементы"
-
-#~ msgid "Duplicate the selected elements"
-#~ msgstr "Дублировать выбранные элементы"
-
-#~ msgid "Enable the color"
-#~ msgstr "Активировать цвет"
-
-#~ msgid "Disable the color"
-#~ msgstr "Деактивировать цвет"
-
-#~ msgid "Invalid"
-#~ msgstr "Неправильно"
-
-#~ msgid "Final size"
-#~ msgstr "Финальный размер"
-
 #~ msgid ""
-#~ "The file couldn't be opened.\n"
-#~ "Try checking the file path, ensure that the file is not deleted, or "
-#~ "choose a different file."
+#~ "If you want to apply the unsaved file state, use \"Reset SVG\" instead."
 #~ msgstr ""
-#~ "Невозможно открыть этот файл.\n"
-#~ "Попробуйте проверить путь до файла, убедитесь что файл не удален или "
-#~ "выберите другой файл."
+#~ "Если вы хотите применить не сохраненное состояние файла, используйте "
+#~ "\"Скинуть SVG\"."
 
-#~ msgid "Enable snap"
-#~ msgstr "Включить привязку"
+#~ msgid "Auto UI scale"
+#~ msgstr "Автоматический маштаб интерфейса пользователя"
 
-#~ msgid "General"
-#~ msgstr "Общие"
-
-#~ msgid "Any changes will apply immediately."
-#~ msgstr "Любые изменения будут применены немедленно."
-
-#~ msgid "Enable autoformatting"
-#~ msgstr "Включить автоформатирование"
-
-#~ msgid "Number precision digits"
-#~ msgstr "Значащие цифры углов"
-
-#~ msgid "Angle precision digits"
-#~ msgstr "Значащие цифры чисел"
-
-#~ msgid "Remove zero padding"
-#~ msgstr "Удалить заполняющие нули"
-
-#~ msgid "Convert rgb format to hex"
-#~ msgstr "Конвертировать rgb формат в hex"
-
-#~ msgid "Convert named colors to hex"
-#~ msgstr "Конвертировать цвета с названиями в hex"
-
-#~ msgid "Use shorthand hex code"
-#~ msgstr "Использовать короткие hex коды"
-
-#~ msgid "Edit palette name"
-#~ msgstr "Редактировать название палитры"
-
-#~ msgid "Import SVG"
-#~ msgstr "Импортировать SVG"
-
-#~ msgid "Tag color"
-#~ msgstr "Цвет тега"
-
-#~ msgid "New tag"
-#~ msgstr "Новый тег"
-
-#~ msgid "Paths"
-#~ msgstr "Пути"
-
-#~ msgid "Remove"
-#~ msgstr "Удалить"
-
-#~ msgid "Import Reference Image"
-#~ msgstr "Импортировать референс-изображение"
-
-#~ msgid "Show Reference Image"
-#~ msgstr "Показать референс-изображение"
-
-#~ msgid "Overlay Reference Image"
-#~ msgstr "Наложить референс-изображение"
-
-#~ msgid "Unknown tag"
-#~ msgstr "Неизвестный тег"
-
-#~ msgid "Load Reference Image"
-#~ msgstr "Загрузить референс-изображение"
-
-#~ msgid "Documentation…"
-#~ msgstr "Документация…"
-
-#~ msgid "Couple/Decouple"
-#~ msgstr "Объединить/Разъединить"
-
-#~ msgid "Add color"
-#~ msgstr "Добавить цвет"
-
-#~ msgid "Remove plus sign"
-#~ msgstr "Удалить знак плюса"
-
-#~ msgid "Default value opacity"
-#~ msgstr "Стандартное значение непрозрачности"
-
-#, fuzzy
-#~ msgid "Clear association"
-#~ msgstr "Удалить"
+#~ msgid "Scales the interface automatically based on the screen size."
+#~ msgstr ""
+#~ "Автоматически масштабировать интерфейс пользователя в зависимости от "
+#~ "размера экрана."

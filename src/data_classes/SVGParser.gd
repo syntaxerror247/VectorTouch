@@ -1,5 +1,38 @@
 class_name SVGParser extends RefCounted
 
+# For checking if an SVG is empty. If the text errors out, it's as if the SVG is empty.
+static func text_check_is_root_empty(text: String) -> bool:
+	if text.is_empty():
+		return false
+	
+	var parser := XMLParser.new()
+	parser.open_buffer(text.to_utf8_buffer())
+	
+	# Ignore everything before the first svg tag.
+	var describes_svg := false
+	
+	# Parse the first svg tag that's encountered.
+	while parser.read() == OK:
+		if parser.get_node_type() != XMLParser.NODE_ELEMENT or\
+		parser.get_node_name() != "svg":
+			continue
+		
+		describes_svg = true
+		
+		var node_offset := parser.get_node_offset()
+		var closure_pos := text.find("/>", node_offset)
+		if closure_pos != -1 and closure_pos <= text.find(">", node_offset):
+			return true
+		break
+	
+	if not describes_svg:
+		return false
+	
+	if parser.read() == OK:
+		if parser.get_node_type() == XMLParser.NODE_ELEMENT_END:
+			return parser.get_node_name() == "svg"
+	return false
+
 # For rendering only a section of the SVG.
 static func root_cutout_to_text(root_element: ElementRoot, custom_width: float,
 custom_height: float, custom_viewbox: Rect2) -> String:
@@ -8,7 +41,7 @@ custom_height: float, custom_viewbox: Rect2) -> String:
 	new_root_element.set_attribute("width", custom_width)
 	new_root_element.set_attribute("height", custom_height)
 	var text := _xnode_to_editor_text(new_root_element)
-	text = text.strip_edges(false, true).left(-6)  # Remove the </svg> at the end.)
+	text = text.left(maxi(text.find("/>"), text.find("</svg>"))) + ">"
 	for child_idx in root_element.get_child_count():
 		text += _xnode_to_editor_text(
 				root_element.get_xnode(PackedInt32Array([child_idx])), true)
@@ -176,7 +209,7 @@ static func text_to_root(text: String) -> ParseResult:
 	parser.open_buffer(text.to_utf8_buffer())
 	var unclosed_element_stack: Array[Element] = []
 	
-	# Remove everything before the first SVG tag.
+	# Ignore everything before the first SVG tag.
 	var describes_svg := false
 	
 	# Parse the first svg tag that's encountered.

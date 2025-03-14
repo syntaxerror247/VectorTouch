@@ -10,10 +10,15 @@ const common_panel_border_color = Color("414159")
 const common_caret_color = Color("ddeeffdd")
 const common_selection_color = Color("668cff66")
 const common_disabled_selection_color = Color("aaaaaa66")
-const common_text_color = Color("ddeeff")
-const common_subtle_text_color = Color("ffffff55")
+const common_editable_text_color = Color("ddeeff")
 const common_inner_color_disabled = Color("0e0e12")
 const common_border_color_disabled = Color("1e1f24")
+
+const common_text_color = Color("ffffffdd")
+const common_highlighted_text_color = Color("ffffff")
+const common_dim_text_color = Color("ffffffbb")
+const common_dimmer_text_color = Color("ffffff77")
+const common_subtle_text_color = Color("ffffff55")
 
 const common_button_inner_color_normal = Color("1c1e38")
 const common_button_border_color_normal = Color("313859")
@@ -187,14 +192,20 @@ static func _setup_panelcontainer(theme: Theme) -> void:
 	panel_stylebox.corner_radius_top_right = 5
 	panel_stylebox.corner_radius_bottom_right = 5
 	panel_stylebox.content_margin_left = 14
-	panel_stylebox.content_margin_right = 14
-	panel_stylebox.content_margin_bottom = 12
-	panel_stylebox.content_margin_top = 11
+	panel_stylebox.content_margin_right = 2
+	panel_stylebox.content_margin_bottom = 2
+	panel_stylebox.content_margin_top = 2
 	theme.set_stylebox("panel", "SideBarContent", panel_stylebox)
 
 static func _setup_button(theme: Theme) -> void:
 	theme.add_type("Button")
-	theme.set_constant("h_separation", "Button", 6)
+	theme.set_constant("h_separation", "Button", 5)
+	theme.set_color("font_color", "Button", common_text_color)
+	theme.set_color("font_disabled_color", "Button", common_subtle_text_color)
+	theme.set_color("font_focus_color", "Button", common_highlighted_text_color)
+	theme.set_color("font_hover_color", "Button", common_highlighted_text_color)
+	theme.set_color("font_pressed_color", "Button", common_highlighted_text_color)
+	theme.set_color("font_hover_pressed_color", "Button", common_highlighted_text_color)
 	var button_stylebox := StyleBoxFlat.new()
 	button_stylebox.set_corner_radius_all(5)
 	button_stylebox.set_border_width_all(2)
@@ -480,6 +491,10 @@ static func _setup_button(theme: Theme) -> void:
 	
 	theme.add_type("SideTab")
 	theme.set_type_variation("SideTab", "Button")
+	theme.set_color("font_color", "SideTab", common_dim_text_color)
+	theme.set_color("font_hover_color", "SideTab", common_highlighted_text_color)
+	theme.set_color("font_pressed_color", "SideTab", common_highlighted_text_color)
+	theme.set_color("font_hover_pressed_color", "SideTab", common_highlighted_text_color)
 	
 	var normal_sidetab_stylebox := StyleBoxFlat.new()
 	normal_sidetab_stylebox.bg_color = normal_tab_color
@@ -525,6 +540,14 @@ static func _setup_button(theme: Theme) -> void:
 
 static func _setup_checkbox(theme: Theme) -> void:
 	theme.add_type("CheckBox")
+	theme.set_constant("h_separation", "CheckBox", 5)
+	theme.set_color("font_color", "CheckBox", common_text_color)
+	theme.set_color("font_color", "CheckBox", common_text_color)
+	theme.set_color("font_disabled_color", "CheckBox", common_subtle_text_color)
+	theme.set_color("font_focus_color", "CheckBox", common_highlighted_text_color)
+	theme.set_color("font_hover_color", "CheckBox", common_highlighted_text_color)
+	theme.set_color("font_pressed_color", "CheckBox", common_highlighted_text_color)
+	theme.set_color("font_hover_pressed_color", "CheckBox", common_highlighted_text_color)
 	theme.set_icon("checked", "CheckBox", _icon("GuiBoxChecked"))
 	theme.set_icon("checked_disabled", "CheckBox", _icon("GuiBoxCheckedDisabled"))
 	theme.set_icon("unchecked", "CheckBox", _icon("GuiBoxUnchecked"))
@@ -534,14 +557,14 @@ static func _setup_checkbox(theme: Theme) -> void:
 	checkbox_stylebox.set_corner_radius_all(4)
 	checkbox_stylebox.content_margin_bottom = 2.0
 	checkbox_stylebox.content_margin_top = 2.0
-	checkbox_stylebox.content_margin_left = 4.0
-	checkbox_stylebox.content_margin_right = 4.0
+	checkbox_stylebox.content_margin_left = 3.0
+	checkbox_stylebox.content_margin_right = 3.0
 	
 	var empty_checkbox_stylebox := StyleBoxEmpty.new()
 	empty_checkbox_stylebox.content_margin_bottom = 2.0
 	empty_checkbox_stylebox.content_margin_top = 2.0
-	empty_checkbox_stylebox.content_margin_left = 4.0
-	empty_checkbox_stylebox.content_margin_right = 4.0
+	empty_checkbox_stylebox.content_margin_left = 3.0
+	empty_checkbox_stylebox.content_margin_right = 3.0
 	theme.set_stylebox("normal", "CheckBox", empty_checkbox_stylebox)
 	theme.set_stylebox("pressed", "CheckBox", empty_checkbox_stylebox)
 	
@@ -556,6 +579,12 @@ static func _setup_checkbox(theme: Theme) -> void:
 
 static func _setup_checkbutton(theme: Theme) -> void:
 	theme.add_type("CheckButton")
+	theme.set_color("font_color", "CheckButton", common_text_color)
+	theme.set_color("font_disabled_color", "CheckButton", common_subtle_text_color)
+	theme.set_color("font_focus_color", "CheckButton", common_highlighted_text_color)
+	theme.set_color("font_hover_color", "CheckButton", common_highlighted_text_color)
+	theme.set_color("font_pressed_color", "CheckButton", common_highlighted_text_color)
+	theme.set_color("font_hover_pressed_color", "CheckButton", common_highlighted_text_color)
 	theme.set_icon("checked", "CheckButton", _icon("GuiToggleChecked"))
 	theme.set_icon("unchecked", "CheckButton", _icon("GuiToggleUnchecked"))
 
@@ -595,7 +624,7 @@ static func _setup_itemlist(theme: Theme) -> void:
 static func _setup_lineedit(theme: Theme) -> void:
 	theme.add_type("LineEdit")
 	theme.set_color("caret_color", "LineEdit", common_caret_color)
-	theme.set_color("font_color", "LineEdit", common_text_color)
+	theme.set_color("font_color", "LineEdit", common_editable_text_color)
 	theme.set_color("font_placeholder_color", "LineEdit", common_subtle_text_color)
 	theme.set_color("selection_color", "LineEdit", common_selection_color)
 	theme.set_color("disabled_selection_color", "LineEdit", common_disabled_selection_color)
@@ -705,7 +734,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	theme.set_stylebox("focus", "RightConnectedLineEdit", right_connected_focus_stylebox)
 	
 	theme.add_type("MiniLineEdit")
-	theme.set_color("font_color", "MiniLineEdit", common_text_color)
+	theme.set_color("font_color", "MiniLineEdit", common_editable_text_color)
 	theme.set_type_variation("MiniLineEdit", "LineEdit")
 	theme.set_font_size("font_size", "MiniLineEdit", 10)
 	theme.set_font("font", "MiniLineEdit", mono_font)
@@ -773,8 +802,8 @@ static func _setup_scrollbar(theme: Theme) -> void:
 	
 	var h_scroll_stylebox := StyleBoxFlat.new()
 	h_scroll_stylebox.set_corner_radius_all(3)
-	h_scroll_stylebox.content_margin_top = 4
-	h_scroll_stylebox.content_margin_bottom = 4
+	h_scroll_stylebox.content_margin_top = 8
+	h_scroll_stylebox.content_margin_bottom = 8
 	h_scroll_stylebox.bg_color = scrollbar_background_color
 	theme.set_stylebox("scroll", "HScrollBar", h_scroll_stylebox)
 	
@@ -798,8 +827,8 @@ static func _setup_scrollbar(theme: Theme) -> void:
 	
 	var v_scroll_stylebox := StyleBoxFlat.new()
 	v_scroll_stylebox.set_corner_radius_all(3)
-	v_scroll_stylebox.content_margin_left = 4.0
-	v_scroll_stylebox.content_margin_right = 4.0
+	v_scroll_stylebox.content_margin_left = 8
+	v_scroll_stylebox.content_margin_right = 8
 	v_scroll_stylebox.bg_color = scrollbar_background_color
 	theme.set_stylebox("scroll", "VScrollBar", v_scroll_stylebox)
 
@@ -820,7 +849,6 @@ static func _setup_separator(theme: Theme) -> void:
 
 static func _setup_label(theme: Theme) -> void:
 	theme.add_type("Label")
-	theme.set_font_size("font_size", "Label", 15)
 	
 	theme.add_type("RichTextLabel")
 	theme.set_color("selection_color", "RichTextLabel", common_selection_color)
@@ -828,6 +856,9 @@ static func _setup_label(theme: Theme) -> void:
 
 static func _setup_tabcontainer(theme: Theme) -> void:
 	theme.add_type("TabContainer")
+	theme.set_color("font_unselected_color", "TabContainer", common_dim_text_color)
+	theme.set_color("font_hovered_color", "TabContainer", common_text_color)
+	theme.set_color("font_selected_color", "TabContainer", common_highlighted_text_color)
 	theme.set_constant("side_margin", "TabContainer", 0)
 	theme.set_font_size("font_size", "TabContainer", 14)
 	
@@ -840,9 +871,9 @@ static func _setup_tabcontainer(theme: Theme) -> void:
 	panel_stylebox.corner_radius_bottom_right = 5
 	panel_stylebox.corner_radius_bottom_left = 5
 	panel_stylebox.content_margin_left = 8
-	panel_stylebox.content_margin_right = 8
-	panel_stylebox.content_margin_bottom = 6
-	panel_stylebox.content_margin_top = 5
+	panel_stylebox.content_margin_right = 2
+	panel_stylebox.content_margin_bottom = 2
+	panel_stylebox.content_margin_top = 0
 	theme.set_stylebox("panel", "TabContainer", panel_stylebox)
 	
 	var tab_disabled_stylebox := StyleBoxEmpty.new()

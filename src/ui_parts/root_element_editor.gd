@@ -1,28 +1,20 @@
 extends VBoxContainer
 
+const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
+
 # So, about this editor. Width and height don't have default values, so they use NAN and
 # use NumberEdit, rather than NumberField. Viewbox is a list and it also doesn't have a
 # default value, so it uses 4 NumberEdits.
 
-const UnrecognizedField = preload("res://src/ui_widgets/unrecognized_field.tscn")
-const ColorField = preload("res://src/ui_widgets/color_field.tscn")
-const NumberField = preload("res://src/ui_widgets/number_field.tscn")
-const NumberSlider = preload("res://src/ui_widgets/number_field_with_slider.tscn")
-const IDField = preload("res://src/ui_widgets/id_field.tscn")
-const EnumField = preload("res://src/ui_widgets/enum_field.tscn")
-const TransformField = preload("res://src/ui_widgets/transform_field.tscn")
-
-const NumberEditType = preload("res://src/ui_widgets/number_edit.gd")
-
 @onready var width_button: Button = %Size/Width/WidthButton
 @onready var height_button: Button = %Size/Height/HeightButton
 @onready var viewbox_button: Button = %Viewbox/ViewboxButton
-@onready var width_edit: NumberEditType = %Size/Width/WidthEdit
-@onready var height_edit: NumberEditType = %Size/Height/HeightEdit
-@onready var viewbox_edit_x: NumberEditType = %Viewbox/Rect/ViewboxEditX
-@onready var viewbox_edit_y: NumberEditType = %Viewbox/Rect/ViewboxEditY
-@onready var viewbox_edit_w: NumberEditType = %Viewbox/Rect/ViewboxEditW
-@onready var viewbox_edit_h: NumberEditType = %Viewbox/Rect/ViewboxEditH
+@onready var width_edit: NumberEdit = %Size/Width/WidthEdit
+@onready var height_edit: NumberEdit = %Size/Height/HeightEdit
+@onready var viewbox_edit_x: NumberEdit = %Viewbox/Rect/ViewboxEditX
+@onready var viewbox_edit_y: NumberEdit = %Viewbox/Rect/ViewboxEditY
+@onready var viewbox_edit_w: NumberEdit = %Viewbox/Rect/ViewboxEditW
+@onready var viewbox_edit_h: NumberEdit = %Viewbox/Rect/ViewboxEditH
 @onready var unknown_container: MarginContainer
 
 func _ready() -> void:
@@ -38,6 +30,13 @@ func _ready() -> void:
 	width_button.toggled.connect(_on_width_button_toggled)
 	height_button.toggled.connect(_on_height_button_toggled)
 	viewbox_button.toggled.connect(_on_viewbox_button_toggled)
+	
+	for control: Control in [width_edit, height_edit,
+	viewbox_edit_x, viewbox_edit_y, viewbox_edit_w, viewbox_edit_h]:
+		control.focus_entered.connect(State.clear_all_selections)
+	
+	for button: Button in [width_button, height_button, viewbox_button]:
+		button.pressed.connect(State.clear_all_selections)
 
 func _on_any_attribute_changed(xid: PackedInt32Array) -> void:
 	if xid.is_empty():
@@ -58,14 +57,17 @@ func update_attributes() -> void:
 				if is_instance_valid(unknown_container):
 					unknown_container.queue_free()
 				unknown_container = MarginContainer.new()
+				unknown_container.begin_bulk_theme_override()
 				unknown_container.add_theme_constant_override("margin_left", 4)
 				unknown_container.add_theme_constant_override("margin_right", 4)
+				unknown_container.end_bulk_theme_override()
 				var unknown_container_child := HFlowContainer.new()
 				unknown_container.add_child(unknown_container_child)
 				add_child(unknown_container)
 				move_child(unknown_container, 0)
 			
 			var input_field := AttributeFieldBuilder.create(attribute.name, State.root_element)
+			input_field.focus_entered.connect(State.clear_all_selections)
 			unknown_container.get_child(0).add_child(input_field)
 	if not has_unrecognized_attributes and is_instance_valid(unknown_container):
 		unknown_container.queue_free()

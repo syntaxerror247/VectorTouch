@@ -1,17 +1,18 @@
 extends PanelContainer
 
-const PaletteConfigWidget = preload("res://src/ui_widgets/palette_config.tscn")
-const ShortcutConfigWidget = preload("res://src/ui_widgets/setting_shortcut.tscn")
-#const ShortcutShowcaseWidget = preload("res://src/ui_widgets/presented_shortcut.tscn")
-const SettingFrame = preload("res://src/ui_widgets/setting_frame.tscn")
-const ProfileFrame = preload("res://src/ui_widgets/profile_frame.tscn")
+const PaletteConfigWidgetScene = preload("res://src/ui_widgets/palette_config.tscn")
+const ShortcutConfigWidgetScene = preload("res://src/ui_widgets/setting_shortcut.tscn")
+const ShortcutShowcaseWidgetScene = preload("res://src/ui_widgets/presented_shortcut.tscn")
+const SettingFrameScene = preload("res://src/ui_widgets/setting_frame.tscn")
+const ProfileFrameScene = preload("res://src/ui_widgets/profile_frame.tscn")
 
 const plus_icon = preload("res://assets/icons/Plus.svg")
 const import_icon = preload("res://assets/icons/Import.svg")
 const reset_icon = preload("res://assets/icons/Reload.svg")
 
 @onready var lang_button: Button = $VBoxContainer/Language
-@onready var content_container: ScrollContainer = %ContentContainer
+@onready var scroll_container: ScrollContainer = %ScrollContainer
+@onready var content_container: MarginContainer = %ScrollContainer/ContentContainer
 @onready var tabs: VBoxContainer = %Tabs
 @onready var close_button: Button = $VBoxContainer/CloseButton
 @onready var advice_panel: PanelContainer = $VBoxContainer/AdvicePanel
@@ -26,6 +27,10 @@ var advice: Dictionary[String, String] = {}
 func _ready() -> void:
 	close_button.pressed.connect(queue_free)
 	Configs.language_changed.connect(setup_everything)
+	
+	scroll_container.get_v_scroll_bar().visibility_changed.connect(adjust_right_margin)
+	adjust_right_margin()
+	
 	update_language_button()
 	update_close_button()
 	setup_tabs()
@@ -39,6 +44,11 @@ func setup_theming() -> void:
 	var stylebox := get_theme_stylebox("panel").duplicate()
 	stylebox.content_margin_top += 4.0
 	add_theme_stylebox_override("panel", stylebox)
+
+func adjust_right_margin() -> void:
+	var scrollbar := scroll_container.get_v_scroll_bar()
+	content_container.add_theme_constant_override("margin_right",
+			2 if scrollbar.visible else int(2 + scrollbar.size.x))
 
 func setup_tabs() -> void:
 	for tab in tabs.get_children():
@@ -80,7 +90,7 @@ func _on_tab_toggled(toggled_on: bool, tab_name: String) -> void:
 		setup_content()
 
 func setup_content() -> void:
-	content_container.scroll_vertical = 0
+	scroll_container.scroll_vertical = 0
 	for child in content_container.get_children():
 		child.queue_free()
 	
@@ -92,6 +102,7 @@ func setup_content() -> void:
 			vbox.add_theme_constant_override("separation", 6)
 			content_container.add_child(vbox)
 			var categories := HFlowContainer.new()
+			categories.alignment = FlowContainer.ALIGNMENT_CENTER
 			var button_group := ButtonGroup.new()
 			for tab_idx in formatter_tab_names:
 				var btn := Button.new()
@@ -195,11 +206,11 @@ func setup_content() -> void:
 			current_setup_setting = "invert_zoom"
 			add_checkbox(Translator.translate("Invert zoom direction"))
 			add_advice(Translator.translate(
-					"Swaps zoom in and zoom out with the mouse wheel."))
-			current_setup_setting = "wrap_mouse"
-			var wrap_mouse := add_checkbox(Translator.translate("Wrap mouse"))
+					"Swaps the scroll directions for zooming in and zooming out."))
+			current_setup_setting = "wraparound_panning"
+			var wraparound_panning := add_checkbox(Translator.translate("Wrap-around panning"))
 			add_advice(Translator.translate(
-					"Wraps the mouse cursor around when panning the viewport."))
+					"Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."))
 			current_setup_setting = "use_ctrl_for_zoom"
 			add_checkbox(Translator.translate("Use CTRL for zooming"))
 			add_advice(Translator.translate(
@@ -236,7 +247,7 @@ func setup_content() -> void:
 			
 			# Disable mouse wrap if not available.
 			if not DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP):
-				wrap_mouse.permanent_disable_checkbox(false)
+				wraparound_panning.permanent_disable_checkbox(false)
 			# Disable fallback file dialog on web, and native file dialog if not available.
 			if OS.has_feature("web"):
 				use_native_file_dialog.permanent_disable_checkbox(true)
@@ -248,6 +259,7 @@ func add_section(section_name: String) -> void:
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 0)
 	var label := Label.new()
+	label.add_theme_font_size_override("font_size", 15)
 	label.text = section_name
 	vbox.add_child(label)
 	var spacer := Control.new()
@@ -256,7 +268,7 @@ func add_section(section_name: String) -> void:
 	setting_container.add_child(vbox)
 
 func add_checkbox(text: String, dim_text := false) -> Control:
-	var frame := SettingFrame.instantiate()
+	var frame := SettingFrameScene.instantiate()
 	frame.dim_text = dim_text
 	frame.text = text
 	setup_frame(frame)
@@ -264,17 +276,19 @@ func add_checkbox(text: String, dim_text := false) -> Control:
 	add_frame(frame)
 	return frame
 
-func add_dropdown(text: String) -> Control:
-	var frame := SettingFrame.instantiate()
+# TODO Typed Dictionary wonkiness
+func add_dropdown(text: String, values: Array[Variant],
+value_text_map: Dictionary) -> Control:  # Dictionary[Variant, String]
+	var frame := SettingFrameScene.instantiate()
 	frame.text = text
 	setup_frame(frame)
-	frame.setup_dropdown(current_setup_resource.get_enum_texts(current_setup_setting))
+	frame.setup_dropdown(values, value_text_map)
 	add_frame(frame)
 	return frame
 
 func add_number_dropdown(text: String, values: Array[float], is_integer := false,
 restricted := true, min_value := -INF, max_value := INF, dim_text := false) -> Control:
-	var frame := SettingFrame.instantiate()
+	var frame := SettingFrameScene.instantiate()
 	frame.dim_text = dim_text
 	frame.text = text
 	setup_frame(frame)
@@ -283,7 +297,7 @@ restricted := true, min_value := -INF, max_value := INF, dim_text := false) -> C
 	return frame
 
 func add_color_edit(text: String, enable_alpha := true) -> Control:
-	var frame := SettingFrame.instantiate()
+	var frame := SettingFrameScene.instantiate()
 	frame.text = text
 	setup_frame(frame)
 	frame.setup_color(enable_alpha)
@@ -293,7 +307,7 @@ func add_color_edit(text: String, enable_alpha := true) -> Control:
 func setup_frame(frame: Control) -> void:
 	var bind := current_setup_setting
 	frame.getter = current_setup_resource.get.bind(bind)
-	frame.setter = func(p): current_setup_resource.set(bind, p)
+	frame.setter = func(p: Variant) -> void: current_setup_resource.set(bind, p)
 	frame.default = current_setup_resource.get_setting_default(current_setup_setting)
 	frame.mouse_entered.connect(show_advice.bind(current_setup_setting))
 	frame.mouse_exited.connect(hide_advice.bind(current_setup_setting))
@@ -308,6 +322,11 @@ func add_advice(text: String) -> void:
 func show_advice(setting: String) -> void:
 	if advice.has(setting):
 		advice_label.text = advice[setting]
+		advice_label.remove_theme_font_size_override("font_size")
+		var advice_font_size := get_theme_font_size("font_size", "Label")
+		while advice_label.get_line_count() > 2:
+			advice_font_size -= 1
+			advice_label.add_theme_font_size_override("font_size", advice_font_size)
 
 func hide_advice(setting: String) -> void:
 	if advice.has(setting) and advice_label.text == advice[setting]:
@@ -318,7 +337,9 @@ func _on_language_pressed() -> void:
 	var strings_count := TranslationServer.get_translation_object("en").get_message_count()
 	
 	var btn_arr: Array[Button] = []
-	for lang in TranslationServer.get_loaded_locales():
+	for locale in TranslationServer.get_loaded_locales():
+		var is_current_locale := (locale == TranslationServer.get_locale())
+		
 		# Translation percentages.
 		# TODO Godot drove me insane here. So Translation.get_translated_message() gets
 		# all the translations, even the fuzzied ones that aren't used... whuh?
@@ -326,20 +347,15 @@ func _on_language_pressed() -> void:
 		# for all the translations... except the fuzzied ones for some reason? WHAT?!
 		# We solve this by finding the number of fuzzied strings by subtracting the
 		# message count of English messages by the message count of the locale.
-		if lang != "en":
-			var translation_obj := TranslationServer.get_translation_object(lang)
-			var fuzzied_count := strings_count - translation_obj.get_message_count()
-			var translated_count := -fuzzied_count
-			for msg in translation_obj.get_message_list():
-				if not msg.is_empty():
-					translated_count += 1
+		if locale != "en":
+			var translation_obj := TranslationServer.get_translation_object(locale)
+			var translated_count := 2 * translation_obj.get_message_count() -\
+					strings_count - translation_obj.get_translated_message_list().count("")
 			var percentage :=\
 					Utils.num_simple(translated_count * 100.0 / strings_count, 1) + "%"
 			
-			var is_current_locale := (lang == TranslationServer.get_locale())
 			var new_btn := ContextPopup.create_button(
-					TranslationServer.get_locale_name(lang) + " (" + lang.to_upper() + ")",
-					Callable(), is_current_locale)
+					TranslationUtils.get_locale_display(locale), Callable(), is_current_locale)
 			
 			var ret_button := Button.new()
 			ret_button.theme_type_variation = "ContextButton"
@@ -349,12 +365,18 @@ func _on_language_pressed() -> void:
 				ret_button.disabled = true
 			else:
 				ret_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-			for theme_item in ["normal", "hover", "pressed", "disabled"]:
-				new_btn.add_theme_stylebox_override(theme_item,
+			
+			new_btn.begin_bulk_theme_override()
+			
+			const CONST_ARR: PackedStringArray = ["normal", "hover", "pressed", "disabled"]
+			for theme_type in CONST_ARR:
+				new_btn.add_theme_stylebox_override(theme_type,
 						new_btn.get_theme_stylebox("normal", "ContextButton"))
+			new_btn.end_bulk_theme_override()
+			
 			var internal_hbox := HBoxContainer.new()
 			new_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Unpressable.
-			internal_hbox.add_theme_constant_override("separation", 6)
+			internal_hbox.add_theme_constant_override("separation", 12)
 			new_btn.add_theme_color_override("icon_normal_color",
 					ret_button.get_theme_color("icon_normal_color", "ContextButton"))
 			var label_margin := MarginContainer.new()
@@ -378,26 +400,27 @@ func _on_language_pressed() -> void:
 			label_margin.add_child(label)
 			internal_hbox.add_child(label_margin)
 			ret_button.add_child(internal_hbox)
-			ret_button.pressed.connect(_on_language_chosen.bind(lang))
+			ret_button.pressed.connect(_on_language_chosen.bind(locale))
 			ret_button.pressed.connect(HandlerGUI.remove_popup)
 			
 			btn_arr.append(ret_button)
 		else:
 			var new_btn := ContextPopup.create_button(
-					TranslationServer.get_locale_name(lang) + " (" + lang.to_upper() + ")",
-					_on_language_chosen.bind(lang), lang == TranslationServer.get_locale())
+					TranslationUtils.get_locale_display(locale),
+					_on_language_chosen.bind(locale), is_current_locale)
 			btn_arr.append(new_btn)
 	
 	var lang_popup := ContextPopup.new()
 	lang_popup.setup(btn_arr, true)
-	HandlerGUI.popup_under_rect_center(lang_popup, lang_button.get_global_rect(), get_viewport())
+	HandlerGUI.popup_under_rect_center(lang_popup, lang_button.get_global_rect(),
+			get_viewport())
 
 func _on_language_chosen(locale: String) -> void:
 	Configs.savedata.language = locale
 
 func update_language_button() -> void:
 	lang_button.text = Translator.translate("Language") + ": " +\
-			TranslationServer.get_locale().to_upper()
+			TranslationUtils.get_locale_string(TranslationServer.get_locale())
 
 
 # Palette tab helpers.
@@ -442,7 +465,7 @@ func rebuild_palettes() -> void:
 	for palette_config in palette_container.get_children():
 		palette_config.queue_free()
 	for palette in Configs.savedata.get_palettes():
-		var palette_config := PaletteConfigWidget.instantiate()
+		var palette_config := PaletteConfigWidgetScene.instantiate()
 		palette_container.add_child(palette_config)
 		palette_config.assign_palette(palette)
 		palette_config.layout_changed.connect(rebuild_palettes)
@@ -512,12 +535,12 @@ func show_formatter(category: String) -> void:
 	button.pressed.connect(current_setup_resource.reset_to_default)
 	
 	# The preset field shouldn't have a reset button or a section, so set it up manually.
-	var frame := ProfileFrame.instantiate()
-	frame.setup_dropdown(true)
+	var frame := ProfileFrameScene.instantiate()
+	frame.setup_dropdown(range(Formatter.Preset.size()),
+			Formatter.get_preset_value_text_map())
 	frame.getter = current_setup_resource.get.bind("preset")
-	frame.setter = func(p): current_setup_resource.set("preset", p)
+	frame.setter = func(p: Variant) -> void: current_setup_resource.set("preset", p)
 	frame.text = Translator.translate("Preset")
-	frame.dropdown.values = Formatter.get_enum_texts("preset")
 	setting_container.add_child(frame)
 	
 	add_section("XML")
@@ -528,7 +551,9 @@ func show_formatter(category: String) -> void:
 	current_setup_setting = "xml_add_trailing_newline"
 	add_checkbox(Translator.translate("Add trailing newline"))
 	current_setup_setting = "xml_shorthand_tags"
-	add_dropdown(Translator.translate("Use shorthand tag syntax"))
+	add_dropdown(Translator.translate("Use shorthand tag syntax"),
+			range(Formatter.ShorthandTags.size()),
+			Formatter.get_shorthand_tags_value_text_map())
 	current_setup_setting = "xml_shorthand_tags_space_out_slash"
 	add_checkbox(Translator.translate("Space out the slash of shorthand tags"))
 	current_setup_setting = "xml_pretty_formatting"
@@ -550,9 +575,13 @@ func show_formatter(category: String) -> void:
 	
 	add_section(Translator.translate("Colors"))
 	current_setup_setting = "color_use_named_colors"
-	add_dropdown(Translator.translate("Use named colors"))
+	add_dropdown(Translator.translate("Use named colors"),
+			range(Formatter.NamedColorUse.size()),
+			Formatter.get_named_color_use_value_text_map())
 	current_setup_setting = "color_primary_syntax"
-	add_dropdown(Translator.translate("Primary syntax"))
+	add_dropdown(Translator.translate("Primary syntax"),
+			range(Formatter.PrimaryColorSyntax.size()),
+			Formatter.get_primary_color_syntax_value_text_map())
 	current_setup_setting = "color_capital_hex"
 	add_checkbox(Translator.translate("Capitalize hexadecimal letters"),
 			current_setup_resource.color_primary_syntax == Formatter.PrimaryColorSyntax.RGB)
@@ -576,19 +605,19 @@ func show_formatter(category: String) -> void:
 	add_checkbox(Translator.translate("Remove unnecessary parameters"))
 
 
-#func show_shortcuts(category: String) -> void:
-	#var shortcuts_container := content_container.get_child(-1).get_child(-1)
-	#for child in shortcuts_container.get_children():
-		#child.queue_free()
-	#
-	#for action in ShortcutUtils.get_shortcuts(category):
-		#var shortcut_config := ShortcutConfigWidget.instantiate() if\
-				#ShortcutUtils.is_shortcut_modifiable(action) else\
-				#ShortcutShowcaseWidget.instantiate()
-		#
-		#shortcuts_container.add_child(shortcut_config)
-		#shortcut_config.label.text = TranslationUtils.get_shortcut_description(action)
-		#shortcut_config.setup(action)
+func show_shortcuts(category: String) -> void:
+	var shortcuts_container := content_container.get_child(-1).get_child(-1)
+	for child in shortcuts_container.get_children():
+		child.queue_free()
+	
+	for action in ShortcutUtils.get_shortcuts(category):
+		var shortcut_config := ShortcutConfigWidgetScene.instantiate() if\
+				ShortcutUtils.is_shortcut_modifiable(action) else\
+				ShortcutShowcaseWidgetScene.instantiate()
+		
+		shortcuts_container.add_child(shortcut_config)
+		shortcut_config.label.text = TranslationUtils.get_shortcut_description(action)
+		shortcut_config.setup(action)
 
 func create_setting_container() -> void:
 	setting_container = VBoxContainer.new()

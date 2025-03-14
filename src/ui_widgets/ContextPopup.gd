@@ -1,6 +1,8 @@
 class_name ContextPopup extends PanelContainer
 ## Standard popup for actions with methods for easy setup.
 
+const arrow = preload("res://assets/icons/PopupArrow.svg")
+
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 
@@ -16,9 +18,14 @@ icon: Texture2D = null, shortcut := "") -> Button:
 	if not shortcut.is_empty():
 		if not InputMap.has_action(shortcut):
 			push_error("Non-existent shortcut was passed to ContextPopup.create_button().")
-		elif InputMap.has_action(shortcut):
+		else:
 			var events := InputMap.action_get_events(shortcut)
-			if not events.is_empty():
+			var showcased_event: InputEventKey
+			for event in events:
+				if Configs.savedata.is_shortcut_valid(event):
+					showcased_event = event
+			
+			if is_instance_valid(showcased_event):
 				# Add button with a shortcut.
 				var ret_button := Button.new()
 				ret_button.theme_type_variation = "ContextButton"
@@ -29,19 +36,24 @@ icon: Texture2D = null, shortcut := "") -> Button:
 					ret_button.disabled = true
 				else:
 					ret_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-				for theme_item in ["normal", "hover", "pressed", "disabled"]:
-					main_button.add_theme_stylebox_override(theme_item,
+				
+				const CONST_ARR: PackedStringArray = ["normal", "hover", "pressed", "disabled"]
+				main_button.begin_bulk_theme_override()
+				for theme_type in CONST_ARR:
+					main_button.add_theme_stylebox_override(theme_type,
 							main_button.get_theme_stylebox("normal", "ContextButton"))
+				main_button.end_bulk_theme_override()
+				
 				var internal_hbox := HBoxContainer.new()
 				main_button.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Unpressable.
-				internal_hbox.add_theme_constant_override("separation", 6)
+				internal_hbox.add_theme_constant_override("separation", 12)
 				main_button.add_theme_color_override("icon_normal_color",
 						ret_button.get_theme_color("icon_normal_color", "ContextButton"))
 				var label_margin := MarginContainer.new()
 				label_margin.add_theme_constant_override("margin_right",
 						int(ret_button.get_theme_stylebox("normal").content_margin_right))
 				var label := Label.new()
-				label.text = events[0].as_text_keycode()
+				label.text = showcased_event.as_text_keycode()
 				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 				var shortcut_text_color := ThemeUtils.common_subtle_text_color
 				if disabled:
@@ -91,28 +103,38 @@ start_pressed: bool, shortcut := "") -> CheckBox:
 	if not shortcut.is_empty():
 		if not InputMap.has_action(shortcut):
 			push_error("Non-existent shortcut was passed to ContextPopup.create_checkbox().")
-		elif InputMap.has_action(shortcut):
+		else:
 			var events := InputMap.action_get_events(shortcut)
-			if not events.is_empty():
+			var showcased_event: InputEventKey
+			for event in events:
+				if Configs.savedata.is_shortcut_valid(event):
+					showcased_event = event
+			
+			if is_instance_valid(showcased_event):
 				# Add button with a shortcut.
 				var ret_button := Button.new()
 				ret_button.theme_type_variation = "ContextButton"
 				ret_button.focus_mode = Control.FOCUS_NONE
 				ret_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 				ret_button.shortcut_in_tooltip = false
-				for theme_stylebox in ["normal", "pressed"]:
-					checkbox.add_theme_stylebox_override(theme_stylebox,
+				
+				checkbox.begin_bulk_theme_override()
+				const CONST_ARR: PackedStringArray = ["normal", "pressed"]
+				for theme_type in CONST_ARR:
+					checkbox.add_theme_stylebox_override(theme_type,
 							checkbox.get_theme_stylebox("normal", "ContextButton"))
+				checkbox.end_bulk_theme_override()
+				
 				var internal_hbox := HBoxContainer.new()
 				checkbox.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Unpressable.
-				internal_hbox.add_theme_constant_override("separation", 6)
+				internal_hbox.add_theme_constant_override("separation", 12)
 				checkbox.add_theme_color_override("icon_normal_color",
 						ret_button.get_theme_color("icon_normal_color", "ContextButton"))
 				var label_margin := MarginContainer.new()
 				label_margin.add_theme_constant_override("margin_right",
 						int(ret_button.get_theme_stylebox("normal").content_margin_right))
 				var label := Label.new()
-				label.text = events[0].as_text_keycode()
+				label.text = showcased_event.as_text_keycode()
 				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 				var shortcut_text_color := ThemeUtils.common_subtle_text_color
 				#if disabled:
@@ -130,7 +152,7 @@ start_pressed: bool, shortcut := "") -> CheckBox:
 				internal_hbox.add_child(label_margin)
 				ret_button.add_child(internal_hbox)
 				ret_button.pressed.connect(
-						func(): checkbox.button_pressed = not checkbox.button_pressed)
+						func() -> void: checkbox.button_pressed = not checkbox.button_pressed)
 				
 				var shortcut_obj := Shortcut.new()
 				var action_obj := InputEventAction.new()
@@ -234,14 +256,6 @@ func _common_initial_setup() -> VBoxContainer:
 	var scroll_container := ScrollContainer.new()
 	scroll_container.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll_container.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	
-	# Increase the scrollbar area on Android.
-	if OS.get_name() == "Android":
-		var scrollbar := scroll_container.get_v_scroll_bar()
-		var stylebox := scrollbar.get_theme_stylebox("scroll").duplicate()
-		stylebox.content_margin_left = 10
-		stylebox.content_margin_right = 10
-		scrollbar.add_theme_stylebox_override("scroll", stylebox)
 	
 	var main_container := VBoxContainer.new()
 	main_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL

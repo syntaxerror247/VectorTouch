@@ -1,22 +1,25 @@
 # This is similar to SettingFrame, but specifically for dropdowns without a default value.
 extends Control
 
+const Dropdown = preload("res://src/ui_widgets/dropdown.gd")
+
 signal value_changed
 
-const Dropdown = preload("res://src/ui_widgets/dropdown.tscn")
-const EnumDropdown = preload("res://src/ui_widgets/enum_dropdown.tscn")
+const DropdownScene = preload("res://src/ui_widgets/dropdown.tscn")
 
 var getter: Callable
 var setter: Callable
 var text: String
 
 var ci := get_canvas_item()
-var dropdown: Control
+var dropdown: Dropdown
 
 var is_hovered := false
 
-func setup_dropdown(enum_mode := false) -> void:
-	dropdown = EnumDropdown.instantiate() if enum_mode else Dropdown.instantiate()
+func setup_dropdown(values: Array, value_text_map: Dictionary) -> void:
+	dropdown = DropdownScene.instantiate()
+	dropdown.values = values
+	dropdown.value_text_map = value_text_map
 
 func _ready() -> void:
 	add_child(dropdown)

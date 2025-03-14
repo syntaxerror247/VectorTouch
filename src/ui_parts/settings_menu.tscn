@@ -45,11 +45,19 @@ size_flags_vertical = 3
 mouse_filter = 1
 theme_type_variation = &"SideBarContent"
 
-[node name="ContentContainer" type="ScrollContainer" parent="VBoxContainer/VBoxContainer/PanelContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="VBoxContainer/VBoxContainer/PanelContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 horizontal_scroll_mode = 0
+
+[node name="ContentContainer" type="MarginContainer" parent="VBoxContainer/VBoxContainer/PanelContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 4
 
 [node name="AdvicePanel" type="PanelContainer" parent="VBoxContainer"]
 custom_minimum_size = Vector2(0, 45)
@@ -60,7 +68,7 @@ theme_type_variation = &"TextBox"
 layout_mode = 2
 size_flags_vertical = 1
 theme_override_colors/font_color = Color(0.878431, 0.878431, 0.878431, 1)
-theme_override_font_sizes/font_size = 13
+theme_override_constants/line_spacing = 2
 autowrap_mode = 3
 
 [node name="CloseButton" type="Button" parent="VBoxContainer"]
