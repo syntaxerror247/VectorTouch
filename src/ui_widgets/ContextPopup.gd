@@ -257,14 +257,6 @@ func _common_initial_setup() -> VBoxContainer:
 	scroll_container.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	scroll_container.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	
-	# Increase the scrollbar area on Android.
-	if OS.get_name() == "Android":
-		var scrollbar := scroll_container.get_v_scroll_bar()
-		var stylebox := scrollbar.get_theme_stylebox("scroll").duplicate()
-		stylebox.content_margin_left = 10
-		stylebox.content_margin_right = 10
-		scrollbar.add_theme_stylebox_override("scroll", stylebox)
-	
 	var main_container := VBoxContainer.new()
 	main_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	main_container.add_theme_constant_override("separation", 0)
