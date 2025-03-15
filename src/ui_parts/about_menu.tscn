@@ -68,9 +68,11 @@ theme_override_constants/separation = 8
 
 [node name="ProjectFounderLabel" type="Label" parent="VBoxContainer/TabContainer/Authors/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="DevelopersLabel" type="Label" parent="VBoxContainer/TabContainer/Authors/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true

@@ -19,7 +19,7 @@ func _ready() -> void:
 	stylebox.content_margin_top += 2.0
 	add_theme_stylebox_override("panel", stylebox)
 	
-	%VersionLabel.text = "GodSVG v" + ProjectSettings.get_setting("application/config/version")
+	%VersionLabel.text = "GodSVG Mobile v" + ProjectSettings.get_setting("application/config/version")
 	
 	close_button.pressed.connect(queue_free)
 	close_button.text = Translator.translate("Close")
@@ -110,7 +110,7 @@ func _on_tab_changed(idx: int) -> void:
 			# This part doesn't need to be translated.
 			var licenses_dict := Engine.get_license_info()
 			
-			%LicenseLabel.text = "MIT License\n\nCopyright (c) 2023 MewPurPur\n" +\
+			%LicenseLabel.text = "MIT License\n\nCopyright (c) 2025 Anish Mishra\n" +\
 			"Copyright (c) 2023-present GodSVG contributors\n\n" + licenses_dict["Expat"]
 		3:
 			for child in %GodSVGParts.get_children():
