@@ -51,7 +51,6 @@ static func save_svg_as() -> void:
 	_save_svg_as_with_custom_final_callback(Callable())
 
 static func open_export_dialog(export_data: ImageExportData, final_callback := Callable()) -> void:
-	OS.request_permissions()
 	if OS.has_feature("web"):
 		var web_format_name := ImageExportData.web_formats[export_data.format]
 		if export_data.format == "svg":
@@ -88,7 +87,8 @@ static func open_export_dialog(export_data: ImageExportData, final_callback := C
 			export_dialog.file_selected.connect(non_native_callback)
 
 static func open_xml_export_dialog(xml: String, file_name: String) -> void:
-	OS.request_permissions()
+	if not OS.request_permissions():
+		return
 	if OS.has_feature("web"):
 		_web_save(xml.to_utf8_buffer(), "application/xml")
 	else:
@@ -158,11 +158,11 @@ static func open_image_import_dialog(completion_callback: Callable) -> void:
 static func open_xml_import_dialog(completion_callback: Callable) -> void:
 	_open_import_dialog(PackedStringArray(["xml"]), completion_callback)
 
-
 # On web, the completion callback can't use the full file path,
 static func _open_import_dialog(extensions: PackedStringArray,
 completion_callback: Callable, native_dialog_title := "") -> void:
-	OS.request_permissions()
+	if not OS.request_permissions():
+		return
 	var extensions_with_dots := PackedStringArray()
 	for extension in extensions:
 		extensions_with_dots.append("." + extension)
