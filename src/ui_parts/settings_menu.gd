@@ -190,6 +190,8 @@ func setup_content() -> void:
 			add_section(Translator.translate("Basic colors"))
 			current_setup_setting = "background_color"
 			add_color_edit(Translator.translate("Background color"), false)
+			current_setup_setting = "grid_color"
+			add_color_edit(Translator.translate("Grid color"), false)
 			current_setup_setting = "basic_color_valid"
 			add_color_edit(Translator.translate("Valid color"))
 			current_setup_setting = "basic_color_error"
@@ -232,18 +234,6 @@ func setup_content() -> void:
 					SaveData.HANDLE_SIZE_MIN, SaveData.HANDLE_SIZE_MAX)
 			add_advice(Translator.translate(
 					"Changes the visual size and grabbing area of handles."))
-			
-			# Temporarily hiding settings to change scale.
-			#current_setup_setting = "ui_scale"
-			#add_number_dropdown(Translator.translate("UI scale"),
-					#[0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0, 4.0], false, false,
-					#SaveData.UI_SCALE_MIN, SaveData.UI_SCALE_MAX)
-			#add_advice(Translator.translate(
-					#"Changes the scale of the visual user interface."))
-			#current_setup_setting = "auto_ui_scale"
-			#add_checkbox(Translator.translate("Auto UI scale"))
-			#add_advice(Translator.translate(
-					#"Scales the user interface based on the screen size."))
 			
 			# Disable mouse wrap if not available.
 			if not DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP):
@@ -351,64 +341,15 @@ func _on_language_pressed() -> void:
 			var translation_obj := TranslationServer.get_translation_object(locale)
 			var translated_count := 2 * translation_obj.get_message_count() -\
 					strings_count - translation_obj.get_translated_message_list().count("")
-			var percentage :=\
-					Utils.num_simple(translated_count * 100.0 / strings_count, 1) + "%"
 			
-			var new_btn := ContextPopup.create_button(
-					TranslationUtils.get_locale_display(locale), Callable(), is_current_locale)
-			
-			var ret_button := Button.new()
-			ret_button.theme_type_variation = "ContextButton"
-			ret_button.focus_mode = Control.FOCUS_NONE
-			if is_current_locale:
-				new_btn.disabled = true
-				ret_button.disabled = true
-			else:
-				ret_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-			
-			new_btn.begin_bulk_theme_override()
-			
-			const CONST_ARR: PackedStringArray = ["normal", "hover", "pressed", "disabled"]
-			for theme_type in CONST_ARR:
-				new_btn.add_theme_stylebox_override(theme_type,
-						new_btn.get_theme_stylebox("normal", "ContextButton"))
-			new_btn.end_bulk_theme_override()
-			
-			var internal_hbox := HBoxContainer.new()
-			new_btn.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Unpressable.
-			internal_hbox.add_theme_constant_override("separation", 12)
-			new_btn.add_theme_color_override("icon_normal_color",
-					ret_button.get_theme_color("icon_normal_color", "ContextButton"))
-			var label_margin := MarginContainer.new()
-			label_margin.add_theme_constant_override("margin_right",
-					int(ret_button.get_theme_stylebox("normal").content_margin_right))
-			var label := Label.new()
-			label.text = percentage
-			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-			var shortcut_text_color := ThemeUtils.common_subtle_text_color
-			if is_current_locale:
-				shortcut_text_color.a *= 0.75
-			label.add_theme_color_override("font_color", shortcut_text_color)
-			label.add_theme_font_size_override("font_size",
-					new_btn.get_theme_font_size("font_size"))
-			
-			ret_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			internal_hbox.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-			label_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			label.size_flags_horizontal = Control.SIZE_FILL
-			internal_hbox.add_child(new_btn)
-			label_margin.add_child(label)
-			internal_hbox.add_child(label_margin)
-			ret_button.add_child(internal_hbox)
-			ret_button.pressed.connect(_on_language_chosen.bind(locale))
-			ret_button.pressed.connect(HandlerGUI.remove_popup)
-			
-			btn_arr.append(ret_button)
-		else:
-			var new_btn := ContextPopup.create_button(
+			btn_arr.append(ContextPopup.create_button(
 					TranslationUtils.get_locale_display(locale),
-					_on_language_chosen.bind(locale), is_current_locale)
-			btn_arr.append(new_btn)
+					_on_language_chosen.bind(locale), is_current_locale,
+					null, Utils.num_simple(translated_count * 100.0 / strings_count, 1) + "%"))
+		else:
+			btn_arr.append(ContextPopup.create_button(
+					TranslationUtils.get_locale_display(locale),
+					_on_language_chosen.bind(locale), is_current_locale))
 	
 	var lang_popup := ContextPopup.new()
 	lang_popup.setup(btn_arr, true)
@@ -610,13 +551,13 @@ func show_shortcuts(category: String) -> void:
 	for child in shortcuts_container.get_children():
 		child.queue_free()
 	
-	for action in ShortcutUtils.get_shortcuts(category):
+	for action in ShortcutUtils.get_actions(category):
 		var shortcut_config := ShortcutConfigWidgetScene.instantiate() if\
-				ShortcutUtils.is_shortcut_modifiable(action) else\
+				ShortcutUtils.is_action_modifiable(action) else\
 				ShortcutShowcaseWidgetScene.instantiate()
 		
 		shortcuts_container.add_child(shortcut_config)
-		shortcut_config.label.text = TranslationUtils.get_shortcut_description(action)
+		shortcut_config.label.text = TranslationUtils.get_action_description(action)
 		shortcut_config.setup(action)
 
 func create_setting_container() -> void:

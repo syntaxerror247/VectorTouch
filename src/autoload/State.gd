@@ -4,19 +4,6 @@ extends Node
 const OptionsDialogScene = preload("res://src/ui_widgets/options_dialog.tscn")
 const PathCommandPopupScene = preload("res://src/ui_widgets/path_popup.tscn")
 
-const path_actions_dict: Dictionary[String, String] = {
-	"move_absolute": "M", "move_relative": "m",
-	"line_absolute": "L", "line_relative": "l",
-	"horizontal_line_absolute": "H", "horizontal_line_relative": "h",
-	"vertical_line_absolute": "V", "vertical_line_relative": "v",
-	"close_path_absolute": "Z", "close_path_relative": "z",
-	"elliptical_arc_absolute": "A", "elliptical_arc_relative": "a",
-	"cubic_bezier_absolute": "C", "cubic_bezier_relative": "c",
-	"shorthand_cubic_bezier_absolute": "S", "shorthand_cubic_bezier_relative": "s",
-	"quadratic_bezier_absolute": "Q", "quadratic_bezier_relative": "q",
-	"shorthand_quadratic_bezier_absolute": "T", "shorthand_quadratic_bezier_relative": "t"
-}
-
 
 signal svg_unknown_change
 signal svg_resized
@@ -78,11 +65,22 @@ func _enter_tree() -> void:
 	setup_from_tab.call_deferred()  # Let everything load before emitting signals.
 	
 	var cmdline_args := OS.get_cmdline_args()
-	if not (OS.is_debug_build() and not OS.has_feature("template")) and\
-	cmdline_args.size() >= 1:
-		await get_tree().ready  # Ensures we can add warning panels.
-		FileUtils.apply_svg_from_path(cmdline_args[0])
-
+	
+	# The first argument passed is always a path to the scene file when in-editor.
+	if (OS.is_debug_build() and not OS.has_feature("template")) and cmdline_args.size() >= 1:
+		cmdline_args.remove_at(0)
+	
+	if cmdline_args.size() >= 1:
+		# Need to wait a frame so the import warnings panel can be added.
+		await get_tree().process_frame
+		
+		var used_tab_paths := PackedStringArray()
+		for tab in Configs.savedata.get_tabs():
+			used_tab_paths.append(tab.svg_file_path)
+		
+		for path in cmdline_args:
+			if path.get_extension() == "svg" and not path in used_tab_paths:
+				FileUtils.apply_svg_from_path(path)
 
 func setup_from_tab() -> void:
 	var active_tab := Configs.savedata.get_active_tab()
@@ -265,25 +263,40 @@ func set_viewport_size(new_value: Vector2i) -> void:
 var view_rasterized := false
 var show_grid := true
 var show_handles := true
+var show_reference := false
+var overlay_reference := false
+var show_debug := false
 
 signal view_rasterized_changed
 signal show_grid_changed
 signal show_handles_changed
+signal show_reference_changed
+signal overlay_reference_changed
+signal show_debug_changed
 
-func set_view_rasterized(new_value: bool) -> void:
-	if view_rasterized != new_value:
-		view_rasterized = new_value
-		view_rasterized_changed.emit()
+func toggle_view_rasterized() -> void:
+	view_rasterized = not view_rasterized
+	view_rasterized_changed.emit()
 
-func set_show_grid(new_value: bool) -> void:
-	if show_grid != new_value:
-		show_grid = new_value
-		show_grid_changed.emit()
+func toggle_show_grid() -> void:
+	show_grid = not show_grid
+	show_grid_changed.emit()
 
-func set_show_handles(new_value: bool) -> void:
-	if show_handles != new_value:
-		show_handles = new_value
-		show_handles_changed.emit()
+func toggle_show_handles() -> void:
+	show_handles = not show_handles
+	show_handles_changed.emit()
+
+func toggle_show_reference() -> void:
+	show_reference = not show_reference
+	show_reference_changed.emit()
+
+func toggle_overlay_reference() -> void:
+	overlay_reference = not overlay_reference
+	overlay_reference_changed.emit()
+
+func toggle_show_debug() -> void:
+	show_debug = not show_debug
+	show_debug_changed.emit()
 
 
 # Override the selected elements with a single new selected element.
@@ -514,13 +527,13 @@ func is_hovered(xid: PackedInt32Array, inner_idx := -1, propagate := false) -> b
 		if inner_idx == -1:
 			return XIDUtils.is_parent_or_self(hovered_xid, xid)
 		else:
-			return XIDUtils.is_parent_or_self(hovered_xid, xid) or\
-					(semi_hovered_xid == xid and inner_hovered == inner_idx)
+			return (inner_hovered == inner_idx and semi_hovered_xid == xid) or\
+					XIDUtils.is_parent_or_self(hovered_xid, xid)
 	else:
 		if inner_idx == -1:
 			return hovered_xid == xid
 		else:
-			return semi_hovered_xid == xid and inner_hovered == inner_idx
+			return inner_hovered == inner_idx and semi_hovered_xid == xid
 
 # Returns whether the given element or inner editor is selected.
 func is_selected(xid: PackedInt32Array, inner_idx := -1, propagate := false) -> bool:
@@ -619,47 +632,38 @@ func _on_xnodes_moved_to(xids: Array[PackedInt32Array], location: PackedInt32Arr
 		selection_changed.emit()
 
 
-func respond_to_key_input(event: InputEventKey) -> void:
-	# Path commands using keys.
-	if inner_selections.is_empty() or event.is_command_or_control_pressed():
+# Path commands using keys.
+func respond_to_key_input(path_cmd_char: String) -> void:
+	if inner_selections.is_empty():
 		# If a single path element is selected, add the new command at the end.
 		if selected_xids.size() == 1:
 			var xnode_ref := root_element.get_xnode(selected_xids[0])
 			if xnode_ref is ElementPath:
 				var path_attrib: AttributePathdata = xnode_ref.get_attribute("d")
-				for action_name in path_actions_dict.keys():
-					if ShortcutUtils.is_action_pressed(event, action_name):
-						var path_cmd_count := path_attrib.get_command_count()
-						var path_cmd_char := path_actions_dict[action_name]
-						# Z after a Z is syntactically invalid.
-						if (path_cmd_count == 0 and not path_cmd_char in "Mm") or\
-						(path_cmd_char in "Zz" and path_cmd_count > 0 and\
-						path_attrib.get_command(path_cmd_count - 1) is\
-						PathCommand.CloseCommand):
-							return
-						path_attrib.insert_command(path_cmd_count, path_cmd_char, Vector2.ZERO)
-						normal_select(selected_xids[0], path_cmd_count)
-						handle_added.emit()
-						break
-		return
-	# If path commands are selected, insert after the last one.
-	for action_name in path_actions_dict.keys():
-		var element_ref := root_element.get_xnode(semi_selected_xid)
-		if element_ref.name == "path":
-			if ShortcutUtils.is_action_pressed(event, action_name):
-				var path_attrib: AttributePathdata = element_ref.get_attribute("d")
-				var path_cmd_char := path_actions_dict[action_name]
-				var last_selection: int = inner_selections.max()
+				var path_cmd_count := path_attrib.get_command_count()
 				# Z after a Z is syntactically invalid.
-				if path_cmd_char in "Zz" and (path_attrib.get_command(last_selection) is\
-				PathCommand.CloseCommand or (path_attrib.get_command_count() >\
-				last_selection + 1 and path_attrib.get_command(last_selection + 1) is\
-				PathCommand.CloseCommand)):
+				if (path_cmd_count == 0 and not path_cmd_char in "Mm") or\
+				(path_cmd_char in "Zz" and path_cmd_count > 0 and\
+				path_attrib.get_command(path_cmd_count - 1) is PathCommand.CloseCommand):
 					return
-				path_attrib.insert_command(last_selection + 1, path_cmd_char, Vector2.ZERO)
-				normal_select(semi_selected_xid, last_selection + 1)
+				path_attrib.insert_command(path_cmd_count, path_cmd_char, Vector2.ZERO)
+				normal_select(selected_xids[0], path_cmd_count)
 				handle_added.emit()
-				break
+	else:
+		# If path commands are selected, insert after the last one.
+		var xnode_ref := root_element.get_xnode(semi_selected_xid)
+		if xnode_ref is ElementPath:
+			var path_attrib: AttributePathdata = xnode_ref.get_attribute("d")
+			var last_selection: int = inner_selections.max()
+			# Z after a Z is syntactically invalid.
+			if path_cmd_char in "Zz" and (path_attrib.get_command(last_selection) is\
+			PathCommand.CloseCommand or (path_attrib.get_command_count() >\
+			last_selection + 1 and path_attrib.get_command(last_selection + 1) is\
+			PathCommand.CloseCommand)):
+				return
+			path_attrib.insert_command(last_selection + 1, path_cmd_char, Vector2.ZERO)
+			normal_select(semi_selected_xid, last_selection + 1)
+			handle_added.emit()
 
 
 # Operations on selected elements.
@@ -761,10 +765,8 @@ func get_selection_context(popup_method: Callable, context: Context) -> ContextP
 			btn_arr.append(ContextPopup.create_button(Translator.translate("View in List"),
 					view_in_list.bind(selected_xids[0]), false,
 					load("res://assets/icons/ViewInList.svg")))
-
-		btn_arr.append(ContextPopup.create_button(Translator.translate("Duplicate"),
-				duplicate_selected, false, load("res://assets/icons/Duplicate.svg"),
-				"duplicate"))
+		
+		btn_arr.append(ContextPopup.create_shortcut_button("duplicate"))
 		
 		var xnode := root_element.get_xnode(selected_xids[0])
 		if selected_xids.size() == 1 and ((not xnode.is_element() and\
@@ -776,18 +778,11 @@ func get_selection_context(popup_method: Callable, context: Context) -> ContextP
 					load("res://assets/icons/Reload.svg")))
 		
 		if can_move_up:
-			btn_arr.append(ContextPopup.create_button(
-					Translator.translate("Move Up"),
-					move_up_selected, false,
-					load("res://assets/icons/MoveUp.svg"), "move_up"))
+			btn_arr.append(ContextPopup.create_shortcut_button("move_up"))
 		if can_move_down:
-			btn_arr.append(ContextPopup.create_button(
-					Translator.translate("Move Down"),
-					move_down_selected, false,
-					load("res://assets/icons/MoveDown.svg"), "move_down"))
+			btn_arr.append(ContextPopup.create_shortcut_button("move_down"))
 		
-		btn_arr.append(ContextPopup.create_button(Translator.translate("Delete"),
-				delete_selected, false, load("res://assets/icons/Delete.svg"), "delete"))
+		btn_arr.append(ContextPopup.create_shortcut_button("delete"))
 	
 	elif not inner_selections.is_empty() and not semi_selected_xid.is_empty():
 		var element_ref := root_element.get_xnode(semi_selected_xid)
@@ -818,24 +813,18 @@ func get_selection_context(popup_method: Callable, context: Context) -> ContextP
 					var can_move_up := false
 					var can_move_down := false
 					if can_move_up:
-						btn_arr.append(ContextPopup.create_button(
-								Translator.translate("Move Up"), # Change to "Move Subpath Up"
-								move_up_selected, false,
-								load("res://visual/icons/MoveUp.svg"), "move_up"))
+						btn_arr.append(ContextPopup.create_shortcut_button("move_up"))
+						# , "Move Subpath Up"
 					if can_move_down:
-						btn_arr.append(ContextPopup.create_button(
-								Translator.translate("Move Down"), # Change to "Move Subpath Down"
-								move_down_selected, false,
-								load("res://visual/icons/MoveDown.svg"), "move_down"))
+						btn_arr.append(ContextPopup.create_shortcut_button("move_down"))
+						# , "Move Subpath Down"
 			"polygon", "polyline":
 				if inner_selections.size() == 1:
 					btn_arr.append(ContextPopup.create_button(
-							Translator.translate("Insert After"),
-							insert_point_after_selection, false,
-							load("res://assets/icons/Plus.svg")))
+							Translator.translate("Insert After"), insert_point_after_selection,
+							false, load("res://assets/icons/Plus.svg")))
 		
-		btn_arr.append(ContextPopup.create_button(Translator.translate("Delete"),
-				delete_selected, false, load("res://assets/icons/Delete.svg"), "delete"))
+		btn_arr.append(ContextPopup.create_shortcut_button("delete"))
 	
 	var element_context := ContextPopup.new()
 	element_context.setup(btn_arr, true)

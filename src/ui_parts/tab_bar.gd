@@ -25,9 +25,6 @@ var proposed_drop_idx := -1:
 			proposed_drop_idx = new_value
 			queue_redraw()
 
-func _exit_tree() -> void:
-	RenderingServer.free_rid(ci)
-
 func _ready() -> void:
 	Configs.active_tab_changed.connect(activate)
 	Configs.tabs_changed.connect(activate)
@@ -193,42 +190,26 @@ func _gui_input(event: InputEvent) -> void:
 				var btn_arr: Array[Button] = []
 				
 				if hovered_idx == -1:
-					btn_arr.append(ContextPopup.create_button(
-							Translator.translate("Create tab"), Configs.savedata.add_empty_tab,
-							false, load("res://assets/icons/CreateTab.svg"), "new_tab"))
+					btn_arr.append(ContextPopup.create_shortcut_button("new_tab"))
 				else:
 					var new_active_tab := Configs.savedata.get_tab(hovered_idx)
+					var file_absent := not FileAccess.file_exists(new_active_tab.svg_file_path)
+					var tab_count := Configs.savedata.get_tab_count()
 					
-					btn_arr.append(ContextPopup.create_button(
-							Translator.translate("Close tab"),
-							FileUtils.close_tabs.bind(hovered_idx), false, null, "close_tab"))
+					btn_arr.append(ContextPopup.create_shortcut_button_without_icon(
+							"close_tab"))
 					# TODO Unify into "Close multiple tabs"
-					btn_arr.append(ContextPopup.create_button(
-							TranslationUtils.get_shortcut_description("close_all_other_tabs"),
-							FileUtils.close_tabs.bind(hovered_idx,
-							FileUtils.TabCloseMode.ALL_OTHERS),
-							Configs.savedata.get_tab_count() < 2, null, "close_all_other_tabs"))
-					btn_arr.append(ContextPopup.create_button(
-							TranslationUtils.get_shortcut_description("close_tabs_to_left"),
-							FileUtils.close_tabs.bind(hovered_idx,
-							FileUtils.TabCloseMode.TO_LEFT),
-							hovered_idx == 0, null, "close_tabs_to_left"))
-					btn_arr.append(ContextPopup.create_button(
-							TranslationUtils.get_shortcut_description("close_tabs_to_right"),
-							FileUtils.close_tabs.bind(hovered_idx,
-							FileUtils.TabCloseMode.TO_RIGHT),
-							hovered_idx == Configs.savedata.get_tab_count() - 1,
-							null, "close_tabs_to_right"))
-					btn_arr.append(ContextPopup.create_button(
-							Translator.translate("Open externally"),
-							ShortcutUtils.fn("open_externally"),
-							not FileAccess.file_exists(new_active_tab.svg_file_path),
-							load("res://assets/icons/OpenFile.svg"), "open_externally"))
-					btn_arr.append(ContextPopup.create_button(
-							Translator.translate("Show in File Manager"),
-							ShortcutUtils.fn("open_in_folder"),
-							not FileAccess.file_exists(new_active_tab.svg_file_path),
-							load("res://assets/icons/OpenFolder.svg"), "open_in_folder"))
+					btn_arr.append(ContextPopup.create_shortcut_button_without_icon(
+							"close_all_other_tabs", tab_count < 2))
+					btn_arr.append(ContextPopup.create_shortcut_button_without_icon(
+							"close_tabs_to_left", hovered_idx == 0))
+					btn_arr.append(ContextPopup.create_shortcut_button_without_icon(
+							"close_tabs_to_right", hovered_idx == tab_count - 1))
+							
+					btn_arr.append(ContextPopup.create_shortcut_button("open_externally",
+							file_absent))
+					btn_arr.append(ContextPopup.create_shortcut_button("open_in_folder",
+							file_absent))
 				var tab_popup := ContextPopup.new()
 				tab_popup.setup(btn_arr, true, -1, -1, PackedInt32Array([4]))
 				
@@ -424,12 +405,10 @@ func _get_tooltip(at_position: Vector2) -> String:
 		return ""
 	
 	var current_tab := Configs.savedata.get_tab(hovered_tab_idx)
-	if current_tab.svg_file_path.is_empty():
-		return Translator.translate("This SVG is not bound to a file location yet.")
 	# We have to pass some metadata to the tooltip.
 	# Since "*" isn't valid in filepaths, we use it as a delimiter.
-	elif hovered_tab_idx == Configs.savedata.get_active_tab_index():
-		return "%s*hovered" % current_tab.get_presented_svg_file_path()
+	if hovered_tab_idx == Configs.savedata.get_active_tab_index():
+		return "%s*active" % current_tab.get_presented_svg_file_path()
 	
 	return "%s*%d" % [current_tab.get_presented_svg_file_path(), current_tab.id]
 
@@ -438,16 +417,20 @@ func _make_custom_tooltip(for_text: String) -> Object:
 	if asterisk_pos == -1:
 		return null
 	
+	var current_tab := Configs.savedata.get_tab(get_hovered_index())
+	var is_saved := not current_tab.svg_file_path.is_empty()
+	
 	var path := for_text.left(asterisk_pos)
 	var label := Label.new()
-	label.add_theme_font_override("font", ThemeUtils.mono_font)
+	label.add_theme_font_override("font", ThemeUtils.mono_font if is_saved else ThemeUtils.regular_font)
 	label.add_theme_font_size_override("font_size", 12)
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	label.text = path
+	label.text = path if is_saved else Translator.translate("This SVG is not bound to a file location yet.")
 	Utils.set_max_text_width(label, 192.0, 4.0)
 	
+	# If the tab is active, no need for an SVG preview.
 	var metadata := for_text.right(-asterisk_pos - 1)
-	if metadata == "hovered":
+	if metadata == "active":
 		return label
 	
 	var id := metadata.to_int()

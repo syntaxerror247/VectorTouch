@@ -23,6 +23,7 @@ func get_setting_default(setting: String) -> Variant:
 		"handle_selected_color": return Color("46f")
 		"handle_hovered_selected_color": return Color("f44")
 		"background_color": return Color(0.12, 0.132, 0.2, 1)
+		"grid_color": return Color(0.5, 0.5, 0.5)
 		"basic_color_valid": return Color("9f9")
 		"basic_color_error": return Color("f99")
 		"basic_color_warning": return Color("ee5")
@@ -172,6 +173,13 @@ const CURRENT_VERSION = 1
 			emit_changed()
 			Configs.change_background_color.call_deferred()
 
+@export var grid_color := Color(0.5, 0.5, 0.5):
+	set(new_value):
+		if grid_color != new_value:
+			grid_color = new_value
+			emit_changed()
+			Configs.grid_color_changed.emit()
+
 @export var basic_color_valid := Color("9f9"):
 	set(new_value):
 		if basic_color_valid != new_value:
@@ -241,7 +249,7 @@ const HANDLE_SIZE_MAX = 4.0
 			Configs.handle_visuals_changed.emit()
 
 enum ScalingApproach {AUTO, CONSTANT_075, CONSTANT_100, CONSTANT_125, CONSTANT_150,
-		CONSTANT_175, CONSTANT_200, CONSTANT_300, CONSTANT_400, MAX}
+		CONSTANT_175, CONSTANT_200, CONSTANT_250, CONSTANT_300, CONSTANT_400, MAX}
 @export var ui_scale := ScalingApproach.AUTO:
 	set(new_value):
 		# Validation
@@ -378,7 +386,7 @@ func _action_sync_inputmap(action: String) -> void:
 
 func update_shortcut_validities() -> void:
 	_shortcut_validities.clear()
-	for action in ShortcutUtils.get_all_shortcuts():
+	for action in ShortcutUtils.get_all_actions():
 		for shortcut: InputEventKey in InputMap.action_get_events(action):
 			var shortcut_id := shortcut.get_keycode_with_modifiers()
 			# If the key already exists, set validity to false, otherwise set to true.
@@ -398,7 +406,7 @@ func get_actions_with_shortcut(shortcut: InputEventKey) -> PackedStringArray:
 		return PackedStringArray()
 	
 	var actions_with_shortcut := PackedStringArray()
-	for action in ShortcutUtils.get_all_shortcuts():
+	for action in ShortcutUtils.get_all_actions():
 		for action_shortcut: InputEventKey in InputMap.action_get_events(action):
 			if action_shortcut.get_keycode_with_modifiers() == shortcut_id:
 				actions_with_shortcut.append(action)
@@ -520,7 +528,7 @@ const SHORTCUT_PANEL_MAX_SLOTS = 6
 		# Validation
 		for key in new_value:
 			if key < 0 or key >= SHORTCUT_PANEL_MAX_SLOTS or\
-			not new_value[key] in ShortcutUtils.get_all_shortcuts():
+			not new_value[key] in ShortcutUtils.get_all_actions():
 				new_value.erase(key)
 		# Main part
 		if _shortcut_panel_slots != new_value:
@@ -576,6 +584,7 @@ const MAX_TABS = 50
 			for tab in _tabs:
 				tab.changed.connect(emit_changed)
 				tab.status_changed.connect(_on_tab_status_changed.bind(tab.id))
+				tab.reference_changed.connect(_on_tab_reference_changed.bind(tab.id))
 			emit_changed()
 			if _tabs.is_empty():
 				_add_new_tab()
@@ -598,6 +607,10 @@ func _on_tab_status_changed(id: int) -> void:
 	if id == _tabs[_active_tab_index].id:
 		Configs.active_tab_status_changed.emit()
 	Configs.tabs_changed.emit()
+
+func _on_tab_reference_changed(id: int) -> void:
+	if id == _tabs[_active_tab_index].id:
+		Configs.active_tab_reference_changed.emit()
 
 func has_tabs() -> bool:
 	return not _tabs.is_empty()
@@ -650,6 +663,7 @@ func _add_new_tab() -> void:
 	new_tab.fully_loaded = false
 	new_tab.changed.connect(emit_changed)
 	new_tab.status_changed.connect(_on_tab_status_changed.bind(new_id))
+	new_tab.reference_changed.connect(_on_tab_reference_changed.bind(new_id))
 	
 	# Clear file path for the new tab.
 	var new_tab_path := new_tab.get_edited_file_path()
