@@ -6,7 +6,8 @@
 [ext_resource type="Script" uid="uid://dh5mir6i27u4u" path="res://src/ui_widgets/BetterTextEdit.gd" id="8_ser4i"]
 
 [node name="CodeEditor" type="VBoxContainer"]
-custom_minimum_size = Vector2(0, 120)
+offset_right = 24.0
+offset_bottom = 120.0
 size_flags_vertical = 3
 theme_override_constants/separation = 0
 script = ExtResource("1_nffk0")
@@ -32,8 +33,8 @@ icon = ExtResource("4_sos04")
 icon_alignment = 1
 
 [node name="ScriptEditor" type="VBoxContainer" parent="."]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
-size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = -2
 
