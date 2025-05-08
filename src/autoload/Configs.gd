@@ -18,9 +18,13 @@ signal basic_colors_changed
 @warning_ignore("unused_signal")
 signal handle_visuals_changed
 @warning_ignore("unused_signal")
+signal grid_color_changed
+@warning_ignore("unused_signal")
 signal shortcut_panel_changed
 @warning_ignore("unused_signal")
 signal active_tab_status_changed
+@warning_ignore("unused_signal")
+signal active_tab_reference_changed
 @warning_ignore("unused_signal")
 signal active_tab_changed
 @warning_ignore("unused_signal")
@@ -43,7 +47,7 @@ var default_shortcuts: Dictionary[String, Array] = {}
 
 func _enter_tree() -> void:
 	# Fill up the default shortcuts dictionary before the shortcuts are loaded.
-	for action in ShortcutUtils.get_all_shortcuts():
+	for action in ShortcutUtils.get_all_actions():
 		if InputMap.has_action(action):
 			default_shortcuts[action] = InputMap.action_get_events(action)
 	load_config()
@@ -69,7 +73,7 @@ func reset_settings() -> void:
 	savedata = SaveData.new()
 	savedata.reset_to_default()
 	savedata.language = "en"
-	savedata.set_shortcut_panel_slots({ 0: "undo", 1: "redo", 2: "save"})
+	savedata.set_shortcut_panel_slots({ 0: "ui_undo", 1: "ui_redo" })
 	savedata.set_palettes([Palette.new("Pure", Palette.Preset.PURE)])
 	save()
 

@@ -52,12 +52,14 @@ static func save_svg_as() -> void:
 
 static func open_export_dialog(export_data: ImageExportData, final_callback := Callable()) -> void:
 	if OS.has_feature("web"):
-		var web_format_name := ImageExportData.web_formats[export_data.format]
+		var buffer: PackedByteArray
 		if export_data.format == "svg":
-			_web_save(ImageExportData.svg_to_buffer(), web_format_name)
+			buffer = ImageExportData.svg_to_buffer()
 		else:
-			var img := export_data.generate_image()
-			_web_save(export_data.image_to_buffer(img), web_format_name)
+			buffer = export_data.image_to_buffer(export_data.generate_image())
+		_web_save(buffer, ImageExportData.web_formats[export_data.format])
+		if final_callback.is_valid():
+			final_callback.call()
 	else:
 		if _is_native_preferred():
 			var native_callback :=\
@@ -138,6 +140,16 @@ static func _finish_xml_export(file_path: String, xml: String) -> void:
 	FileAccess.open(file_path, FileAccess.WRITE).store_string(xml)
 	HandlerGUI.remove_all_menus()
 
+static func _finish_reference_load(data: Variant, file_path: String) -> void:
+	var img := Image.new()
+	match file_path.get_extension().to_lower():
+		"svg": img.load_svg_from_string(data)
+		"png": img.load_png_from_buffer(data)
+		"jpg", "jpeg": img.load_jpg_from_buffer(data)
+		"webp": img.load_webp_from_buffer(data)
+	var image_texture := ImageTexture.create_from_image(img)
+	Configs.savedata.get_active_tab().reference_image = image_texture
+
 
 static func _is_native_preferred() -> bool:
 	return DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE) and\
@@ -151,9 +163,9 @@ static func _choose_file_name() -> String:
 static func open_svg_import_dialog() -> void:
 	_open_import_dialog(PackedStringArray(["svg"]), _apply_svg)
 
-static func open_image_import_dialog(completion_callback: Callable) -> void:
+static func open_image_import_dialog() -> void:
 	_open_import_dialog(PackedStringArray(["png", "jpg", "jpeg", "webp", "svg"]),
-			completion_callback, Translator.translate("Load an image file"))
+			_finish_reference_load, Translator.translate("Load an image file"))
 
 static func open_xml_import_dialog(completion_callback: Callable) -> void:
 	_open_import_dialog(PackedStringArray(["xml"]), completion_callback)
@@ -205,12 +217,6 @@ allowed_extensions: PackedStringArray) -> Error:
 	
 	Configs.savedata.add_recent_dir(file_path.get_base_dir())
 	
-	if file_extension == "tscn":
-		# I asked kiisu about why he wrote this special case. He said:
-		# "I think when running from the editor it would give the specific scene
-		# run as first argument",
-		# TODO understand what he meant and if it's still relevant.
-		return ERR_FILE_CANT_OPEN
 	if not file_extension in allowed_extensions:
 		error = TranslationUtils.get_bad_extension_alert_text(file_extension,
 				allowed_extensions)
@@ -247,7 +253,7 @@ static func _apply_svg(data: Variant, file_path: String) -> void:
 		if compare_svg_to_disk_contents() == FileState.DIFFERENT:
 			alert_message += "\n\n" + Translator.translate(
 					"If you want to revert your edits since the last save, use {reset_svg}.").format(
-					{"reset_svg": TranslationUtils.get_shortcut_description("reset_svg")})
+					{"reset_svg": TranslationUtils.get_action_description("reset_svg")})
 		
 		var alert_dialog := AlertDialogScene.instantiate()
 		HandlerGUI.add_menu(alert_dialog)
