@@ -1,13 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://bihwwoedqcyo8"]
+[gd_scene load_steps=2 format=3 uid="uid://bihwwoedqcyo8"]
 
 [ext_resource type="Script" uid="uid://dunoppeuubgd1" path="res://src/ui_parts/editor_scene.gd" id="1_o7lif"]
-[ext_resource type="PackedScene" uid="uid://cxmrx6t4jkhyj" path="res://src/ui_parts/global_actions.tscn" id="2_p8urg"]
-[ext_resource type="PackedScene" uid="uid://cr1fdlmbknnko" path="res://src/ui_parts/code_editor.tscn" id="3_4uluy"]
-[ext_resource type="PackedScene" uid="uid://ccynisiuyn5qn" path="res://src/ui_parts/inspector.tscn" id="4_jik7v"]
-[ext_resource type="PackedScene" uid="uid://bvrncl7e6yn5b" path="res://src/ui_parts/display.tscn" id="5_gb5yr"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mt61i"]
-bg_color = Color(0.0745098, 0.0745098, 0.121569, 0.501961)
 
 [node name="MainScene" type="VBoxContainer"]
 anchors_preset = 15
@@ -18,38 +11,6 @@ grow_vertical = 2
 theme_override_constants/separation = 0
 script = ExtResource("1_o7lif")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 2
-theme_override_constants/margin_left = 5
-theme_override_constants/margin_top = 3
-theme_override_constants/margin_right = 5
-theme_override_constants/margin_bottom = 3
-
-[node name="GlobalActions" parent="MarginContainer" instance=ExtResource("2_p8urg")]
-layout_mode = 2
-
-[node name="HSplitContainer" type="VSplitContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 30
-theme_override_styles/split_bar_background = SubResource("StyleBoxFlat_mt61i")
-
-[node name="TabContainer" type="TabContainer" parent="HSplitContainer"]
-layout_mode = 2
-tab_alignment = 1
-current_tab = 0
-tabs_position = 1
-
-[node name="Inspector" parent="HSplitContainer/TabContainer" instance=ExtResource("4_jik7v")]
-custom_minimum_size = Vector2(0, 120)
-layout_mode = 2
-metadata/_tab_index = 0
-
-[node name="CodeEditor" parent="HSplitContainer/TabContainer" instance=ExtResource("3_4uluy")]
-visible = false
-layout_mode = 2
-metadata/_tab_index = 1
-
-[node name="Display" parent="HSplitContainer" instance=ExtResource("5_gb5yr")]
-unique_name_in_owner = true
-layout_mode = 2

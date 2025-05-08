@@ -7,12 +7,11 @@
 [ext_resource type="Script" uid="uid://b04padjc3w1s8" path="res://src/ui_parts/move_to_overlay.gd" id="5_otlmf"]
 
 [node name="Inspector" type="Container"]
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 9
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_16ggy")
 border_width = 2
 corner_radius_top_left = 5
@@ -34,6 +33,7 @@ theme_override_constants/h_separation = 4
 icon = ExtResource("3_vo6hf")
 
 [node name="ElementContainer" type="Control" parent="."]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_qeptj")
