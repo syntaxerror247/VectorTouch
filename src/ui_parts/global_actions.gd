@@ -23,8 +23,8 @@ func _ready() -> void:
 	const CONST_ARR: PackedStringArray = ["normal", "focus", "hover", "disabled"]
 	for theme_type in CONST_ARR:
 		var stylebox := size_button.get_theme_stylebox(theme_type).duplicate()
-		stylebox.content_margin_bottom = 0
-		stylebox.content_margin_top = 0
+		stylebox.content_margin_bottom = 0.0
+		stylebox.content_margin_top = 0.0
 		size_button.add_theme_stylebox_override(theme_type, stylebox)
 	size_button.end_bulk_theme_override()
 	
@@ -54,7 +54,6 @@ func _on_more_options_pressed() -> void:
 	
 	var about_btn := ContextPopup.create_shortcut_button("about_info", false, "",
 			load("res://assets/logos/icon.svg"))
-	about_btn.expand_icon = true
 	buttons_arr.append(about_btn)
 	buttons_arr.append(ContextPopup.create_shortcut_button("about_repo"))
 	var separator_indices := PackedInt32Array([1, 3])

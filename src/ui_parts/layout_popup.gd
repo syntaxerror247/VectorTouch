@@ -236,6 +236,8 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 	
 	var top_left_parts := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.TOP_LEFT)
 	var bottom_left_parts := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.BOTTOM_LEFT)
+	var is_dragged_part_the_only_top_left := (top_left_parts == [dragged_data.layout_part])
+	var is_dragged_part_the_only_bottom_left := (bottom_left_parts == [dragged_data.layout_part])
 	
 	for section in section_areas:
 		var section_area := section_areas[section]
@@ -244,12 +246,13 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 		
 		proposed_drop_location_pivot = section
 		
+		
 		if at_position.y < lerpf(section_area.position.y, section_area.end.y, 0.25) and\
 		((section == SaveData.LayoutLocation.TOP_LEFT and\
-		top_left_parts != [dragged_data.layout_part] and (bottom_left_parts.is_empty() or\
-		bottom_left_parts == [dragged_data.layout_part])) or\
+		not is_dragged_part_the_only_top_left and (bottom_left_parts.is_empty() or\
+		is_dragged_part_the_only_bottom_left)) or\
 		(section == SaveData.LayoutLocation.BOTTOM_LEFT and top_left_parts.is_empty() and\
-		bottom_left_parts != [dragged_data.layout_part])):
+		not is_dragged_part_the_only_top_left)):
 			# Hovering over the top side of the section, when one of the following is true:
 			# Case 1: The section is top left, and there's either nothing on the bottom left,
 			# or the only thing on the bottom left is the dragged layout part.
@@ -259,16 +262,16 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 			proposed_drop_idx = -1
 		elif at_position.y > lerpf(section_area.position.y, section_area.end.y, 0.75) and\
 		((section == SaveData.LayoutLocation.BOTTOM_LEFT and\
-		bottom_left_parts != [dragged_data.layout_part] and (top_left_parts.is_empty() or\
-		top_left_parts == [dragged_data.layout_part])) or\
+		not is_dragged_part_the_only_bottom_left and (top_left_parts.is_empty() or\
+		is_dragged_part_the_only_top_left)) or\
 		(section == SaveData.LayoutLocation.TOP_LEFT and bottom_left_parts.is_empty() and\
-		top_left_parts != [dragged_data.layout_part])):
+		not is_dragged_part_the_only_bottom_left)):
 			# Same logic as the previous big condition, but top and bottom are flipped.
 			proposed_drop_location_direction = DropDirection.BELOW
 			proposed_drop_idx = -1
 		elif not (section == SaveData.LayoutLocation.EXCLUDED and\
-		((top_left_parts == [dragged_data.layout_part] and bottom_left_parts.is_empty()) or\
-		(bottom_left_parts == [dragged_data.layout_part] and top_left_parts.is_empty()))):
+		((is_dragged_part_the_only_top_left and bottom_left_parts.is_empty()) or\
+		(is_dragged_part_the_only_bottom_left and top_left_parts.is_empty()))):
 			# Ensure we're not dragging the last layout part into excluded.
 			proposed_drop_location_direction = DropDirection.INSIDE
 			var layout_parts_count := Configs.savedata.get_layout_parts(section).size()
@@ -307,6 +310,12 @@ func clear_proposed_drop() -> void:
 # Tooltips
 
 func _get_tooltip(at_position: Vector2) -> String:
+	# TODO Hack for the viewport tooltip.
+	var half_width := size.x / 2.0 - PANEL_MARGIN
+	if Rect2(size.x / 2.0, PANEL_MARGIN, half_width, half_width * 1.25).\
+	grow(-BUFFER_SIZE).has_point(at_position):
+		return TranslationUtils.get_layout_part_name(Utils.LayoutPart.VIEWPORT)
+	
 	for layout_part in layout_part_areas:
 		if layout_part_areas[layout_part].grow(-BUFFER_SIZE).has_point(at_position):
 			return TranslationUtils.get_layout_part_name(layout_part)
@@ -320,11 +329,13 @@ func _make_custom_tooltip(for_text: String) -> Object:
 	vbox.add_theme_constant_override("separation", 2)
 	var main_label := Label.new()
 	main_label.text = for_text
-	var dim_label := Label.new()
-	dim_label.add_theme_color_override("font_color", ThemeUtils.common_dimmer_text_color)
-	dim_label.text = Translator.translate("Drag and drop to change the layout")
+	# TODO The condition is a hack for the viewport tooltip.
 	vbox.add_child(main_label)
-	vbox.add_child(dim_label)
+	if for_text != TranslationUtils.get_layout_part_name(Utils.LayoutPart.VIEWPORT):
+		var dim_label := Label.new()
+		dim_label.add_theme_color_override("font_color", ThemeUtils.common_dimmer_text_color)
+		dim_label.text = Translator.translate("Drag and drop to change the layout")
+		vbox.add_child(dim_label)
 	return vbox
 
 

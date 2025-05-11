@@ -21,9 +21,9 @@ func setup_theme() -> void:
 	const CONST_ARR: PackedStringArray = ["normal", "hover", "pressed"]
 	for theme_type in CONST_ARR:
 		var stylebox := palette_button.get_theme_stylebox(theme_type).duplicate()
-		stylebox.content_margin_top -= 3
-		stylebox.content_margin_bottom -= 2
-		stylebox.content_margin_left += 1
+		stylebox.content_margin_top -= 3.0
+		stylebox.content_margin_bottom -= 2.0
+		stylebox.content_margin_left += 1.0
 		palette_button.add_theme_stylebox_override(theme_type, stylebox)
 	palette_button.end_bulk_theme_override()
 	var panel_stylebox := get_theme_stylebox("panel").duplicate()
@@ -122,9 +122,13 @@ func _on_name_edit_text_changed(new_text: String) -> void:
 	name_edit.begin_bulk_theme_override()
 	const CONST_ARR: PackedStringArray = ["font_color", "font_hover_color"]
 	for theme_type in CONST_ARR:
+		# If the new text matches the current title, show warning color
+		# if the palette is currently invalid. If the new text is different,
+		# check if it's unused, i.e., would be a valid title.
 		name_edit.add_theme_color_override(theme_type,
-				Configs.savedata.get_validity_color(false, new_text != palette.title and\
-				not Configs.savedata.is_palette_title_unused(new_text)))
+				Configs.savedata.get_validity_color(false, (new_text != palette.title and\
+				not Configs.savedata.is_palette_title_unused(new_text)) or\
+				(new_text == palette.title and Configs.savedata.is_palette_valid(palette))))
 	name_edit.end_bulk_theme_override()
 
 func _on_name_edit_text_submitted(new_title: String) -> void:

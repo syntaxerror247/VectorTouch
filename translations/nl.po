@@ -247,6 +247,15 @@ msgstr "Visuelen"
 msgid "Snap size"
 msgstr "Maat inknappen"
 
+#: src/ui_parts/display.gd
+#, fuzzy
+msgid "Paste reference image"
+msgstr "Referentiebeeld inladen"
+
+#: src/ui_parts/donate_menu.gd
+msgid "Links to donation platforms"
+msgstr ""
+
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
 #: src/ui_widgets/confirm_dialog.gd src/ui_widgets/options_dialog.gd
@@ -320,22 +329,6 @@ msgstr "De zichtbaarheit van verborgen bestanden omschakelen"
 #: src/ui_parts/good_file_dialog.gd
 msgid "Search files"
 msgstr "Bestanden zoeken"
-
-#: src/ui_parts/good_file_dialog.gd src/utils/TranslationUtils.gd
-msgid "Save SVG"
-msgstr "SVG opslaan"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an SVG"
-msgstr "Kies een SVG uit"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an XML file"
-msgstr "Kies een XML bestand uit"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an image"
-msgstr "Kies een afbeedling"
 
 #: src/ui_parts/good_file_dialog.gd
 msgid "Select"
@@ -413,6 +406,7 @@ msgstr "Syntaxfout"
 msgid "Add element"
 msgstr "Element toevoegen"
 
+#. Refers to the zero, one, or multiple UI parts to not be shown in the final layout. It's of plural cardinality.
 #: src/ui_parts/layout_popup.gd
 msgid "Excluded"
 msgstr ""
@@ -445,7 +439,7 @@ msgstr "Knappen"
 msgid "Formatting"
 msgstr "Formattering"
 
-#: src/ui_parts/settings_menu.gd src/ui_widgets/color_popup.gd
+#: src/ui_parts/settings_menu.gd src/ui_widgets/color_field_popup.gd
 msgid "Palettes"
 msgstr "Paletten"
 
@@ -493,6 +487,7 @@ msgstr "Commentaarkleur"
 msgid "Text color"
 msgstr "Textkleur"
 
+#. CDATA shouldn't be translated. It's a type of XML section.
 #: src/ui_parts/settings_menu.gd
 msgid "CDATA color"
 msgstr "CDATA-kleur"
@@ -501,6 +496,7 @@ msgstr "CDATA-kleur"
 msgid "Error color"
 msgstr "Fout-kleur"
 
+#. Refers to the colors of the draggable handles.
 #: src/ui_parts/settings_menu.gd
 msgid "Handle colors"
 msgstr "Handvatkleuren"
@@ -578,6 +574,7 @@ msgstr "Gebruik inheemse bestandendialoog"
 msgid "Sync window title to file name"
 msgstr "Synchroniseer venstertitel naar bestandsnaam"
 
+#. Refers to the size of the draggable handles.
 #: src/ui_parts/settings_menu.gd
 msgid "Handle size"
 msgstr "Handvat maat"
@@ -610,10 +607,12 @@ msgstr "Nieuw palette"
 msgid "New palette from XML"
 msgstr "Nieuwe palette uit XML"
 
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_parts/settings_menu.gd
 msgid "Editor formatter"
 msgstr "Editor-formatter"
 
+#. Refers to the formatter used when exporting.
 #: src/ui_parts/settings_menu.gd
 msgid "Export formatter"
 msgstr "Exportformatter"
@@ -719,6 +718,12 @@ msgid "Remove unnecessary parameters"
 msgstr "Verwijder onnodige parameters"
 
 #: src/ui_parts/settings_menu.gd
+msgid ""
+"If turned on, clicking on a tab with the middle mouse button closes the tab. "
+"If turned off, it focuses the tab instead."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd
 msgid "Swaps the scroll directions for zooming in and zooming out."
 msgstr "Verwisselt de scroll richtingen voor inzoomen en uitzoomen."
 
@@ -731,9 +736,9 @@ msgstr ""
 "tijdens het rondkijken."
 
 #: src/ui_parts/settings_menu.gd
+#, fuzzy
 msgid ""
-"If turned on, scrolling will pan the view. To zoom, hold CTRL while "
-"scrolling."
+"If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
 msgstr ""
 "Als ingeschakeld, scrollen zal het weergave verschuiven. Om te zoomen,houd "
 "CTRL ingedrukt tijdens scrollen."
@@ -748,9 +753,10 @@ msgstr ""
 "bestandendialoog."
 
 #: src/ui_parts/settings_menu.gd
+#, fuzzy
 msgid ""
-"If turned off, the window title will remain simply \"GodSVG\" regardless of "
-"the current file."
+"If turned off, the window title remains as \"GodSVG\" without including the "
+"current file."
 msgstr ""
 "Als dit uitgeschakelt is, blijft de venstertitel simpelweg \"GodSVG\" "
 "achteloos van het huidige bestand."
@@ -792,12 +798,12 @@ msgid "This SVG is not bound to a file location yet."
 msgstr "Deze SVG is nog niet gebonden aan een bestandslocatie."
 
 #: src/ui_parts/update_menu.gd
-msgid "Show prereleases"
-msgstr "Laat prereleases zien"
-
-#: src/ui_parts/update_menu.gd
 msgid "Retry"
 msgstr "Opnieuw proberen"
+
+#: src/ui_parts/update_menu.gd
+msgid "Show prereleases"
+msgstr "Laat prereleases zien"
 
 #: src/ui_parts/update_menu.gd
 msgid "Current Version"
@@ -807,27 +813,34 @@ msgstr "Huidige versie"
 msgid "Retrieving information..."
 msgstr "Informatie aan het ophalen..."
 
+#. When checking for updates.
 #: src/ui_parts/update_menu.gd
 msgid "Update check failed"
 msgstr "Updatecontrole mislukt"
+
+#: src/ui_parts/update_menu.gd
+#, fuzzy
+msgid "View all releases"
+msgstr "Selecteer alle elementen"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
 msgstr "GodSVG is up-to-date."
 
 #: src/ui_parts/update_menu.gd
-msgid "New versions"
+#, fuzzy
+msgid "New versions available!"
 msgstr "Nieuwe versies"
 
 #: src/ui_widgets/choose_name_dialog.gd
 msgid "Create"
 msgstr "Creëren"
 
-#: src/ui_widgets/color_popup.gd
+#: src/ui_widgets/color_field_popup.gd
 msgid "Search color"
 msgstr "Zoekkleur"
 
-#: src/ui_widgets/color_popup.gd
+#: src/ui_widgets/color_field_popup.gd
 msgid "Color Picker"
 msgstr "Kleurenplukker"
 
@@ -945,18 +958,6 @@ msgid "GodSVG doesn’t recognize this attribute"
 msgstr "GodSVG herkent deze attribuut niet"
 
 #: src/utils/FileUtils.gd
-msgid "Save the .\"{format}\" file"
-msgstr "Bewaar het .\"{format}\" bestand"
-
-#: src/utils/FileUtils.gd
-msgid "Load an image file"
-msgstr "Laad een afbeeldingsbestand"
-
-#: src/utils/FileUtils.gd
-msgid "Import a {extension} file"
-msgstr "Importeer een {extension} bestand"
-
-#: src/utils/FileUtils.gd
 msgid "The file couldn't be opened."
 msgstr "Het bestand kon niet worden geopend."
 
@@ -997,6 +998,10 @@ msgstr ""
 #: src/utils/FileUtils.gd
 msgid "Do you want to save the changes made to {file_name}?"
 msgstr "Wilt u de aanpassingen opslaan als {file_name}?"
+
+#: src/utils/TranslationUtils.gd
+msgid "Save SVG"
+msgstr "SVG opslaan"
 
 #: src/utils/TranslationUtils.gd
 #, fuzzy
@@ -1216,6 +1221,10 @@ msgid "Quit the application"
 msgstr "Applicatie afsluiten"
 
 #: src/utils/TranslationUtils.gd
+msgid "Toggle fullscreen"
+msgstr ""
+
+#: src/utils/TranslationUtils.gd
 msgid "Move to"
 msgstr "Verplaats naar"
 
@@ -1267,10 +1276,25 @@ msgstr ""
 msgid "Inspector"
 msgstr ""
 
+#. The viewport is the area where the graphic is displayed. In similar applications, it's often called the canvas.
 #: src/utils/TranslationUtils.gd
 #, fuzzy
 msgid "Viewport"
 msgstr "Zicht"
+
+#: src/utils/TranslationUtils.gd
+msgid "Select an image"
+msgstr "Kies een afbeedling"
+
+#: src/utils/TranslationUtils.gd
+#, fuzzy
+msgid "Select an {format} file"
+msgstr "Kies een XML bestand uit"
+
+#: src/utils/TranslationUtils.gd
+#, fuzzy
+msgid "Save the {format} file"
+msgstr "Bewaar het .\"{format}\" bestand"
 
 #: src/utils/TranslationUtils.gd
 msgid ""
@@ -1285,6 +1309,18 @@ msgid "The file extension is empty. Only {extension_list} files are supported."
 msgstr ""
 "Deze bestandsextensie is leeg. Alleen {extension_list} bestanden zijn "
 "ondersteund."
+
+#~ msgid "Save the .\"{format}\" file"
+#~ msgstr "Bewaar het .\"{format}\" bestand"
+
+#~ msgid "Load an image file"
+#~ msgstr "Laad een afbeeldingsbestand"
+
+#~ msgid "Import a {extension} file"
+#~ msgstr "Importeer een {extension} bestand"
+
+#~ msgid "Select an SVG"
+#~ msgstr "Kies een SVG uit"
 
 #~ msgid "Show reference"
 #~ msgstr "Referentie weergeven"
@@ -1329,9 +1365,6 @@ msgstr ""
 
 #~ msgid "Open SVG file"
 #~ msgstr "Open SVG bestand"
-
-#~ msgid "Select all elements"
-#~ msgstr "Selecteer alle elementen"
 
 #~ msgid "Duplicate the selected elements"
 #~ msgstr "Dupliceer de gekozen elementen"
