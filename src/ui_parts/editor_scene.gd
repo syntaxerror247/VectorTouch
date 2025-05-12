@@ -18,6 +18,8 @@ func update_theme() -> void:
 	stylebox.bg_color = ThemeUtils.overlay_panel_inner_color
 	stylebox.set_content_margin_all(0)
 	panel_container.add_theme_stylebox_override("panel", stylebox)
+	SystemBarColorChanger.set_status_bar_color(ThemeUtils.overlay_panel_inner_color)
+	SystemBarColorChanger.set_navigation_bar_color(ThemeUtils.overlay_panel_inner_color)
 
 
 func update_layout() -> void:
@@ -31,6 +33,7 @@ func update_layout() -> void:
 	var main_splitter := VSplitContainer.new()
 	main_splitter.size_flags_horizontal = Control.SIZE_FILL
 	main_splitter.add_theme_constant_override("separation", 6)
+	main_splitter.add_theme_constant_override("autohide", 0)
 	main_splitter.split_offset = Configs.savedata.main_splitter_offset
 	main_splitter.dragged.connect(_on_main_splitter_dragged)
 	panel_container.add_child(main_splitter)
@@ -61,6 +64,7 @@ func update_layout() -> void:
 		var top_vertical_split_container := VSplitContainer.new()
 		top_vertical_split_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		top_vertical_split_container.add_theme_constant_override("separation", 10)
+		top_vertical_split_container.add_theme_constant_override("autohide", 0)
 		top_vertical_split_container.split_offset = Configs.savedata.top_vertical_splitter_offset
 		top_vertical_split_container.dragged.connect(_on_top_vertical_splitter_dragged)
 		top_vertical_split_container.add_child(create_layout_node(top_left[0]))

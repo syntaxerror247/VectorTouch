@@ -31,6 +31,7 @@ driver/driver="Dummy"
 Configs="*res://src/autoload/Configs.gd"
 State="*res://src/autoload/State.gd"
 HandlerGUI="*res://src/autoload/HandlerGUI.gd"
+SystemBarColorChanger="*res://addons/SystemBarColorChanger/SystemBarColorChanger.gd"
 
 [display]
 
@@ -39,6 +40,10 @@ window/size/viewport_height=1280
 window/energy_saving/keep_screen_on=false
 window/handheld/orientation=1
 mouse_cursor/tooltip_position_offset=Vector2(0, 10)
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/SystemBarColorChanger/plugin.cfg")
 
 [filesystem]
 
