@@ -84,7 +84,7 @@ _headers: PackedStringArray, body: PackedByteArray) -> void:
 func display_error_message(msg: String) -> void:
 	status_label.text = Translator.translate("Update check failed")
 	results_panel.show()
-	results_label.text = "%s\n[url=https://github.com/MewPurPur/GodSVG/releases]%s[/url]" %\
+	results_label.text = "%s\n[url=https://github.com/syntaxerror247/GodSVG-Mobile/releases]%s[/url]" %\
 			[msg, Translator.translate("View all releases")]
 	retry_button.show()
 
