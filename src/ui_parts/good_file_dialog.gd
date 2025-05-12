@@ -96,7 +96,7 @@ func _ready() -> void:
 		file_container.hide()
 	
 	var extension_panel_stylebox := extension_panel.get_theme_stylebox("panel")
-	extension_panel_stylebox.content_margin_top -= 4
+	extension_panel_stylebox.content_margin_top -= 4.0
 	extension_panel.add_theme_stylebox_override("panel", extension_panel_stylebox)
 	if Configs.savedata.file_dialog_show_hidden:
 		show_hidden_button.set_pressed_no_signal(true)
@@ -107,16 +107,11 @@ func _ready() -> void:
 	search_button.tooltip_text = Translator.translate("Search files")
 	search_field.placeholder_text = Translator.translate("Search files")
 	
-	if mode != FileMode.SELECT:
-		title_label.text = Translator.translate("Save SVG")
+	if mode == FileMode.SAVE:
+		title_label.text = TranslationUtils.get_file_dialog_save_mode_title_text(extensions[0])
 		extension_label.text = "." + extensions[0]
 	else:
-		if extensions.size() == 1 and extensions[0] == "svg":
-			title_label.text = Translator.translate("Select an SVG")
-		elif extensions.size() == 1 and extensions[0] == "xml":
-			title_label.text = Translator.translate("Select an XML file")
-		else:
-			title_label.text = Translator.translate("Select an image")
+		title_label.text = TranslationUtils.get_file_dialog_select_mode_title_text(extensions)
 	
 	close_button.text = Translator.translate("Close")
 	special_button.text = Translator.translate("Select") if\
@@ -447,7 +442,7 @@ func get_drive_icon(path: String) -> Texture2D:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if ShortcutUtils.is_action_pressed(event, "find"):
-		search_button.button_pressed = true
+		search_button.button_pressed = not search_button.button_pressed
 		accept_event()
 	elif event.is_action_pressed("ui_accept"):
 		var selected_item_indices := file_list.get_selected_items()

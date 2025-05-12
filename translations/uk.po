@@ -10,7 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 msgid "translation-credits"
 msgstr "volkov"
@@ -85,9 +85,8 @@ msgid "Restore"
 msgstr "Відновити"
 
 #: src/autoload/State.gd
-#, fuzzy
 msgid "View in Inspector"
-msgstr "Переглянути списком"
+msgstr "Переглянути в інспекторі"
 
 #: src/autoload/State.gd
 msgid "Convert To"
@@ -102,12 +101,11 @@ msgid "The last edited state of this tab could not be found."
 msgstr "Останній редагований стан цієї вкладки не може бути знайдено."
 
 #: src/autoload/State.gd
-#, fuzzy
 msgid ""
 "The tab is bound to the file path {file_path}. Do you want to restore the "
 "SVG from this path?"
 msgstr ""
-"Ця вкладка пов'язана з шляхом до файлу {file_path}. Бажаєте відновити з "
+"Ця вкладка пов'язана з шляхом до файлу {file_path}. Бажаєте відновити SVG з "
 "цього шляху?"
 
 #: src/config_classes/Formatter.gd
@@ -248,6 +246,15 @@ msgstr "Зовнішній вигляд"
 msgid "Snap size"
 msgstr "Розмір прилипання"
 
+#: src/ui_parts/display.gd
+#, fuzzy
+msgid "Paste reference image"
+msgstr "Завантажити еталонне зображення"
+
+#: src/ui_parts/donate_menu.gd
+msgid "Links to donation platforms"
+msgstr ""
+
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
 #: src/ui_widgets/confirm_dialog.gd src/ui_widgets/options_dialog.gd
@@ -321,22 +328,6 @@ msgstr "Перемикнути видимість прихованих файл�
 #: src/ui_parts/good_file_dialog.gd
 msgid "Search files"
 msgstr "Пошук файлів"
-
-#: src/ui_parts/good_file_dialog.gd src/utils/TranslationUtils.gd
-msgid "Save SVG"
-msgstr "Зберегти SVG"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an SVG"
-msgstr "Обрати SVG"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an XML file"
-msgstr "Обрати XML файл"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an image"
-msgstr "Обрати зображення"
 
 #: src/ui_parts/good_file_dialog.gd
 msgid "Select"
@@ -414,13 +405,14 @@ msgstr "Синтаксична помилка"
 msgid "Add element"
 msgstr "Додати елемент"
 
+#. Refers to the zero, one, or multiple UI parts to not be shown in the final layout. It's of plural cardinality.
 #: src/ui_parts/layout_popup.gd
 msgid "Excluded"
-msgstr ""
+msgstr "Виключені"
 
 #: src/ui_parts/layout_popup.gd
 msgid "Drag and drop to change the layout"
-msgstr ""
+msgstr "Перетягніть і опустіть, щоб змінити макет"
 
 #: src/ui_parts/mac_menu.gd src/ui_parts/settings_menu.gd
 msgid "File"
@@ -446,7 +438,7 @@ msgstr "Прилипання"
 msgid "Formatting"
 msgstr "Форматування"
 
-#: src/ui_parts/settings_menu.gd src/ui_widgets/color_popup.gd
+#: src/ui_parts/settings_menu.gd src/ui_widgets/color_field_popup.gd
 msgid "Palettes"
 msgstr "Палітри"
 
@@ -457,6 +449,10 @@ msgstr "Клавіатурні скорочення"
 #: src/ui_parts/settings_menu.gd
 msgid "Theming"
 msgstr "Тема"
+
+#: src/ui_parts/settings_menu.gd
+msgid "Tab bar"
+msgstr "Вкладка"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Other"
@@ -490,6 +486,7 @@ msgstr "Колір коментаря"
 msgid "Text color"
 msgstr "Колір тексту"
 
+#. CDATA shouldn't be translated. It's a type of XML section.
 #: src/ui_parts/settings_menu.gd
 msgid "CDATA color"
 msgstr "Колір CDATA"
@@ -498,6 +495,7 @@ msgstr "Колір CDATA"
 msgid "Error color"
 msgstr "Колір помилки"
 
+#. Refers to the colors of the draggable handles.
 #: src/ui_parts/settings_menu.gd
 msgid "Handle colors"
 msgstr "Колір ручки редагування"
@@ -531,9 +529,8 @@ msgid "Background color"
 msgstr "Колір фону"
 
 #: src/ui_parts/settings_menu.gd
-#, fuzzy
 msgid "Grid color"
-msgstr "Колір валідності"
+msgstr "Колір ґратки"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Valid color"
@@ -549,7 +546,7 @@ msgstr "Пристрої вводу"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Close tabs with middle mouse button"
-msgstr ""
+msgstr "Закривати вкладки при натисканні середньої кнопки миші"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Invert zoom direction"
@@ -575,6 +572,7 @@ msgstr "Використовувати рідний файловий діало�
 msgid "Sync window title to file name"
 msgstr "Синхронізувати заголовок вікна з назвою поточного файлу"
 
+#. Refers to the size of the draggable handles.
 #: src/ui_parts/settings_menu.gd
 msgid "Handle size"
 msgstr "Розмір ручок редагування"
@@ -607,10 +605,12 @@ msgstr "Нова палітра"
 msgid "New palette from XML"
 msgstr "Нова палітра з XML"
 
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_parts/settings_menu.gd
 msgid "Editor formatter"
 msgstr "Форматер редактору"
 
+#. Refers to the formatter used when exporting.
 #: src/ui_parts/settings_menu.gd
 msgid "Export formatter"
 msgstr "Форматер експорту"
@@ -720,6 +720,14 @@ msgid "Remove unnecessary parameters"
 msgstr "Видалити необов'язкові параметри"
 
 #: src/ui_parts/settings_menu.gd
+msgid ""
+"If turned on, clicking on a tab with the middle mouse button closes the tab. "
+"If turned off, it focuses the tab instead."
+msgstr ""
+"Якщо увімкнено - клацання на вкладку середньою кнопкою миші закриє її. Якщо "
+"вимкнено - фокус буде замінено на неї."
+
+#: src/ui_parts/settings_menu.gd
 msgid "Swaps the scroll directions for zooming in and zooming out."
 msgstr "Міняє напрям гортання при масштабуванні."
 
@@ -733,10 +741,9 @@ msgstr ""
 
 #: src/ui_parts/settings_menu.gd
 msgid ""
-"If turned on, scrolling will pan the view. To zoom, hold CTRL while "
-"scrolling."
+"If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
 msgstr ""
-"Якщо увімкнено, гортання буде рухати вікно перегляду. Щоб масштабувати, "
+"Якщо увімкнено - гортання буде рухати вікно перегляду. Щоб масштабувати, "
 "затисніть CTRL доки гортаєте."
 
 #: src/ui_parts/settings_menu.gd
@@ -750,11 +757,11 @@ msgstr ""
 
 #: src/ui_parts/settings_menu.gd
 msgid ""
-"If turned off, the window title will remain simply \"GodSVG\" regardless of "
-"the current file."
+"If turned off, the window title remains as \"GodSVG\" without including the "
+"current file."
 msgstr ""
-"Якщо вимкнено, заголовок вікна залишиться \"GodSVG\" незалежно від поточного "
-"файлу."
+"Якщо вимкнено - заголовок вікна залишиться як \"GodSVG\", не включаючи назву "
+"поточного файлу."
 
 #: src/ui_parts/settings_menu.gd
 msgid "Changes the visual size and grabbing area of handles."
@@ -793,13 +800,12 @@ msgid "This SVG is not bound to a file location yet."
 msgstr "Це SVG зображення поки що не пов'язано з розташуванням файла."
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
-msgid "Show prereleases"
-msgstr "Включати тестові версії"
-
-#: src/ui_parts/update_menu.gd
 msgid "Retry"
 msgstr "Спробувати ще раз"
+
+#: src/ui_parts/update_menu.gd
+msgid "Show prereleases"
+msgstr "Показати тестові версії"
 
 #: src/ui_parts/update_menu.gd
 msgid "Current Version"
@@ -809,27 +815,34 @@ msgstr "Поточна версія"
 msgid "Retrieving information..."
 msgstr "Отримуємо інформацію..."
 
+#. When checking for updates.
 #: src/ui_parts/update_menu.gd
 msgid "Update check failed"
 msgstr "Не вдалося перевірити оновлення"
+
+#: src/ui_parts/update_menu.gd
+#, fuzzy
+msgid "View all releases"
+msgstr "Показати тестові версії"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
 msgstr "GodSVG оновлено до останньої версії."
 
 #: src/ui_parts/update_menu.gd
-msgid "New versions"
+#, fuzzy
+msgid "New versions available!"
 msgstr "Нові версії"
 
 #: src/ui_widgets/choose_name_dialog.gd
 msgid "Create"
 msgstr "Створити"
 
-#: src/ui_widgets/color_popup.gd
+#: src/ui_widgets/color_field_popup.gd
 msgid "Search color"
 msgstr "Шукати колір"
 
-#: src/ui_widgets/color_popup.gd
+#: src/ui_widgets/color_field_popup.gd
 msgid "Color Picker"
 msgstr "Кольорова піпетка"
 
@@ -947,18 +960,6 @@ msgid "GodSVG doesn’t recognize this attribute"
 msgstr "GodSVG не може розпізнати цей атрибут"
 
 #: src/utils/FileUtils.gd
-msgid "Save the .\"{format}\" file"
-msgstr "Зберегти .\"{format}\" файл"
-
-#: src/utils/FileUtils.gd
-msgid "Load an image file"
-msgstr "Завантажити файл зображення"
-
-#: src/utils/FileUtils.gd
-msgid "Import a {extension} file"
-msgstr "Імпортувати {extension} файл"
-
-#: src/utils/FileUtils.gd
 msgid "The file couldn't be opened."
 msgstr "Цей файл неможливо відкрити."
 
@@ -967,26 +968,24 @@ msgid "Check if the file still exists in the selected file path."
 msgstr "Перевірити, чи файл все щє існує по обраному шляху."
 
 #: src/utils/FileUtils.gd
-#, fuzzy
 msgid "Save the file?"
-msgstr "Зберегти .\"{format}\" файл"
+msgstr "Зберегти файл?"
 
 #: src/utils/FileUtils.gd
-#, fuzzy
 msgid "Do you want to save this file?"
-msgstr "Ви дійсно бажаєте продовжити?"
+msgstr "Ви бажаєте зберегти цей файл?"
 
 #: src/utils/FileUtils.gd
 msgid "Save the changes?"
-msgstr ""
+msgstr "Зберегти зміни?"
 
 #: src/utils/FileUtils.gd
 msgid "Your changes will be lost if you don't save them."
-msgstr ""
+msgstr "Ваші зміни буде втрачено, якщо ви не збережете їх."
 
 #: src/utils/FileUtils.gd
 msgid "Don't save"
-msgstr ""
+msgstr "Не зберігати"
 
 #: src/utils/FileUtils.gd
 msgid "The imported file is already being edited inside GodSVG."
@@ -995,15 +994,20 @@ msgstr "Імпортований файл вже редагується в GodSV
 #: src/utils/FileUtils.gd
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
 msgstr ""
+"Якщо ви бажаєте повернути свої зміни з останнього збереження, використовуйте "
+"{reset_svg}."
 
 #: src/utils/FileUtils.gd
 msgid "Do you want to save the changes made to {file_name}?"
-msgstr ""
+msgstr "Чи бажаєте зберегти зміни в {file_name}?"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
+msgid "Save SVG"
+msgstr "Зберегти SVG"
+
+#: src/utils/TranslationUtils.gd
 msgid "Save SVG as"
-msgstr "Зберегти SVG як…"
+msgstr "Зберегти SVG як"
 
 #: src/utils/TranslationUtils.gd
 msgid "Close tabs to the left"
@@ -1034,18 +1038,16 @@ msgid "Optimize"
 msgstr "Оптимізувати"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Optimize SVG"
-msgstr "Оптимізувати"
+msgstr "Оптимізувати SVG"
 
 #: src/utils/TranslationUtils.gd
 msgid "Copy all text"
 msgstr "Скопіювати весь текст"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Copy the SVG text"
-msgstr "Скопіювати весь текст"
+msgstr "Скопіювати SVG текст"
 
 #: src/utils/TranslationUtils.gd
 msgid "Reset SVG"
@@ -1104,7 +1106,6 @@ msgid "Delete the selection"
 msgstr "Видалити усі обрані теги"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Move up"
 msgstr "Пересунути вгору"
 
@@ -1113,7 +1114,6 @@ msgid "Move the selection up"
 msgstr "Пересунути обране вгору"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
 msgid "Move down"
 msgstr "Пересунути вниз"
 
@@ -1219,6 +1219,10 @@ msgid "Quit the application"
 msgstr "Вийти із додатку"
 
 #: src/utils/TranslationUtils.gd
+msgid "Toggle fullscreen"
+msgstr ""
+
+#: src/utils/TranslationUtils.gd
 msgid "Move to"
 msgstr "Пересунути до"
 
@@ -1264,16 +1268,28 @@ msgstr "Абсолютно"
 
 #: src/utils/TranslationUtils.gd
 msgid "Code editor"
-msgstr ""
+msgstr "Редактор коду"
 
 #: src/utils/TranslationUtils.gd
 msgid "Inspector"
-msgstr ""
+msgstr "Інспектор"
+
+#. The viewport is the area where the graphic is displayed. In similar applications, it's often called the canvas.
+#: src/utils/TranslationUtils.gd
+msgid "Viewport"
+msgstr "Вікно перегляду"
 
 #: src/utils/TranslationUtils.gd
-#, fuzzy
-msgid "Viewport"
-msgstr "Перегляд"
+msgid "Select an image"
+msgstr "Обрати зображення"
+
+#: src/utils/TranslationUtils.gd
+msgid "Select an {format} file"
+msgstr "Обрати {format} файл"
+
+#: src/utils/TranslationUtils.gd
+msgid "Save the {format} file"
+msgstr "Зберегти {format} файл"
 
 #: src/utils/TranslationUtils.gd
 msgid ""
@@ -1286,6 +1302,18 @@ msgstr ""
 #: src/utils/TranslationUtils.gd
 msgid "The file extension is empty. Only {extension_list} files are supported."
 msgstr "Розширення файлу порожнє. Тільки {extension_list} файли підтримуються."
+
+#~ msgid "Save the .\"{format}\" file"
+#~ msgstr "Зберегти .\"{format}\" файл"
+
+#~ msgid "Load an image file"
+#~ msgstr "Завантажити файл зображення"
+
+#~ msgid "Import a {extension} file"
+#~ msgstr "Імпортувати {extension} файл"
+
+#~ msgid "Select an SVG"
+#~ msgstr "Обрати SVG"
 
 #~ msgid "Show reference"
 #~ msgstr "Показати еталонне зображення"

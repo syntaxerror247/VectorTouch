@@ -244,6 +244,15 @@ msgstr "显示"
 msgid "Snap size"
 msgstr "吸附大小"
 
+#: src/ui_parts/display.gd
+#, fuzzy
+msgid "Paste reference image"
+msgstr "加载参考图像"
+
+#: src/ui_parts/donate_menu.gd
+msgid "Links to donation platforms"
+msgstr ""
+
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
 #: src/ui_widgets/confirm_dialog.gd src/ui_widgets/options_dialog.gd
@@ -317,22 +326,6 @@ msgstr "切换隐藏文件可见性"
 #: src/ui_parts/good_file_dialog.gd
 msgid "Search files"
 msgstr "搜索文件"
-
-#: src/ui_parts/good_file_dialog.gd src/utils/TranslationUtils.gd
-msgid "Save SVG"
-msgstr "保存 SVG"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an SVG"
-msgstr "选择 SVG"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an XML file"
-msgstr "选择 XML 文件"
-
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select an image"
-msgstr "选择图像"
 
 #: src/ui_parts/good_file_dialog.gd
 msgid "Select"
@@ -408,6 +401,7 @@ msgstr "语法错误"
 msgid "Add element"
 msgstr "添加元素"
 
+#. Refers to the zero, one, or multiple UI parts to not be shown in the final layout. It's of plural cardinality.
 #: src/ui_parts/layout_popup.gd
 msgid "Excluded"
 msgstr ""
@@ -440,7 +434,7 @@ msgstr "吸附"
 msgid "Formatting"
 msgstr "格式化"
 
-#: src/ui_parts/settings_menu.gd src/ui_widgets/color_popup.gd
+#: src/ui_parts/settings_menu.gd src/ui_widgets/color_field_popup.gd
 msgid "Palettes"
 msgstr "调色盘"
 
@@ -484,6 +478,7 @@ msgstr "注释颜色"
 msgid "Text color"
 msgstr "文本颜色"
 
+#. CDATA shouldn't be translated. It's a type of XML section.
 #: src/ui_parts/settings_menu.gd
 msgid "CDATA color"
 msgstr "CDATA 颜色"
@@ -492,6 +487,7 @@ msgstr "CDATA 颜色"
 msgid "Error color"
 msgstr "错误颜色"
 
+#. Refers to the colors of the draggable handles.
 #: src/ui_parts/settings_menu.gd
 msgid "Handle colors"
 msgstr "拖拽框颜色"
@@ -569,6 +565,7 @@ msgstr "使用系统自带文件选择窗口"
 msgid "Sync window title to file name"
 msgstr "同步窗口标题为文件名"
 
+#. Refers to the size of the draggable handles.
 #: src/ui_parts/settings_menu.gd
 msgid "Handle size"
 msgstr "拖拽框大小"
@@ -602,11 +599,13 @@ msgstr "新建调色盘"
 msgid "New palette from XML"
 msgstr "从 XML 创建新调色盘"
 
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_parts/settings_menu.gd
 #, fuzzy
 msgid "Editor formatter"
 msgstr "编辑器格式"
 
+#. Refers to the formatter used when exporting.
 #: src/ui_parts/settings_menu.gd
 #, fuzzy
 msgid "Export formatter"
@@ -714,6 +713,12 @@ msgid "Remove unnecessary parameters"
 msgstr "移除不必要的参数"
 
 #: src/ui_parts/settings_menu.gd
+msgid ""
+"If turned on, clicking on a tab with the middle mouse button closes the tab. "
+"If turned off, it focuses the tab instead."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd
 msgid "Swaps the scroll directions for zooming in and zooming out."
 msgstr ""
 
@@ -724,9 +729,9 @@ msgid ""
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd
+#, fuzzy
 msgid ""
-"If turned on, scrolling will pan the view. To zoom, hold CTRL while "
-"scrolling."
+"If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
 msgstr "如果启用，滚动鼠标滚轮将移动视图。按住 CTRL 并滚动滚轮以缩放。"
 
 #: src/ui_parts/settings_menu.gd
@@ -738,9 +743,10 @@ msgstr ""
 "择窗口。"
 
 #: src/ui_parts/settings_menu.gd
+#, fuzzy
 msgid ""
-"If turned off, the window title will remain simply \"GodSVG\" regardless of "
-"the current file."
+"If turned off, the window title remains as \"GodSVG\" without including the "
+"current file."
 msgstr "如果禁用，不论当前打开的文件是什么，窗口标题都将固定为 “GodSVG”。"
 
 #: src/ui_parts/settings_menu.gd
@@ -784,13 +790,13 @@ msgid "This SVG is not bound to a file location yet."
 msgstr ""
 
 #: src/ui_parts/update_menu.gd
+msgid "Retry"
+msgstr "重试"
+
+#: src/ui_parts/update_menu.gd
 #, fuzzy
 msgid "Show prereleases"
 msgstr "包括预发布版本"
-
-#: src/ui_parts/update_menu.gd
-msgid "Retry"
-msgstr "重试"
 
 #: src/ui_parts/update_menu.gd
 msgid "Current Version"
@@ -800,27 +806,34 @@ msgstr "当前版本"
 msgid "Retrieving information..."
 msgstr "正在获取信息…"
 
+#. When checking for updates.
 #: src/ui_parts/update_menu.gd
 msgid "Update check failed"
 msgstr "更新检查失败"
+
+#: src/ui_parts/update_menu.gd
+#, fuzzy
+msgid "View all releases"
+msgstr "选择所有元素"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
 msgstr "GodSVG 是最新版本。"
 
 #: src/ui_parts/update_menu.gd
-msgid "New versions"
+#, fuzzy
+msgid "New versions available!"
 msgstr "新版本"
 
 #: src/ui_widgets/choose_name_dialog.gd
 msgid "Create"
 msgstr "创建"
 
-#: src/ui_widgets/color_popup.gd
+#: src/ui_widgets/color_field_popup.gd
 msgid "Search color"
 msgstr "搜索颜色"
 
-#: src/ui_widgets/color_popup.gd
+#: src/ui_widgets/color_field_popup.gd
 msgid "Color Picker"
 msgstr "取色器"
 
@@ -940,18 +953,6 @@ msgid "GodSVG doesn’t recognize this attribute"
 msgstr "GodSVG 无法识别该属性"
 
 #: src/utils/FileUtils.gd
-msgid "Save the .\"{format}\" file"
-msgstr "保存 .\"{format}\" 文件"
-
-#: src/utils/FileUtils.gd
-msgid "Load an image file"
-msgstr "加载图像文件"
-
-#: src/utils/FileUtils.gd
-msgid "Import a {extension} file"
-msgstr "导入 {extension} 文件"
-
-#: src/utils/FileUtils.gd
 msgid "The file couldn't be opened."
 msgstr "无法打开文件。"
 
@@ -992,6 +993,10 @@ msgstr ""
 #: src/utils/FileUtils.gd
 msgid "Do you want to save the changes made to {file_name}?"
 msgstr ""
+
+#: src/utils/TranslationUtils.gd
+msgid "Save SVG"
+msgstr "保存 SVG"
 
 #: src/utils/TranslationUtils.gd
 #, fuzzy
@@ -1218,6 +1223,10 @@ msgid "Quit the application"
 msgstr "退出程序"
 
 #: src/utils/TranslationUtils.gd
+msgid "Toggle fullscreen"
+msgstr ""
+
+#: src/utils/TranslationUtils.gd
 msgid "Move to"
 msgstr "移动到"
 
@@ -1269,10 +1278,25 @@ msgstr ""
 msgid "Inspector"
 msgstr ""
 
+#. The viewport is the area where the graphic is displayed. In similar applications, it's often called the canvas.
 #: src/utils/TranslationUtils.gd
 #, fuzzy
 msgid "Viewport"
 msgstr "视图"
+
+#: src/utils/TranslationUtils.gd
+msgid "Select an image"
+msgstr "选择图像"
+
+#: src/utils/TranslationUtils.gd
+#, fuzzy
+msgid "Select an {format} file"
+msgstr "选择 XML 文件"
+
+#: src/utils/TranslationUtils.gd
+#, fuzzy
+msgid "Save the {format} file"
+msgstr "保存 .\"{format}\" 文件"
 
 #: src/utils/TranslationUtils.gd
 msgid ""
@@ -1284,6 +1308,18 @@ msgstr ""
 #: src/utils/TranslationUtils.gd
 msgid "The file extension is empty. Only {extension_list} files are supported."
 msgstr "文件扩展名为空。只有 {extension_list} 内的文件受支持。"
+
+#~ msgid "Save the .\"{format}\" file"
+#~ msgstr "保存 .\"{format}\" 文件"
+
+#~ msgid "Load an image file"
+#~ msgstr "加载图像文件"
+
+#~ msgid "Import a {extension} file"
+#~ msgstr "导入 {extension} 文件"
+
+#~ msgid "Select an SVG"
+#~ msgstr "选择 SVG"
 
 #~ msgid "Show reference"
 #~ msgstr "显示参考"
@@ -1333,9 +1369,6 @@ msgstr "文件扩展名为空。只有 {extension_list} 内的文件受支持。
 #, fuzzy
 #~ msgid "Open SVG file"
 #~ msgstr "打开文件"
-
-#~ msgid "Select all elements"
-#~ msgstr "选择所有元素"
 
 #~ msgid "Duplicate the selected elements"
 #~ msgstr "克隆选中的元素"
