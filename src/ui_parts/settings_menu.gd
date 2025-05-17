@@ -246,6 +246,26 @@ func setup_content() -> void:
 			add_advice(Translator.translate(
 					"Changes the visual size and grabbing area of handles."))
 			
+			current_setup_setting = "ui_scale"
+			var dropdown_values := [
+				SaveData.ScalingApproach.AUTO,
+				SaveData.ScalingApproach.CONSTANT_150,
+				SaveData.ScalingApproach.CONSTANT_175,
+				SaveData.ScalingApproach.CONSTANT_200,
+				SaveData.ScalingApproach.CONSTANT_250,
+				SaveData.ScalingApproach.CONSTANT_300
+			]
+			# Dictionary[SaveData.ScalingApproach, String]
+			var dropdown_map: Dictionary = {
+				SaveData.ScalingApproach.AUTO: "Auto (%d%%)" % int(HandlerGUI.get_auto_ui_scale() / 2.0 * 100),
+				SaveData.ScalingApproach.CONSTANT_150: "75%",
+				SaveData.ScalingApproach.CONSTANT_175: "88%",
+				SaveData.ScalingApproach.CONSTANT_200: "100%",
+				SaveData.ScalingApproach.CONSTANT_250: "125%",
+				SaveData.ScalingApproach.CONSTANT_300: "150%"
+			}
+			add_dropdown(Translator.translate("UI scale"), dropdown_values, dropdown_map)
+			add_advice(Translator.translate("Changes the scale factor for the interface."))
 			# Disable mouse wrap if not available.
 			if not DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP):
 				wraparound_panning.permanent_disable_checkbox(false)
@@ -278,8 +298,7 @@ func add_checkbox(text: String, dim_text := false) -> Control:
 	return frame
 
 # TODO Typed Dictionary wonkiness
-func add_dropdown(text: String, values: Array[Variant],
-value_text_map: Dictionary) -> Control:  # Dictionary[Variant, String]
+func add_dropdown(text: String, values: Array[Variant], value_text_map: Dictionary) -> Control:  # Dictionary[Variant, String]
 	var frame := SettingFrameScene.instantiate()
 	frame.text = text
 	setup_frame(frame)

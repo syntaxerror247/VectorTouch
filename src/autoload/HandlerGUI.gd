@@ -365,33 +365,44 @@ func get_min_ui_scale() -> float:
 	return maxf(snappedf(get_max_ui_scale() / 2.0 - 0.125, 0.25), 0.75)
 
 func get_auto_ui_scale() -> float:
-	# Usable rect might not be reliable on web, so attempt to use devicePixelRatio.
-	if OS.get_name() == "Web":
-		var pixel_ratio: float = JavaScriptBridge.eval("window.devicePixelRatio || 1", true)
-		if is_finite(pixel_ratio):
-			return snappedf(pixel_ratio, 0.25)
-	
-	var screen_size := get_usable_rect()
-	if screen_size.x == 0 or screen_size.y == 0:
-		return 1.0
-	
-	# The wider the screen, the bigger the automatically chosen UI scale.
-	var aspect_ratio := screen_size.aspect()
-	var auto_scale := get_max_ui_scale() * clampf(aspect_ratio * 0.375, 0.6, 0.8)
-	if OS.get_name() == "Android":
-		auto_scale *= 1.1  # Default to giving mobile a bit more space.
-	return clampf(snappedf(auto_scale, 0.25), get_min_ui_scale(), get_max_ui_scale())
+	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
+	print(dpi)
+	if dpi <= 120:
+		return 0.75  # ldpi
+	elif dpi <= 160:
+		return 1.0   # mdpi
+	elif dpi <= 240:
+		return 1.5   # hdpi
+	elif dpi <= 320:
+		return 2.0   # xhdpi
+	elif dpi <= 400:
+		return 2.5
+	elif dpi <= 480:
+		return 3.0   # xxhdpi
+	elif dpi <= 640:
+		return 4.0   # xxxhdpi
+	else:
+		return 5.0
 
 
 func update_ui_scale() -> void:
 	var window := get_window()
 	if not window.is_node_ready():
 		await window.ready
-	if Configs.savedata.ui_scale == SaveData.ScalingApproach.AUTO:
-		window.content_scale_factor = _calculate_auto_scale()
-	else:
-		var final_scale := minf(Configs.savedata.ui_scale, 4.0)
-		window.content_scale_factor = final_scale
+	var ui_scaling_approach := Configs.savedata.ui_scale
+	var final_scale: float
+	match ui_scaling_approach:
+		SaveData.ScalingApproach.AUTO: final_scale = get_auto_ui_scale()
+		SaveData.ScalingApproach.CONSTANT_075: final_scale = 0.75
+		SaveData.ScalingApproach.CONSTANT_100: final_scale = 1.0
+		SaveData.ScalingApproach.CONSTANT_125: final_scale = 1.25
+		SaveData.ScalingApproach.CONSTANT_150: final_scale = 1.50
+		SaveData.ScalingApproach.CONSTANT_175: final_scale = 1.75
+		SaveData.ScalingApproach.CONSTANT_200: final_scale = 2.0
+		SaveData.ScalingApproach.CONSTANT_250: final_scale = 2.5
+		SaveData.ScalingApproach.CONSTANT_300: final_scale = 3.0
+		SaveData.ScalingApproach.CONSTANT_400: final_scale = 4.0
+	window.content_scale_factor = final_scale
 
 
 func prompt_quit() -> void:
@@ -481,25 +492,6 @@ func open_export() -> void:
 	var svg_export_data := ImageExportData.new()
 	confirm_dialog.setup(Translator.translate("Export SVG"), message,
 			Translator.translate("Export"), FileUtils.open_export_dialog.bind(svg_export_data))
-
-func _calculate_auto_scale() -> float:
-	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
-
-	#if dpi <= 120:
-		#return 0.75  # ldpi
-	if dpi <= 160:
-		return 1.0  # mdpi (baseline)
-	elif dpi <= 240:
-		return 1.5  # hdpi
-	elif dpi <= 320:
-		return 2.0  # xhdpi
-	elif dpi <= 480:
-		return 3.0  # xxhdpi
-	elif dpi <= 640:
-		return 4.0  # xxxhdpi
-	else:
-		return 5.0  # Beyond xxxhdpi
-
 
 func update_window_title() -> void:
 	if Configs.savedata.use_filename_for_window_title and\
