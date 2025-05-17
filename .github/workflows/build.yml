@@ -106,9 +106,10 @@ jobs:
         name: Build Godot release template for Android
         run: |
           cd godot
-          scons p=android arch=arm64 generate_apk=yes ${BUILD_OPTIONS} target=template_release
+          scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release
+          scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release generate_apk=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
-          mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
+          mv ./bin/android_release.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
 
       - name: Export debug project
@@ -122,7 +123,7 @@ jobs:
           godot --headless --export-debug "Android" build/android/GodSVG-Mobile-debug.apk
 
       - name: Export release project
-        if: github.event_name == 'workflow_dispatch'
+        if: github.event.pull_request.head.repo.fork != true
         env:
           GODOT_ANDROID_KEYSTORE_RELEASE_PATH: "/tmp/release.keystore"
           GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.KEY_ALIAS }}
@@ -131,6 +132,7 @@ jobs:
           cd godsvg
           mkdir -p build/android
           echo "${{ secrets.KEYSTORE }}" | base64 -d > /tmp/release.keystore
+          godot --headless --export-release "Android(arm32)" build/android/GodSVG-Mobile-arm32.apk
           godot --headless --export-release "Android" build/android/GodSVG-Mobile.apk
 
       - name: Upload debug artifact
@@ -146,5 +148,13 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME }}
           path: godsvg/build/android/GodSVG-Mobile.apk
+          if-no-files-found: ignore
+          retention-days: 28
+
+      - name: Upload arm32 APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.PROJECT_NAME }}-arm32
+          path: godsvg/build/android/GodSVG-Mobile-arm32.apk
           if-no-files-found: ignore
           retention-days: 28
