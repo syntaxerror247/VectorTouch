@@ -249,6 +249,8 @@ func setup_content() -> void:
 			current_setup_setting = "ui_scale"
 			var dropdown_values := [
 				SaveData.ScalingApproach.AUTO,
+				SaveData.ScalingApproach.CONSTANT_100,
+				SaveData.ScalingApproach.CONSTANT_125,
 				SaveData.ScalingApproach.CONSTANT_150,
 				SaveData.ScalingApproach.CONSTANT_175,
 				SaveData.ScalingApproach.CONSTANT_200,
@@ -257,12 +259,14 @@ func setup_content() -> void:
 			]
 			# Dictionary[SaveData.ScalingApproach, String]
 			var dropdown_map: Dictionary = {
-				SaveData.ScalingApproach.AUTO: "Auto (%d%%)" % int(HandlerGUI.get_auto_ui_scale() / 2.0 * 100),
-				SaveData.ScalingApproach.CONSTANT_150: "75%",
-				SaveData.ScalingApproach.CONSTANT_175: "88%",
-				SaveData.ScalingApproach.CONSTANT_200: "100%",
-				SaveData.ScalingApproach.CONSTANT_250: "125%",
-				SaveData.ScalingApproach.CONSTANT_300: "150%"
+				SaveData.ScalingApproach.AUTO: "Auto (%d%%)" % int(HandlerGUI.get_auto_ui_scale()/ 1.5 * 100),
+				SaveData.ScalingApproach.CONSTANT_100: "66%",
+				SaveData.ScalingApproach.CONSTANT_125: "83%",
+				SaveData.ScalingApproach.CONSTANT_150: "100%",
+				SaveData.ScalingApproach.CONSTANT_175: "116%",
+				SaveData.ScalingApproach.CONSTANT_200: "133%",
+				SaveData.ScalingApproach.CONSTANT_250: "166%",
+				SaveData.ScalingApproach.CONSTANT_300: "200%"
 			}
 			add_dropdown(Translator.translate("UI scale"), dropdown_values, dropdown_map)
 			add_advice(Translator.translate("Changes the scale factor for the interface."))
