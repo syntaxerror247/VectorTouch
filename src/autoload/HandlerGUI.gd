@@ -366,23 +366,34 @@ func get_min_ui_scale() -> float:
 
 func get_auto_ui_scale() -> float:
 	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
+	
 	if dpi <= 120:
-		return 0.75  # ldpi
+		return 0.75
 	elif dpi <= 160:
-		return 1.0   # mdpi
+		return 1.0
+	elif dpi <= 200:
+		return 1.25
 	elif dpi <= 240:
-		return 1.5   # hdpi
+		return 1.5
+	elif dpi <= 280:
+		return 1.75
 	elif dpi <= 320:
-		return 2.0   # xhdpi
+		return 2.0
+	elif dpi <= 360:
+		return 2.25
 	elif dpi <= 400:
 		return 2.5
+	elif dpi <= 440:
+		return 2.75
 	elif dpi <= 480:
-		return 3.0   # xxhdpi
+		return 3.0
+	elif dpi <= 560:
+		return 3.5
 	elif dpi <= 640:
-		return 4.0   # xxxhdpi
+		return 4.0
 	else:
 		return 5.0
-
+	
 
 func update_ui_scale() -> void:
 	var window := get_window()
