@@ -73,7 +73,7 @@ msgstr ""
 "заданы."
 
 #: src/autoload/State.gd src/ui_parts/good_file_dialog.gd
-#: src/ui_widgets/alert_dialog.gd
+#: src/ui_widgets/alert_dialog.gd src/utils/FileUtils.gd
 msgid "Alert!"
 msgstr "Внимание!"
 
@@ -248,13 +248,12 @@ msgid "Snap size"
 msgstr "Размер привязки"
 
 #: src/ui_parts/display.gd
-#, fuzzy
 msgid "Paste reference image"
-msgstr "Загрузить референс"
+msgstr "Вставить референсое изображение"
 
 #: src/ui_parts/donate_menu.gd
 msgid "Links to donation platforms"
-msgstr ""
+msgstr "Ссылки на платформы для пожертвований"
 
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
@@ -302,6 +301,10 @@ msgstr "Ширина"
 msgid "Height"
 msgstr "Высота"
 
+#: src/ui_parts/export_menu.gd src/utils/TranslationUtils.gd
+msgid "Copy"
+msgstr "Скопировать"
+
 #: src/ui_parts/export_menu.gd
 msgid "Preview image size is limited to {dimensions}"
 msgstr ""
@@ -331,13 +334,13 @@ msgstr "Переключить видимость скрытых файлов"
 msgid "Search files"
 msgstr "Искать файлы"
 
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select"
-msgstr "Выбрать"
-
 #: src/ui_parts/good_file_dialog.gd src/utils/FileUtils.gd
 msgid "Save"
 msgstr "Сохранить"
+
+#: src/ui_parts/good_file_dialog.gd
+msgid "Select"
+msgstr "Выбрать"
 
 #: src/ui_parts/good_file_dialog.gd
 msgid "Path"
@@ -797,7 +800,7 @@ msgstr "Прокрутить вперед"
 msgid "This SVG is not bound to a file location yet."
 msgstr "Это SVG изображение еще не связано с расположением файла."
 
-#: src/ui_parts/update_menu.gd
+#: src/ui_parts/update_menu.gd src/utils/FileUtils.gd
 msgid "Retry"
 msgstr "Попробовать еще раз"
 
@@ -819,18 +822,16 @@ msgid "Update check failed"
 msgstr "Не удалось проверить обновления"
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
 msgid "View all releases"
-msgstr "Показывать тестовые сборки"
+msgstr "Показать все сборки"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
 msgstr "Установлена последняя версия GodSVG."
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
 msgid "New versions available!"
-msgstr "Новые версии"
+msgstr "Доступна новая версия!"
 
 #: src/ui_widgets/choose_name_dialog.gd
 msgid "Create"
@@ -958,12 +959,36 @@ msgid "GodSVG doesn’t recognize this attribute"
 msgstr "GodSVG не может распознать этот атрибут"
 
 #: src/utils/FileUtils.gd
-msgid "The file couldn't be opened."
-msgstr "Файл невозможно открыть."
+msgid "The following files were discarded:"
+msgstr "Следующие файлы были отклонены:"
+
+#: src/utils/FileUtils.gd
+msgid "{file_path} was discarded."
+msgstr "{file_path} был отклонен."
+
+#: src/utils/FileUtils.gd
+msgid "Discarded files"
+msgstr "Отклоненные файлы"
+
+#: src/utils/FileUtils.gd
+msgid "Proceed"
+msgstr "Продолжить"
+
+#: src/utils/FileUtils.gd
+msgid "{file_path} couldn't be opened."
+msgstr "Невозможно открыть {file_path} файл."
 
 #: src/utils/FileUtils.gd
 msgid "Check if the file still exists in the selected file path."
 msgstr "Проверьте, что файл все еще существует по выбранному пути."
+
+#: src/utils/FileUtils.gd
+msgid "Proceed with importing the rest of the files?"
+msgstr "Продолжить импортировать остальные файлы?"
+
+#: src/utils/FileUtils.gd
+msgid "Proceed for all files that can't be opened"
+msgstr "Продолжить для всех файлов, которые не могут быть открыты"
 
 #: src/utils/FileUtils.gd
 msgid "Save the file?"
@@ -986,8 +1011,8 @@ msgid "Don't save"
 msgstr "Не сохранять"
 
 #: src/utils/FileUtils.gd
-msgid "The imported file is already being edited inside GodSVG."
-msgstr "Импортированный файл уже редактируется в GodSVG."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "Файл {file_path} уже редактируется внутри GodSVG."
 
 #: src/utils/FileUtils.gd
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1018,6 +1043,14 @@ msgstr "Закрыть вкладки справа"
 #: src/utils/TranslationUtils.gd
 msgid "Close all other tabs"
 msgstr "Закрыть все остальные вкладки"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close empty tabs"
+msgstr "Закрыть пустые вкладки"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close saved tabs"
+msgstr "Закрыть сохраненные вкладки"
 
 #: src/utils/TranslationUtils.gd
 msgid "Create tab"
@@ -1074,10 +1107,6 @@ msgstr "Отменить"
 #: src/utils/TranslationUtils.gd
 msgid "Redo"
 msgstr "Вернуть"
-
-#: src/utils/TranslationUtils.gd
-msgid "Copy"
-msgstr "Скопировать"
 
 #: src/utils/TranslationUtils.gd
 msgid "Paste"
@@ -1217,7 +1246,7 @@ msgstr "Выйти из приложения"
 
 #: src/utils/TranslationUtils.gd
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Переключить полный экран"
 
 #: src/utils/TranslationUtils.gd
 msgid "Move to"
@@ -1277,6 +1306,10 @@ msgid "Viewport"
 msgstr "Окно просмотра"
 
 #: src/utils/TranslationUtils.gd
+msgid "Select {format} files"
+msgstr "Выбрать {format} файлы"
+
+#: src/utils/TranslationUtils.gd
 msgid "Select an image"
 msgstr "Выбрать изображение"
 
@@ -1289,16 +1322,17 @@ msgid "Save the {format} file"
 msgstr "Сохранить {format} файл"
 
 #: src/utils/TranslationUtils.gd
-msgid ""
-"The file extension {extension} is unsupported for this operation. Only "
-"{extension_list} files are supported."
+msgid "Only {extension_list} files are supported for this operation."
 msgstr ""
-"Расширение файла {extension} не поддерживается для этой операции. Только "
-"{extension_list} файлы поддерживаются."
+"Только файлы с расширениями {extension_list} поддерживаются для этой "
+"операции."
 
-#: src/utils/TranslationUtils.gd
-msgid "The file extension is empty. Only {extension_list} files are supported."
-msgstr "Расширение файла пустое. Поддерживаются только {extension_list} файлы."
+#~ msgid ""
+#~ "The file extension {extension} is unsupported for this operation. Only "
+#~ "{extension_list} files are supported."
+#~ msgstr ""
+#~ "Расширение файла {extension} не поддерживается для этой операции. Только "
+#~ "{extension_list} файлы поддерживаются."
 
 #~ msgid "Save the .\"{format}\" file"
 #~ msgstr "Сохранить .\"{format}\" файл"

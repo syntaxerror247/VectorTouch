@@ -71,13 +71,13 @@ msgstr ""
 "Graafika saab eksportida ainult SVG-na, sest selle suurus pole defineeritud."
 
 #: src/autoload/State.gd src/ui_parts/good_file_dialog.gd
-#: src/ui_widgets/alert_dialog.gd
+#: src/ui_widgets/alert_dialog.gd src/utils/FileUtils.gd
 msgid "Alert!"
 msgstr "Hoiatus!"
 
 #: src/autoload/State.gd src/utils/TranslationUtils.gd
 msgid "Close tab"
-msgstr "Sulge kaart"
+msgstr "Sulge vahekaart"
 
 #: src/autoload/State.gd
 msgid "Restore"
@@ -104,8 +104,8 @@ msgid ""
 "The tab is bound to the file path {file_path}. Do you want to restore the "
 "SVG from this path?"
 msgstr ""
-"Kaart on seotud failiga asukohas {file_path}. Kas te soovite taastada SVG "
-"sellest failist?"
+"See vahekaart on seotud failiga asukohas {file_path}. Kas te soovite "
+"taastada SVG sellest failist?"
 
 #: src/config_classes/Formatter.gd
 msgid "Compact"
@@ -251,7 +251,7 @@ msgstr "Kleebi võrdluspilt"
 
 #: src/ui_parts/donate_menu.gd
 msgid "Links to donation platforms"
-msgstr ""
+msgstr "Annetusplatvormide lingid"
 
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
@@ -299,6 +299,10 @@ msgstr "Laius"
 msgid "Height"
 msgstr "Kõrgus"
 
+#: src/ui_parts/export_menu.gd src/utils/TranslationUtils.gd
+msgid "Copy"
+msgstr "Kopeeri"
+
 #: src/ui_parts/export_menu.gd
 msgid "Preview image size is limited to {dimensions}"
 msgstr "Eelvaade on piiratud suurusele {dimensions}"
@@ -327,13 +331,13 @@ msgstr "Lülita peidetud failide kuvamine sisse"
 msgid "Search files"
 msgstr "Otsi faile"
 
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select"
-msgstr "Vali"
-
 #: src/ui_parts/good_file_dialog.gd src/utils/FileUtils.gd
 msgid "Save"
 msgstr "Salvesta"
+
+#: src/ui_parts/good_file_dialog.gd
+msgid "Select"
+msgstr "Vali"
 
 #: src/ui_parts/good_file_dialog.gd
 msgid "Path"
@@ -544,7 +548,7 @@ msgstr "Sisend"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Close tabs with middle mouse button"
-msgstr "Sulge kaarte keskmise hiireklahviga"
+msgstr "Sulge vahekaarte keskmise hiireklahviga"
 
 #: src/ui_parts/settings_menu.gd
 msgid "Invert zoom direction"
@@ -777,7 +781,7 @@ msgstr "Kiirklahvida seadistamise paneel"
 
 #: src/ui_parts/tab_bar.gd src/utils/TranslationUtils.gd
 msgid "Create a new tab"
-msgstr "Loo uus kaart"
+msgstr "Loo uus vahekaart"
 
 #: src/ui_parts/tab_bar.gd
 msgid "Scroll backwards"
@@ -791,7 +795,7 @@ msgstr "Keri edasi"
 msgid "This SVG is not bound to a file location yet."
 msgstr "See SVG ei ole veel seotud failiasukohaga."
 
-#: src/ui_parts/update_menu.gd
+#: src/ui_parts/update_menu.gd src/utils/FileUtils.gd
 msgid "Retry"
 msgstr "Proovi uuesti"
 
@@ -813,18 +817,16 @@ msgid "Update check failed"
 msgstr "Uuenduste otsimine ebaõnnestus"
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
 msgid "View all releases"
-msgstr "Näita eelväljaandeid"
+msgstr "Näita kõiki väljaandeid"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
 msgstr "GodSVG on ajakohane."
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
 msgid "New versions available!"
-msgstr "Uued versioonid"
+msgstr "Uuem versioon on saadaval!"
 
 #: src/ui_widgets/choose_name_dialog.gd
 msgid "Create"
@@ -952,12 +954,36 @@ msgid "GodSVG doesn’t recognize this attribute"
 msgstr "GodSVG ei tunne seda atribuuti"
 
 #: src/utils/FileUtils.gd
-msgid "The file couldn't be opened."
-msgstr "Faili avamine ebaõnnestus."
+msgid "The following files were discarded:"
+msgstr "Järgnevad failid hüljati:"
+
+#: src/utils/FileUtils.gd
+msgid "{file_path} was discarded."
+msgstr "{file_path} hüljati."
+
+#: src/utils/FileUtils.gd
+msgid "Discarded files"
+msgstr "Hüljatud failid"
+
+#: src/utils/FileUtils.gd
+msgid "Proceed"
+msgstr "Jätka"
+
+#: src/utils/FileUtils.gd
+msgid "{file_path} couldn't be opened."
+msgstr "{file_path} ei saanud avada."
 
 #: src/utils/FileUtils.gd
 msgid "Check if the file still exists in the selected file path."
 msgstr "Kontrollige, kas fail asub veel valitud asukohas."
+
+#: src/utils/FileUtils.gd
+msgid "Proceed with importing the rest of the files?"
+msgstr "Jätka ülejäänud failide importimisega?"
+
+#: src/utils/FileUtils.gd
+msgid "Proceed for all files that can't be opened"
+msgstr "Jätka kõikide failide jaoks, mida ei saa avada"
 
 #: src/utils/FileUtils.gd
 msgid "Save the file?"
@@ -980,8 +1006,8 @@ msgid "Don't save"
 msgstr "Ära salvesta"
 
 #: src/utils/FileUtils.gd
-msgid "The imported file is already being edited inside GodSVG."
-msgstr "Imporditud fail on juba avatud GodSVGs."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "{file_path} on juba avatud GodSVGs."
 
 #: src/utils/FileUtils.gd
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1014,16 +1040,24 @@ msgid "Close all other tabs"
 msgstr "Sulge teised kaardid"
 
 #: src/utils/TranslationUtils.gd
+msgid "Close empty tabs"
+msgstr "Sulge tühjad kaardid"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close saved tabs"
+msgstr "Sulge salvestatud kaardid"
+
+#: src/utils/TranslationUtils.gd
 msgid "Create tab"
-msgstr "Uus kaart"
+msgstr "Uus vahekaart"
 
 #: src/utils/TranslationUtils.gd
 msgid "Select the next tab"
-msgstr "Vali järgmine kaart"
+msgstr "Vali järgmine vahekaart"
 
 #: src/utils/TranslationUtils.gd
 msgid "Select the previous tab"
-msgstr "Vali eelmine kaart"
+msgstr "Vali eelmine vahekaart"
 
 #: src/utils/TranslationUtils.gd
 msgid "Optimize"
@@ -1068,10 +1102,6 @@ msgstr "Võta tagasi"
 #: src/utils/TranslationUtils.gd
 msgid "Redo"
 msgstr "Tee uuesti"
-
-#: src/utils/TranslationUtils.gd
-msgid "Copy"
-msgstr "Kopeeri"
 
 #: src/utils/TranslationUtils.gd
 msgid "Paste"
@@ -1271,6 +1301,10 @@ msgid "Viewport"
 msgstr "Vaade"
 
 #: src/utils/TranslationUtils.gd
+msgid "Select {format} files"
+msgstr "Vali {format} faile"
+
+#: src/utils/TranslationUtils.gd
 msgid "Select an image"
 msgstr "Vali pilt"
 
@@ -1283,16 +1317,15 @@ msgid "Save the {format} file"
 msgstr "Salvesta {format} fail"
 
 #: src/utils/TranslationUtils.gd
-msgid ""
-"The file extension {extension} is unsupported for this operation. Only "
-"{extension_list} files are supported."
-msgstr ""
-"Faililaiend {extension} ei ole selle operatsiooni jaoks toetatud. Toetatud "
-"on {extension_list} failid."
+msgid "Only {extension_list} files are supported for this operation."
+msgstr "Ainult {extension_list} failid on toetatud selle tehingu jaoks."
 
-#: src/utils/TranslationUtils.gd
-msgid "The file extension is empty. Only {extension_list} files are supported."
-msgstr "Faililaiend on tühi. Ainult {extension_list} on toetatud."
+#~ msgid ""
+#~ "The file extension {extension} is unsupported for this operation. Only "
+#~ "{extension_list} files are supported."
+#~ msgstr ""
+#~ "Faililaiend {extension} ei ole selle operatsiooni jaoks toetatud. "
+#~ "Toetatud on {extension_list} failid."
 
 #~ msgid "Save the .\"{format}\" file"
 #~ msgstr "Salvesta .\"{format}\" fail"

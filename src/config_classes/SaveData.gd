@@ -63,7 +63,7 @@ func validate() -> void:
 		if _layout.has(location) and not _layout[location].is_empty():
 			return
 	_layout = {
-		LayoutLocation.TOP_LEFT: [Utils.LayoutPart.CODE_EDITOR, Utils.LayoutPart.INSPECTOR]
+		LayoutLocation.TOP_LEFT: [Utils.LayoutPart.INSPECTOR, Utils.LayoutPart.CODE_EDITOR]
 	}
 
 
@@ -79,7 +79,7 @@ const CURRENT_VERSION = 1
 		if language != new_value:
 			language = new_value
 			emit_changed()
-			Configs.change_locale.call_deferred()
+			Configs.sync_locale.call_deferred()
 			Configs.language_changed.emit.call_deferred()
 
 # Theming
@@ -179,7 +179,7 @@ const CURRENT_VERSION = 1
 		if background_color != new_value:
 			background_color = new_value
 			emit_changed()
-			Configs.change_background_color.call_deferred()
+			Configs.sync_background_color.call_deferred()
 
 @export var grid_color := Color(0.5, 0.5, 0.5):
 	set(new_value):
@@ -571,7 +571,7 @@ func erase_shortcut_panel_slot(slot: int) -> void:
 	Configs.shortcut_panel_changed.emit()
 
 
-const MAX_TABS = 50
+const MAX_TABS = 4096
 @export var _tabs: Array[TabData] = []:
 	set(new_value):
 		# Validation
@@ -657,6 +657,7 @@ func set_active_tab_index(new_index: int) -> void:
 	if old_id != _tabs[_active_tab_index].id:
 		Configs.active_tab_changed.emit()
 
+# Basic operation that all tab adding methods call.
 func _add_new_tab() -> void:
 	if _tabs.size() >= MAX_TABS:
 		return
@@ -689,7 +690,8 @@ func add_empty_tab() -> void:
 	Configs.tabs_changed.emit()
 	set_active_tab_index(_tabs.size() - 1)
 
-# Adds a new path with the given path, unless something with the path already exists.
+# Adds a new path with the given path.
+# If a tab with the path already exists, it's set as the active tab instead.
 func add_tab_with_path(new_file_path: String) -> void:
 	for idx in _tabs.size():
 		if _tabs[idx].svg_file_path == new_file_path:
@@ -701,6 +703,8 @@ func add_tab_with_path(new_file_path: String) -> void:
 	Configs.tabs_changed.emit()
 	set_active_tab_index(_tabs.size() - 1)
 
+# Note that a method for removing multiple tabs at once isn't straightforward,
+# since removed tabs can show dialogs asking the user if they should be saved.
 func remove_tab(idx: int) -> void:
 	if idx < 0 or idx >= _tabs.size():
 		return

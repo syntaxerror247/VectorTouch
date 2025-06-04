@@ -116,7 +116,7 @@ func update_handles() -> void:
 	
 	_handles_update_pending = false
 	handles.clear()
-	for element in State.root_element.get_all_element_descendants():
+	for element in State.root_element.get_all_valid_element_descendants():
 		match element.name:
 			"circle":
 				handles.append(XYHandle.new(element, "cx", "cy"))
@@ -132,6 +132,8 @@ func update_handles() -> void:
 			"line":
 				handles.append(XYHandle.new(element, "x1", "y1"))
 				handles.append(XYHandle.new(element, "x2", "y2"))
+			"use":
+				handles.append(XYHandle.new(element, "x", "y"))
 			"polygon", "polyline":
 				handles += generate_polyhandles(element)
 			"path":
@@ -195,7 +197,7 @@ func _draw() -> void:
 	var hovered_multiline := PackedVector2Array()
 	var hovered_selected_multiline := PackedVector2Array()
 	
-	for element: Element in State.root_element.get_all_element_descendants():
+	for element: Element in State.root_element.get_all_valid_element_descendants():
 		# Determine if the element is hovered/selected or has a hovered/selected parent.
 		var element_hovered := State.is_hovered(element.xid, -1, true)
 		var element_selected := State.is_selected(element.xid, -1, true)
@@ -267,7 +269,7 @@ func _draw() -> void:
 				var rx: float = element.get_rx()
 				var ry: float = element.get_ry()
 				var points := PackedVector2Array()
-				if rx == 0 and ry == 0:
+				if rx == 0 or ry == 0:
 					# Basic rectangle.
 					points = [Vector2(x, y), Vector2(x + rect_width, y),
 							Vector2(x + rect_width, y + rect_height),
@@ -546,7 +548,7 @@ func _draw() -> void:
 								e1 = e2
 								t += PI/4
 							
-							if n != ceili(segments):
+							if n != ceili(segments) and not is_equal_approx(n, segments):
 								t = theta1 + delta_theta
 								var p2 := Utils.E(c, r, cosine, sine, t)
 								var e2 := Utils.Et(r, cosine, sine, t)

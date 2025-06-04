@@ -1,9 +1,6 @@
 # An <svg> element.
 class_name ElementSVG extends Element
 
-# TODO Fix up the logic for handling x, y, and aspect ratio handling.
-#var x: float
-#var y: float
 var width: float
 var height: float
 var normalized_diagonal: float
@@ -19,6 +16,7 @@ const name = "svg"
 const possible_conversions: Array[String] = []
 
 func _init() -> void:
+	canvas_precise_transform = PackedFloat64Array([1.0, 0.0, 0.0, 1.0, 0.0, 0.0])
 	attribute_changed.connect(_conditional_update_cache)
 	# If attributes change in an ancestor, it can affect percentage calculations.
 	ancestor_attribute_changed.connect(_conditional_update_cache)
