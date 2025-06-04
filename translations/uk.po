@@ -72,7 +72,7 @@ msgstr ""
 "завданий."
 
 #: src/autoload/State.gd src/ui_parts/good_file_dialog.gd
-#: src/ui_widgets/alert_dialog.gd
+#: src/ui_widgets/alert_dialog.gd src/utils/FileUtils.gd
 msgid "Alert!"
 msgstr "Увага!"
 
@@ -247,13 +247,12 @@ msgid "Snap size"
 msgstr "Розмір прилипання"
 
 #: src/ui_parts/display.gd
-#, fuzzy
 msgid "Paste reference image"
-msgstr "Завантажити еталонне зображення"
+msgstr "Вставити еталонне зображення"
 
 #: src/ui_parts/donate_menu.gd
 msgid "Links to donation platforms"
-msgstr ""
+msgstr "Посилання на платформи для пожертв"
 
 #: src/ui_parts/donate_menu.gd src/ui_parts/export_menu.gd
 #: src/ui_parts/import_warning_menu.gd src/ui_widgets/choose_name_dialog.gd
@@ -301,6 +300,10 @@ msgstr "Ширина"
 msgid "Height"
 msgstr "Висота"
 
+#: src/ui_parts/export_menu.gd src/utils/TranslationUtils.gd
+msgid "Copy"
+msgstr "Скопіювати"
+
 #: src/ui_parts/export_menu.gd
 msgid "Preview image size is limited to {dimensions}"
 msgstr "Розмір попереднього перегляду зображення обмежено до {dimensions}"
@@ -329,13 +332,13 @@ msgstr "Перемикнути видимість прихованих файл�
 msgid "Search files"
 msgstr "Пошук файлів"
 
-#: src/ui_parts/good_file_dialog.gd
-msgid "Select"
-msgstr "Обрати"
-
 #: src/ui_parts/good_file_dialog.gd src/utils/FileUtils.gd
 msgid "Save"
 msgstr "Зберегти"
+
+#: src/ui_parts/good_file_dialog.gd
+msgid "Select"
+msgstr "Обрати"
 
 #: src/ui_parts/good_file_dialog.gd
 msgid "Path"
@@ -799,7 +802,7 @@ msgstr "Гортати вперед"
 msgid "This SVG is not bound to a file location yet."
 msgstr "Це SVG зображення поки що не пов'язано з розташуванням файла."
 
-#: src/ui_parts/update_menu.gd
+#: src/ui_parts/update_menu.gd src/utils/FileUtils.gd
 msgid "Retry"
 msgstr "Спробувати ще раз"
 
@@ -821,18 +824,16 @@ msgid "Update check failed"
 msgstr "Не вдалося перевірити оновлення"
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
 msgid "View all releases"
-msgstr "Показати тестові версії"
+msgstr "Показати усі версії"
 
 #: src/ui_parts/update_menu.gd
 msgid "GodSVG is up-to-date."
 msgstr "GodSVG оновлено до останньої версії."
 
 #: src/ui_parts/update_menu.gd
-#, fuzzy
 msgid "New versions available!"
-msgstr "Нові версії"
+msgstr "Доступна нова версія!"
 
 #: src/ui_widgets/choose_name_dialog.gd
 msgid "Create"
@@ -960,12 +961,36 @@ msgid "GodSVG doesn’t recognize this attribute"
 msgstr "GodSVG не може розпізнати цей атрибут"
 
 #: src/utils/FileUtils.gd
-msgid "The file couldn't be opened."
-msgstr "Цей файл неможливо відкрити."
+msgid "The following files were discarded:"
+msgstr "Наступні файли були відкинуті:"
+
+#: src/utils/FileUtils.gd
+msgid "{file_path} was discarded."
+msgstr "{file_path} було відкинуто."
+
+#: src/utils/FileUtils.gd
+msgid "Discarded files"
+msgstr "Відкинуті файли"
+
+#: src/utils/FileUtils.gd
+msgid "Proceed"
+msgstr "Продовжити"
+
+#: src/utils/FileUtils.gd
+msgid "{file_path} couldn't be opened."
+msgstr "Файл {file_path} неможливо відкрити."
 
 #: src/utils/FileUtils.gd
 msgid "Check if the file still exists in the selected file path."
 msgstr "Перевірити, чи файл все щє існує по обраному шляху."
+
+#: src/utils/FileUtils.gd
+msgid "Proceed with importing the rest of the files?"
+msgstr "Продовжити імпортуючи інші файли?"
+
+#: src/utils/FileUtils.gd
+msgid "Proceed for all files that can't be opened"
+msgstr "Продовжити для усіх файлів, які неможливо відкрити"
 
 #: src/utils/FileUtils.gd
 msgid "Save the file?"
@@ -988,8 +1013,8 @@ msgid "Don't save"
 msgstr "Не зберігати"
 
 #: src/utils/FileUtils.gd
-msgid "The imported file is already being edited inside GodSVG."
-msgstr "Імпортований файл вже редагується в GodSVG."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "Файл {file_path} вже редагується в GodSVG."
 
 #: src/utils/FileUtils.gd
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1020,6 +1045,14 @@ msgstr "Закрити усі вкладки справа"
 #: src/utils/TranslationUtils.gd
 msgid "Close all other tabs"
 msgstr "Закрити усі інші вкладки"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close empty tabs"
+msgstr "Закрити порожні вкладки"
+
+#: src/utils/TranslationUtils.gd
+msgid "Close saved tabs"
+msgstr "Закрити збережені вкладки"
 
 #: src/utils/TranslationUtils.gd
 msgid "Create tab"
@@ -1076,10 +1109,6 @@ msgstr "Скасувати"
 #: src/utils/TranslationUtils.gd
 msgid "Redo"
 msgstr "Повернути"
-
-#: src/utils/TranslationUtils.gd
-msgid "Copy"
-msgstr "Скопіювати"
 
 #: src/utils/TranslationUtils.gd
 msgid "Paste"
@@ -1220,7 +1249,7 @@ msgstr "Вийти із додатку"
 
 #: src/utils/TranslationUtils.gd
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Перемикнути повноекранний режим"
 
 #: src/utils/TranslationUtils.gd
 msgid "Move to"
@@ -1280,6 +1309,10 @@ msgid "Viewport"
 msgstr "Вікно перегляду"
 
 #: src/utils/TranslationUtils.gd
+msgid "Select {format} files"
+msgstr "Обрати {format} файли"
+
+#: src/utils/TranslationUtils.gd
 msgid "Select an image"
 msgstr "Обрати зображення"
 
@@ -1292,16 +1325,16 @@ msgid "Save the {format} file"
 msgstr "Зберегти {format} файл"
 
 #: src/utils/TranslationUtils.gd
-msgid ""
-"The file extension {extension} is unsupported for this operation. Only "
-"{extension_list} files are supported."
+msgid "Only {extension_list} files are supported for this operation."
 msgstr ""
-"Розширення файлу {extension} не підтримується для цієї операції. Тільки "
-"{extension_list} файли підтримуються."
+"Тільки файли з розширеннями {extension_list} підтримуються для цієї операції."
 
-#: src/utils/TranslationUtils.gd
-msgid "The file extension is empty. Only {extension_list} files are supported."
-msgstr "Розширення файлу порожнє. Тільки {extension_list} файли підтримуються."
+#~ msgid ""
+#~ "The file extension {extension} is unsupported for this operation. Only "
+#~ "{extension_list} files are supported."
+#~ msgstr ""
+#~ "Розширення файлу {extension} не підтримується для цієї операції. Тільки "
+#~ "{extension_list} файли підтримуються."
 
 #~ msgid "Save the .\"{format}\" file"
 #~ msgstr "Зберегти .\"{format}\" файл"

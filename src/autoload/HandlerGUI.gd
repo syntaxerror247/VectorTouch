@@ -43,7 +43,7 @@ func _notification(what: int) -> void:
 # Drag-and-drop of files.
 func _on_files_dropped(files: PackedStringArray) -> void:
 	if menu_stack.is_empty():
-		FileUtils.apply_svg_from_path(files[0])
+		FileUtils.apply_svgs_from_paths(files)
 
 
 func add_menu(new_menu: Control) -> void:
@@ -263,15 +263,21 @@ func _unhandled_input(event: InputEvent) -> void:
 				"save": FileUtils.save_svg()
 				"save_as": FileUtils.save_svg_as()
 				"close_tab": FileUtils.close_tabs(Configs.savedata.get_active_tab_index())
+				"close_all_other_tabs": FileUtils.close_tabs(
+						Configs.savedata.get_active_tab_index(),
+						FileUtils.TabCloseMode.ALL_OTHERS)
 				"close_tabs_to_left": FileUtils.close_tabs(
 						Configs.savedata.get_active_tab_index(),
 						FileUtils.TabCloseMode.TO_LEFT)
 				"close_tabs_to_right": FileUtils.close_tabs(
 						Configs.savedata.get_active_tab_index(),
 						FileUtils.TabCloseMode.TO_RIGHT)
-				"close_all_other_tabs": FileUtils.close_tabs(
+				"close_empty_tabs": FileUtils.close_tabs(
 						Configs.savedata.get_active_tab_index(),
-						FileUtils.TabCloseMode.ALL_OTHERS)
+						FileUtils.TabCloseMode.EMPTY)
+				"close_saved_tabs": FileUtils.close_tabs(
+						Configs.savedata.get_active_tab_index(),
+						FileUtils.TabCloseMode.SAVED)
 				"new_tab": Configs.savedata.add_empty_tab()
 				"select_next_tab": Configs.savedata.set_active_tab_index(
 						posmod(Configs.savedata.get_active_tab_index() + 1,
@@ -359,7 +365,7 @@ func get_max_ui_scale() -> float:
 	var window_default_size := get_window_default_size()
 	# How much can the default size be increased before it takes all usable screen space.
 	var max_expansion := Vector2(usable_screen_size) / Vector2(window_default_size)
-	return clampf(snappedf(minf(max_expansion.x, max_expansion.y) - 0.025, 0.05), 0.75, 4.0)
+	return clampf(snappedf(minf(max_expansion.x, max_expansion.y) - 0.005, 0.01), 0.75, 4.0)
 
 func get_min_ui_scale() -> float:
 	return maxf(snappedf(get_max_ui_scale() / 2.0 - 0.125, 0.25), 0.75)
@@ -519,7 +525,14 @@ func throw_mouse_motion_event() -> void:
 	var mm_event := InputEventMouseMotion.new()
 	var window := get_window()
 	# Must multiply by the final transform because the InputEvent is not yet parsed.
-	mm_event.position = window.get_mouse_position() * window.get_final_transform()
+	var mouse_position = window.get_mouse_position()
+	# TODO This is a workaround because the returned mouse position is sometimes (0, 0),
+	# likely a Godot issue. This has been reproduced on Android and on Web.
+	# Reproducing on web is especially easy with zoom at something like 110% on Web.
+	if mouse_position == Vector2.ZERO:
+		return
+	
+	mm_event.position = mouse_position * window.get_final_transform()
 	Input.parse_input_event.call_deferred(mm_event)
 
 # Trigger a shortcut automatically.
