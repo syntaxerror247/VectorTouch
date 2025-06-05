@@ -161,6 +161,25 @@ static func _setup_panelcontainer(theme: Theme) -> void:
 	overlay_stylebox.border_color = overlay_panel_border_color
 	theme.set_stylebox("panel", "OverlayPanel", overlay_stylebox)
 	
+	theme.add_type("TabItem")
+	theme.set_type_variation("TabItem", "PanelContainer")
+	var tab_stylebox := StyleBoxFlat.new()
+	tab_stylebox.set_corner_radius_all(12)
+	tab_stylebox.content_margin_left = 10.0
+	tab_stylebox.content_margin_right = 10.0
+	tab_stylebox.content_margin_top = 8.0
+	tab_stylebox.content_margin_bottom = 8.0
+	tab_stylebox.bg_color = Color("181d2f")
+	theme.set_stylebox("panel", "TabItem", tab_stylebox)
+	
+	theme.add_type("TabItemActive")
+	theme.set_type_variation("TabItemActive", "PanelContainer")
+	var border_tab_stylebox := tab_stylebox.duplicate()
+	border_tab_stylebox.set_border_width_all(4)
+	border_tab_stylebox.bg_color = Color("242b45")
+	border_tab_stylebox.border_color = Color("2e69bf")
+	theme.set_stylebox("panel", "TabItemActive", border_tab_stylebox)
+	
 	theme.add_type("TextBox")
 	theme.set_type_variation("TextBox", "PanelContainer")
 	var textbox_stylebox := StyleBoxFlat.new()
