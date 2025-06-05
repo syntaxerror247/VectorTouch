@@ -44,6 +44,7 @@ func update_layout() -> void:
 	top_margin_container.add_theme_constant_override("margin_top", 6)
 	top_margin_container.add_theme_constant_override("margin_bottom", 6)
 	top_margin_container.add_theme_constant_override("margin_left", 6)
+	top_margin_container.add_theme_constant_override("margin_right", 6)
 	top_margin_container.end_bulk_theme_override()
 	main_splitter.add_child(top_margin_container)
 	

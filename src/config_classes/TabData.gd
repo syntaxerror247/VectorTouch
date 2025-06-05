@@ -8,6 +8,7 @@ const EDITED_FILES_DIR = "user://edited"
 
 signal status_changed
 signal reference_changed
+signal data_synced
 
 var presented_name: String:
 	set(new_value):
@@ -143,7 +144,6 @@ func queue_sync() -> void:
 func _sync() -> void:
 	if not _sync_pending:
 		return
-	_sync_pending = false
 	
 	if is_saved():
 		# The extension is included in the presented name too.
@@ -163,6 +163,7 @@ func _sync() -> void:
 						SVGParser.root_to_export_text(edited_text_parse_result.svg)
 			else:
 				marked_unsaved = true
+				
 	
 	elif not FileAccess.file_exists(get_edited_file_path()) or\
 	SVGParser.text_check_is_root_empty(get_true_svg_text()):
@@ -173,7 +174,9 @@ func _sync() -> void:
 		empty_unsaved = false
 		marked_unsaved = false
 		presented_name = "[ %s ]" % Translator.translate("Unsaved")
-
+	
+	_sync_pending = false
+	data_synced.emit()
 
 func activate() -> void:
 	active = true
