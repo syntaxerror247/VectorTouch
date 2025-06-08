@@ -12,11 +12,11 @@ func _ready() -> void:
 
 func animate_in() -> void:
 	var tween := get_tree().create_tween()
-	tween.tween_property(self, "position:x", 0, 0.3).from(-200).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "position:x", 0, 0.3).from(-200).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func animate_out() -> void:
 	var tween := get_tree().create_tween()
-	tween.tween_property(self, "position:x", -200, 0.3).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "position:x", -200, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tween.finished
 	get_parent().hide()
 
