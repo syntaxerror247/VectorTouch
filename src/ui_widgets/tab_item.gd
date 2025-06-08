@@ -18,7 +18,6 @@ func setup(tab_title: String, svg_text: String, is_active: bool = false) -> void
 
 func highlight_active_tab() -> void:
 	var active_index := Configs.savedata.get_active_tab_index()
-	print("active_index ", active_index)
 	if get_index() == active_index:
 		highlight(true)
 	else:

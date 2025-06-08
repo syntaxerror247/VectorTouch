@@ -1,7 +1,7 @@
 extends VBoxContainer
 
 const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
-const TabPanel = preload("res://src/ui_parts/tab_panel.tscn")
+const TabsPanel = preload("res://src/ui_parts/tabs_panel.tscn")
 
 @onready var viewport: SubViewport = %Viewport
 @onready var reference_texture: TextureRect = %Viewport/ReferenceTexture
@@ -15,7 +15,8 @@ const TabPanel = preload("res://src/ui_parts/tab_panel.tscn")
 @onready var input_debug_label: Label = %DebugContainer/InputDebugLabel
 @onready var toolbar: PanelContainer = $ViewportPanel/VBoxContainer/Toolbar
 
-var tab_panel: PanelContainer
+var tabs_panel: PanelContainer
+var should_refresh_tabs := false
 
 var reference_overlay := false
 
@@ -23,6 +24,7 @@ func _ready() -> void:
 	Configs.language_changed.connect(update_translations)
 	Configs.snap_changed.connect(update_snap_config)
 	Configs.theme_changed.connect(update_theme)
+	Configs.tabs_changed.connect(set.bind("should_refresh_tabs" ,true))
 	Configs.active_tab_changed.connect(sync_reference_image)
 	Configs.active_tab_reference_changed.connect(sync_reference_image)
 	sync_reference_image()
@@ -37,13 +39,13 @@ func _ready() -> void:
 	update_snap_config()
 	get_window().window_input.connect(_update_input_debug)
 	
-	tab_panel = TabPanel.instantiate()
+	tabs_panel = TabsPanel.instantiate()
 	var overlay_ref := ColorRect.new()
 	overlay_ref.color = Color(0, 0, 0, 0.4)
 	overlay_ref.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay_ref.hide()
 	get_tree().root.add_child.call_deferred(overlay_ref)
-	overlay_ref.add_child(tab_panel)
+	overlay_ref.add_child(tabs_panel)
 
 func update_translations() -> void:
 	%LeftMenu/Visuals.tooltip_text = Translator.translate("Visuals")
@@ -171,6 +173,9 @@ func _update_input_debug(event: InputEvent) -> void:
 		input_debug_label.text = new_text
 
 
-func _on_tab_switcher_pressed() -> void:
-	tab_panel.get_parent().show()
-	tab_panel.animate_in()
+func show_tabs_panel() -> void:
+	if should_refresh_tabs:
+		tabs_panel.refresh_tabs()
+		should_refresh_tabs = false
+	tabs_panel.get_parent().show()
+	tabs_panel.animate_in()

@@ -21,7 +21,6 @@ func animate_out() -> void:
 	get_parent().hide()
 
 func refresh_tabs() -> void:
-	print("Refreshing tabs...")
 	for i in tab_container.get_children():
 		i.queue_free()
 	
