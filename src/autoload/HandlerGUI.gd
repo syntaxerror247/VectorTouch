@@ -42,6 +42,7 @@ func _notification(what: int) -> void:
 # Drag-and-drop of files.
 func _on_files_dropped(files: PackedStringArray) -> void:
 	if menu_stack.is_empty():
+		get_window().grab_focus()
 		FileUtils.apply_svgs_from_paths(files)
 
 
@@ -359,15 +360,14 @@ func get_usable_rect() -> Vector2i:
 			DisplayServer.window_get_current_screen()).size -\
 			window.get_size_with_decorations() + window.size)
 
-func get_max_ui_scale() -> float:
-	var usable_screen_size := get_usable_rect()
+func get_max_ui_scale(usable_screen_size: Vector2i) -> float:
 	var window_default_size := get_window_default_size()
 	# How much can the default size be increased before it takes all usable screen space.
 	var max_expansion := Vector2(usable_screen_size) / Vector2(window_default_size)
 	return clampf(snappedf(minf(max_expansion.x, max_expansion.y) - 0.005, 0.01), 0.75, 4.0)
 
-func get_min_ui_scale() -> float:
-	return maxf(snappedf(get_max_ui_scale() / 2.0 - 0.125, 0.25), 0.75)
+func get_min_ui_scale(usable_screen_size: Vector2i) -> float:
+	return maxf(snappedf(get_max_ui_scale(usable_screen_size) / 2.0 - 0.125, 0.25), 0.75)
 
 func get_auto_ui_scale() -> float:
 	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
