@@ -31,7 +31,6 @@ driver/driver="Dummy"
 Configs="*res://src/autoload/Configs.gd"
 State="*res://src/autoload/State.gd"
 HandlerGUI="*res://src/autoload/HandlerGUI.gd"
-SystemBarColorChanger="*res://addons/SystemBarColorChanger/SystemBarColorChanger.gd"
 
 [display]
 
