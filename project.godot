@@ -15,7 +15,7 @@ config/version="1.0-alpha3"
 config/tags=PackedStringArray("application", "mobile", "project")
 run/main_scene="uid://bihwwoedqcyo8"
 config/use_custom_user_dir=true
-config/features=PackedStringArray("4.4")
+config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0.1065, 0.1181, 0.15, 1)
 boot_splash/fullsize=false
@@ -31,7 +31,6 @@ driver/driver="Dummy"
 Configs="*res://src/autoload/Configs.gd"
 State="*res://src/autoload/State.gd"
 HandlerGUI="*res://src/autoload/HandlerGUI.gd"
-SystemBarColorChanger="*res://addons/SystemBarColorChanger/SystemBarColorChanger.gd"
 
 [display]
 

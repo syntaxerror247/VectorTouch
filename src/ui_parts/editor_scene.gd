@@ -18,8 +18,6 @@ func update_theme() -> void:
 	stylebox.bg_color = ThemeUtils.overlay_panel_inner_color
 	stylebox.set_content_margin_all(0)
 	panel_container.add_theme_stylebox_override("panel", stylebox)
-	SystemBarColorChanger.set_status_bar_color(ThemeUtils.overlay_panel_inner_color)
-	SystemBarColorChanger.set_navigation_bar_color(ThemeUtils.overlay_panel_inner_color)
 
 
 func update_layout() -> void:
