@@ -59,7 +59,6 @@ func update_theme() -> void:
 	
 	var frame := StyleBoxFlat.new()
 	frame.draw_center = false
-	frame.border_width_left = 2
 	frame.border_width_top = 2
 	frame.border_color = ThemeUtils.connected_button_border_color_pressed
 	frame.content_margin_left = 2.0

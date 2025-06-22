@@ -51,7 +51,7 @@ unique_name_in_owner = true
 disable_3d = true
 handle_input_locally = false
 gui_snap_controls_to_pixels = false
-size = Vector2i(720, 1249)
+size = Vector2i(716, 1248)
 size_2d_override_stretch = true
 render_target_update_mode = 4
 script = ExtResource("9_4xrk7")
@@ -99,10 +99,11 @@ layout_mode = 2
 
 [node name="ViewportOptions" type="HBoxContainer" parent="ViewportPanel/VBoxContainer/Toolbar"]
 layout_mode = 2
-alignment = 2
+alignment = 1
 
 [node name="LeftMenu" type="HBoxContainer" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 0)
 layout_mode = 2
 theme_override_constants/separation = 5
 
@@ -165,7 +166,9 @@ size_flags_horizontal = 3
 
 [node name="ZoomMenu" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions" instance=ExtResource("8_xtdmn")]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(132, 0)
 layout_mode = 2
+alignment = 2
 
 [node name="DebugMargins" type="MarginContainer" parent="ViewportPanel"]
 visible = false
