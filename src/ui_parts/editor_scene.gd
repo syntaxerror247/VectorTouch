@@ -30,8 +30,8 @@ func update_layout() -> void:
 	# Set up the horizontal splitter.
 	var main_splitter := VSplitContainer.new()
 	main_splitter.size_flags_horizontal = Control.SIZE_FILL
-	main_splitter.add_theme_constant_override("separation", 6)
-	main_splitter.add_theme_constant_override("autohide", 0)
+	main_splitter.dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
+	main_splitter.touch_dragger_enabled = true
 	main_splitter.split_offset = Configs.savedata.main_splitter_offset
 	main_splitter.dragged.connect(_on_main_splitter_dragged)
 	panel_container.add_child(main_splitter)
@@ -40,14 +40,14 @@ func update_layout() -> void:
 	top_margin_container.custom_minimum_size.x = 350
 	top_margin_container.begin_bulk_theme_override()
 	top_margin_container.add_theme_constant_override("margin_top", 6)
-	top_margin_container.add_theme_constant_override("margin_bottom", 6)
+	top_margin_container.add_theme_constant_override("margin_bottom", 3)
 	top_margin_container.add_theme_constant_override("margin_left", 6)
 	top_margin_container.add_theme_constant_override("margin_right", 6)
 	top_margin_container.end_bulk_theme_override()
 	main_splitter.add_child(top_margin_container)
 	
 	var bottom_margin_container := MarginContainer.new()
-	bottom_margin_container.add_theme_constant_override("margin_top", 6)
+	bottom_margin_container.add_theme_constant_override("margin_top", 3)
 	bottom_margin_container.add_child(create_layout_node(Utils.LayoutPart.VIEWPORT))
 	main_splitter.add_child(bottom_margin_container)
 	
@@ -62,8 +62,8 @@ func update_layout() -> void:
 		# Layout parts both on top and on the bottom.
 		var top_vertical_split_container := VSplitContainer.new()
 		top_vertical_split_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		top_vertical_split_container.add_theme_constant_override("separation", 10)
-		top_vertical_split_container.add_theme_constant_override("autohide", 0)
+		top_vertical_split_container.dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
+		top_vertical_split_container.touch_dragger_enabled = true
 		top_vertical_split_container.split_offset = Configs.savedata.top_vertical_splitter_offset
 		top_vertical_split_container.dragged.connect(_on_top_vertical_splitter_dragged)
 		top_vertical_split_container.add_child(create_layout_node(top_left[0]))
