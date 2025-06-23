@@ -12,6 +12,8 @@ func _ready() -> void:
 	Configs.layout_changed.connect(update_layout)
 	update_layout()
 	update_theme()
+	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
+	if version: Configs.current_sdk = version.SDK_INT
 
 func update_theme() -> void:
 	var stylebox := StyleBoxFlat.new()
