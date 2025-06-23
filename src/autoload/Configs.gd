@@ -36,6 +36,8 @@ signal tab_selected(index: int)
 @warning_ignore("unused_signal")
 signal layout_changed
 
+var current_sdk: int = -1
+
 const savedata_path = "user://savedata.tres"
 var savedata: SaveData:
 	set(new_value):

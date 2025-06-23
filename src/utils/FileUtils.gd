@@ -182,7 +182,11 @@ static func open_xml_import_dialog(completion_callback: Callable) -> void:
 # On web, the completion callback can't use the full file path.
 static func _open_import_dialog(extensions: PackedStringArray,
 completion_callback: Callable, multi_select := false) -> void:
-	if not OS.request_permission("android.permission.READ_MEDIA_IMAGES"):
+	var permission := "android.permission.READ_MEDIA_IMAGES"
+	if Configs.current_sdk < 33:
+		permission = "android.permission.READ_EXTERNAL_STORAGE"
+	
+	if not OS.request_permission(permission):
 		return
 	
 	var extensions_with_dots := PackedStringArray()
