@@ -74,8 +74,14 @@ func _save_svg_text() -> void:
 func save_to_bound_path() -> void:
 	if Configs.savedata.get_active_tab() != self:
 		return
-	FileAccess.open(svg_file_path, FileAccess.WRITE).store_string(State.get_export_text())
-	queue_sync()
+	var f := FileAccess.open(svg_file_path, FileAccess.WRITE)
+	if f != null:
+		f.store_string(State.get_export_text())
+		queue_sync()
+	else:
+		# Failed to save to the bound file path.
+		# Opening export dialog to save and bind a new path.
+		FileUtils.open_export_dialog(ImageExportData.new(), queue_sync)
 
 func setup_svg_text(new_text: String, fully_load := true) -> void:
 	_svg_text = new_text

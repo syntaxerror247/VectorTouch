@@ -867,6 +867,6 @@ func get_active_tab_dir() -> String:
 func get_last_dir() -> String:
 	_validate_recent_dirs()
 	if _recent_dirs.is_empty() or not DirAccess.dir_exists_absolute(_recent_dirs[0]):
-		return OS.get_system_dir(OS.SYSTEM_DIR_PICTURES)
+		return OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS)
 	else:
 		return _recent_dirs[0]

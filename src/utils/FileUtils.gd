@@ -95,8 +95,6 @@ static func open_export_dialog(export_data: ImageExportData, final_callback := C
 			export_dialog.files_selected.connect(non_native_callback)
 
 static func open_xml_export_dialog(xml: String, file_name: String) -> void:
-	if not OS.request_permissions():
-		return
 	if OS.has_feature("web"):
 		_web_save(xml.to_utf8_buffer(), "application/xml")
 	else:
@@ -120,6 +118,9 @@ static func open_xml_export_dialog(xml: String, file_name: String) -> void:
 					func(paths: PackedStringArray) -> void: _finish_xml_export(paths[0], xml))
 
 static func _finish_export(file_path: String, export_data: ImageExportData) -> void:
+	if not (file_path.contains("/Documents/") or file_path.contains("/Download/")):
+		OS.alert("Saving is only allowed in the Documents or Download directories.", "Save Failed")
+		return
 	if file_path.get_extension().is_empty():
 		file_path += "." + export_data.format
 	
@@ -181,8 +182,9 @@ static func open_xml_import_dialog(completion_callback: Callable) -> void:
 # On web, the completion callback can't use the full file path.
 static func _open_import_dialog(extensions: PackedStringArray,
 completion_callback: Callable, multi_select := false) -> void:
-	if not OS.request_permissions():
+	if not OS.request_permission("android.permission.READ_MEDIA_IMAGES"):
 		return
+	
 	var extensions_with_dots := PackedStringArray()
 	for extension in extensions:
 		extensions_with_dots.append("." + extension)
