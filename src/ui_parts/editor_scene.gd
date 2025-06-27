@@ -7,13 +7,23 @@ const ViewportScene = preload("res://src/ui_parts/display.tscn")
 
 @onready var panel_container: PanelContainer = $PanelContainer
 
+var main_splitter: SplitContainer
+
+
 func _ready() -> void:
 	Configs.theme_changed.connect(update_theme)
 	Configs.layout_changed.connect(update_layout)
+	Configs.orientation_changed.connect(update_orientation)
 	update_layout()
 	update_theme()
 	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
 	if version: Configs.current_sdk = version.SDK_INT
+
+func update_orientation():
+	if Configs.current_orientation == Configs.orientation.PORTRAIT:
+		main_splitter.vertical = true
+	else:
+		main_splitter.vertical = false
 
 func update_theme() -> void:
 	var stylebox := StyleBoxFlat.new()
@@ -26,54 +36,53 @@ func update_layout() -> void:
 	for child in panel_container.get_children():
 		child.queue_free()
 	
-	var top_left := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.TOP_LEFT)
-	var bottom_left := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.BOTTOM_LEFT)
+	var side_panel_top := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_TOP)
+	var side_panel_bottom := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_BOTTOM)
 	
-	# Set up the horizontal splitter.
-	var main_splitter := VSplitContainer.new()
-	main_splitter.size_flags_horizontal = Control.SIZE_FILL
+	# Set up the main splitter.
+	main_splitter = SplitContainer.new()
+	main_splitter.vertical = true
 	main_splitter.dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
 	main_splitter.touch_dragger_enabled = true
 	main_splitter.split_offset = Configs.savedata.main_splitter_offset
 	main_splitter.dragged.connect(_on_main_splitter_dragged)
 	panel_container.add_child(main_splitter)
 	
-	var top_margin_container := MarginContainer.new()
-	top_margin_container.custom_minimum_size.x = 350
-	top_margin_container.begin_bulk_theme_override()
-	top_margin_container.add_theme_constant_override("margin_top", 6)
-	top_margin_container.add_theme_constant_override("margin_bottom", 3)
-	top_margin_container.add_theme_constant_override("margin_left", 6)
-	top_margin_container.add_theme_constant_override("margin_right", 6)
-	top_margin_container.end_bulk_theme_override()
-	main_splitter.add_child(top_margin_container)
+	var side_panel_margin_container := MarginContainer.new()
+	side_panel_margin_container.begin_bulk_theme_override()
+	side_panel_margin_container.add_theme_constant_override("margin_top", 6)
+	side_panel_margin_container.add_theme_constant_override("margin_bottom", 3)
+	side_panel_margin_container.add_theme_constant_override("margin_left", 6)
+	side_panel_margin_container.add_theme_constant_override("margin_right", 6)
+	side_panel_margin_container.end_bulk_theme_override()
+	main_splitter.add_child(side_panel_margin_container)
 	
-	var bottom_margin_container := MarginContainer.new()
-	bottom_margin_container.add_theme_constant_override("margin_top", 3)
-	bottom_margin_container.add_child(create_layout_node(Utils.LayoutPart.VIEWPORT))
-	main_splitter.add_child(bottom_margin_container)
+	var main_view_margin_container := MarginContainer.new()
+	main_view_margin_container.add_theme_constant_override("margin_top", 3)
+	main_view_margin_container.add_child(create_layout_node(Utils.LayoutPart.VIEWPORT))
+	main_splitter.add_child(main_view_margin_container)
 	
-	var left_vbox := VBoxContainer.new()
-	left_vbox.add_theme_constant_override("separation", 6)
-	top_margin_container.add_child(left_vbox)
+	var side_panel_vbox := VBoxContainer.new()
+	side_panel_vbox.add_theme_constant_override("separation", 6)
+	side_panel_margin_container.add_child(side_panel_vbox)
 	
 	var global_actions := GlobalActionsScene.instantiate()
-	left_vbox.add_child(global_actions)
+	side_panel_vbox.add_child(global_actions)
 	
-	if not top_left.is_empty() and not bottom_left.is_empty():
+	if not side_panel_top.is_empty() and not side_panel_bottom.is_empty():
 		# Layout parts both on top and on the bottom.
-		var top_vertical_split_container := VSplitContainer.new()
-		top_vertical_split_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		top_vertical_split_container.dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
-		top_vertical_split_container.touch_dragger_enabled = true
-		top_vertical_split_container.split_offset = Configs.savedata.top_vertical_splitter_offset
-		top_vertical_split_container.dragged.connect(_on_top_vertical_splitter_dragged)
-		top_vertical_split_container.add_child(create_layout_node(top_left[0]))
-		top_vertical_split_container.add_child(create_layout_node(bottom_left[0]))
-		left_vbox.add_child(top_vertical_split_container)
-	elif top_left.size() == 2 or bottom_left.size() == 2:
+		var side_panel_split_container := VSplitContainer.new()
+		side_panel_split_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		side_panel_split_container.dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
+		side_panel_split_container.touch_dragger_enabled = true
+		side_panel_split_container.split_offset = Configs.savedata.side_panel_splitter_offset
+		side_panel_split_container.dragged.connect(_on_side_panel_splitter_dragged)
+		side_panel_split_container.add_child(create_layout_node(side_panel_top[0]))
+		side_panel_split_container.add_child(create_layout_node(side_panel_bottom[0]))
+		side_panel_vbox.add_child(side_panel_split_container)
+	elif side_panel_top.size() == 2 or side_panel_bottom.size() == 2:
 		# Tabs for the different layout parts.
-		var layout_parts := top_left if bottom_left.is_empty() else bottom_left
+		var layout_parts := side_panel_top if side_panel_bottom.is_empty() else side_panel_bottom
 		var vbox := VBoxContainer.new()
 		vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		var buttons_hbox := HBoxContainer.new()
@@ -114,19 +123,19 @@ func update_layout() -> void:
 			if i == 0:
 				btn.button_pressed = true
 				layout_nodes[part].show()
-		left_vbox.add_child(vbox)
+		side_panel_vbox.add_child(vbox)
 	else:
 		# Layout parts disabled.
-		if not top_left.is_empty():
-			left_vbox.add_child(create_layout_node(top_left[0]))
-		elif not bottom_left.is_empty():
-			left_vbox.add_child(create_layout_node(bottom_left[0]))
+		if not side_panel_top.is_empty():
+			side_panel_vbox.add_child(create_layout_node(side_panel_top[0]))
+		elif not side_panel_bottom.is_empty():
+			side_panel_vbox.add_child(create_layout_node(side_panel_bottom[0]))
 
 func _on_main_splitter_dragged(offset: int) -> void:
 	Configs.savedata.main_splitter_offset = offset
 
-func _on_top_vertical_splitter_dragged(offset: int) -> void:
-	Configs.savedata.top_vertical_splitter_offset = offset
+func _on_side_panel_splitter_dragged(offset: int) -> void:
+	Configs.savedata.side_panel_splitter_offset = offset
 
 
 func create_layout_node(layout_part: Utils.LayoutPart) -> Node:

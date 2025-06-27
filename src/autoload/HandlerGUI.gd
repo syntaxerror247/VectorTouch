@@ -8,6 +8,7 @@ const DonateMenuScene = preload("res://src/ui_parts/donate_menu.tscn")
 const UpdateMenuScene = preload("res://src/ui_parts/update_menu.tscn")
 const ExportMenuScene = preload("res://src/ui_parts/export_menu.tscn")
 const ShortcutPanelScene = preload("res://src/ui_parts/shortcut_panel.tscn")
+const TabsPanel = preload("res://src/ui_parts/tabs_panel.tscn")
 
 # Menus should be added with add_menu() and removed by being freed.
 # To add them as modals that don't hide the previous one, use add_dialog().
@@ -15,6 +16,7 @@ var menu_stack: Array[ColorRect]
 var popup_stack: Array[Control]
 
 var shortcut_panel: PanelContainer
+var tabs_panel: PanelContainer
 
 func _enter_tree() -> void:
 	var window := get_window()
@@ -33,6 +35,14 @@ func _ready() -> void:
 	
 	shortcut_panel = ShortcutPanelScene.instantiate()
 	get_tree().root.add_child(shortcut_panel)
+	
+	tabs_panel = TabsPanel.instantiate()
+	var overlay_ref := ColorRect.new()
+	overlay_ref.color = Color(0, 0, 0, 0.4)
+	overlay_ref.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay_ref.hide()
+	get_tree().root.add_child.call_deferred(overlay_ref)
+	overlay_ref.add_child(tabs_panel)
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_ABOUT:

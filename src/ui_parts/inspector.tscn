@@ -33,7 +33,7 @@ theme_override_constants/h_separation = 4
 icon = ExtResource("3_vo6hf")
 
 [node name="ElementContainer" type="Control" parent="."]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(340, 150)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("3_qeptj")

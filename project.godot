@@ -37,7 +37,7 @@ HandlerGUI="*res://src/autoload/HandlerGUI.gd"
 window/size/viewport_width=720
 window/size/viewport_height=1280
 window/energy_saving/keep_screen_on=false
-window/handheld/orientation=1
+window/handheld/orientation=6
 mouse_cursor/tooltip_position_offset=Vector2(0, 10)
 
 [editor_plugins]
