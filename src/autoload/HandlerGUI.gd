@@ -18,6 +18,31 @@ var popup_stack: Array[Control]
 var shortcut_panel: PanelContainer
 var tabs_panel: PanelContainer
 
+var android_runtime: JNISingleton
+var is_light_system_bars: bool = false
+
+func set_system_bar_color(color: Color, override_appearance := false) -> void:
+	if not android_runtime:
+		return
+	
+	var activity = android_runtime.getActivity()
+	var callable = func ():
+		var window = activity.getWindow()
+		var decorView: JavaObject = window.getDecorView()
+		decorView.setBackgroundColor(color.to_argb32())
+		
+		if (is_light_system_bars != (color.get_luminance() > 0.5)) or override_appearance:
+			is_light_system_bars = color.get_luminance() > 0.5
+			var wic = JavaClassWrapper.wrap("android.view.WindowInsetsController")
+			var insets_controller = window.getInsetsController()
+			insets_controller.setSystemBarsAppearance(
+				wic.APPEARANCE_LIGHT_STATUS_BARS if is_light_system_bars else 0, wic.APPEARANCE_LIGHT_STATUS_BARS)
+			insets_controller.setSystemBarsAppearance(
+				wic.APPEARANCE_LIGHT_NAVIGATION_BARS if is_light_system_bars else 0, wic.APPEARANCE_LIGHT_NAVIGATION_BARS)
+	
+	activity.runOnUiThread(android_runtime.createRunnableFromGodotCallable(callable))
+
+
 func _enter_tree() -> void:
 	var window := get_window()
 	window.files_dropped.connect(_on_files_dropped)
@@ -32,6 +57,9 @@ func _ready() -> void:
 	Configs.ui_scale_changed.connect(update_ui_scale)
 	await get_tree().process_frame  # Helps make things more consistent.
 	update_ui_scale()
+	
+	android_runtime = Engine.get_singleton("AndroidRuntime")
+	set_system_bar_color(ThemeUtils.overlay_panel_inner_color, true)
 	
 	shortcut_panel = ShortcutPanelScene.instantiate()
 	get_tree().root.add_child(shortcut_panel)
