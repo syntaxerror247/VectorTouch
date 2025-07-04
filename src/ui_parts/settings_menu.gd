@@ -258,28 +258,27 @@ func setup_content() -> void:
 					"Changes the visual size and grabbing area of handles."))
 			
 			current_setup_setting = "ui_scale"
-			var dropdown_values := [
-				SaveData.ScalingApproach.AUTO,
-				SaveData.ScalingApproach.CONSTANT_100,
-				SaveData.ScalingApproach.CONSTANT_125,
-				SaveData.ScalingApproach.CONSTANT_150,
-				SaveData.ScalingApproach.CONSTANT_175,
-				SaveData.ScalingApproach.CONSTANT_200,
-				SaveData.ScalingApproach.CONSTANT_250,
-				SaveData.ScalingApproach.CONSTANT_300
-			]
-			# Dictionary[SaveData.ScalingApproach, String]
-			var dropdown_map: Dictionary = {
-				SaveData.ScalingApproach.AUTO: "Auto (%d%%)" % int(HandlerGUI.get_auto_ui_scale()/ 1.5 * 100),
-				SaveData.ScalingApproach.CONSTANT_100: "66%",
-				SaveData.ScalingApproach.CONSTANT_125: "83%",
-				SaveData.ScalingApproach.CONSTANT_150: "100%",
-				SaveData.ScalingApproach.CONSTANT_175: "116%",
-				SaveData.ScalingApproach.CONSTANT_200: "133%",
-				SaveData.ScalingApproach.CONSTANT_250: "166%",
-				SaveData.ScalingApproach.CONSTANT_300: "200%"
+			
+			var auto_scale: float = HandlerGUI.get_auto_ui_scale()
+			var all_options := {
+				SaveData.ScalingApproach.CONSTANT_100: 1.0,
+				SaveData.ScalingApproach.CONSTANT_125: 1.25,
+				SaveData.ScalingApproach.CONSTANT_150: 1.5,
+				SaveData.ScalingApproach.CONSTANT_175: 1.75,
+				SaveData.ScalingApproach.CONSTANT_200: 2.0,
+				SaveData.ScalingApproach.CONSTANT_225: 2.25,
+				SaveData.ScalingApproach.CONSTANT_250: 2.5,
+				SaveData.ScalingApproach.CONSTANT_275: 2.75,
+				SaveData.ScalingApproach.CONSTANT_300: 3.0
 			}
-			add_dropdown(Translator.translate("UI scale"), dropdown_values, dropdown_map)
+			var dropdown_map := {
+				SaveData.ScalingApproach.AUTO: "Auto (%d%%)" % int(auto_scale * 100),
+			}
+			for approach in all_options.keys():
+				var value: float= all_options[approach]
+				dropdown_map[approach] = "%d%%" % int(value * 100)
+			
+			add_dropdown(Translator.translate("UI scale"), dropdown_map.keys(), dropdown_map)
 			add_advice(Translator.translate("Changes the scale factor for the interface."))
 			# Disable mouse wrap if not available.
 			if not DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP):

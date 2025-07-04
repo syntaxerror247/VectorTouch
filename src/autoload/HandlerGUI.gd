@@ -409,34 +409,12 @@ func get_min_ui_scale(usable_screen_size: Vector2i) -> float:
 
 func get_auto_ui_scale() -> float:
 	var dpi := DisplayServer.screen_get_dpi(DisplayServer.window_get_current_screen())
-	
-	if dpi <= 120:
-		return 0.75
-	elif dpi <= 160:
-		return 1.0
-	elif dpi <= 200:
-		return 1.25
-	elif dpi <= 240:
-		return 1.5
-	elif dpi <= 280:
-		return 1.75
-	elif dpi <= 320:
-		return 2.0
-	elif dpi <= 360:
-		return 2.25
-	elif dpi <= 400:
-		return 2.5
-	elif dpi <= 440:
-		return 2.75
-	elif dpi <= 480:
-		return 3.0
-	elif dpi <= 560:
-		return 3.5
-	elif dpi <= 640:
-		return 4.0
-	else:
-		return 5.0
-	
+	print(dpi)
+	var base_dpi := 160.0
+	var scale := dpi / base_dpi
+	var blend: float = clamp((dpi - 240.0) / 400.0, 0.0, 1.0)
+	var adjusted_scale: float = lerp(scale, pow(scale, 0.75), blend)
+	return max(adjusted_scale, 1.0)
 
 func update_ui_scale() -> void:
 	var window := get_window()
@@ -452,7 +430,9 @@ func update_ui_scale() -> void:
 		SaveData.ScalingApproach.CONSTANT_150: final_scale = 1.50
 		SaveData.ScalingApproach.CONSTANT_175: final_scale = 1.75
 		SaveData.ScalingApproach.CONSTANT_200: final_scale = 2.0
+		SaveData.ScalingApproach.CONSTANT_225: final_scale = 2.25
 		SaveData.ScalingApproach.CONSTANT_250: final_scale = 2.5
+		SaveData.ScalingApproach.CONSTANT_275: final_scale = 2.75
 		SaveData.ScalingApproach.CONSTANT_300: final_scale = 3.0
 		SaveData.ScalingApproach.CONSTANT_400: final_scale = 4.0
 	window.content_scale_factor = final_scale

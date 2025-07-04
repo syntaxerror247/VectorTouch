@@ -34,8 +34,8 @@ HandlerGUI="*res://src/autoload/HandlerGUI.gd"
 
 [display]
 
-window/size/viewport_width=720
-window/size/viewport_height=1280
+window/size/viewport_width=480
+window/size/viewport_height=854
 window/energy_saving/keep_screen_on=false
 window/handheld/orientation=6
 mouse_cursor/tooltip_position_offset=Vector2(0, 10)
@@ -375,5 +375,6 @@ locale/translations=PackedStringArray("res://translations/bg.po", "res://transla
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
 environment/defaults/default_clear_color=Color(0.12, 0.132, 0.2, 1)
