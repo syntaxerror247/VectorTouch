@@ -205,7 +205,7 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 				Configs.savedata.set_layout_parts(proposed_drop_location_pivot, parts)
 			DropDirection.BELOW:
 				var bottom_left_parts := Configs.savedata.get_layout_parts(
-						SaveData.LayoutLocation.BOTTOM_LEFT)
+						SaveData.LayoutLocation.SIDE_PANEL_BOTTOM)
 				if not bottom_left_parts.is_empty():
 					# If everything is on the bottom, then move them to the top so the
 					# new dragged layout part can be on the bottom.
@@ -213,18 +213,18 @@ func _drop_data(_at_position: Vector2, data: Variant) -> void:
 					# to be valid, then the dragged part should be the only one on the top side.
 					# In either case, the stuff on the bottom should be moved to the top,
 					# and the dragged one should move to the bottom.
-					Configs.savedata.set_layout_parts(SaveData.LayoutLocation.TOP_LEFT,
+					Configs.savedata.set_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_TOP,
 							bottom_left_parts, false)
-				Configs.savedata.set_layout_parts(SaveData.LayoutLocation.BOTTOM_LEFT,
+				Configs.savedata.set_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_BOTTOM,
 						[dragged_data.layout_part])
 			DropDirection.ABOVE:
 				# Same logic as above, but with top and bottom flipped.
 				var top_left_parts := Configs.savedata.get_layout_parts(
-						SaveData.LayoutLocation.TOP_LEFT)
+						SaveData.LayoutLocation.SIDE_PANEL_TOP)
 				if not top_left_parts.is_empty():
-					Configs.savedata.set_layout_parts(SaveData.LayoutLocation.BOTTOM_LEFT,
+					Configs.savedata.set_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_BOTTOM,
 							top_left_parts, false)
-				Configs.savedata.set_layout_parts(SaveData.LayoutLocation.TOP_LEFT,
+				Configs.savedata.set_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_TOP,
 						[dragged_data.layout_part])
 	
 	clear_proposed_drop()
@@ -234,8 +234,8 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 	if not data == dragged_data:
 		return false
 	
-	var top_left_parts := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.TOP_LEFT)
-	var bottom_left_parts := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.BOTTOM_LEFT)
+	var top_left_parts := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_TOP)
+	var bottom_left_parts := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_BOTTOM)
 	var is_dragged_part_the_only_top_left := (top_left_parts == [dragged_data.layout_part])
 	var is_dragged_part_the_only_bottom_left := (bottom_left_parts == [dragged_data.layout_part])
 	
@@ -248,10 +248,10 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 		
 		
 		if at_position.y < lerpf(section_area.position.y, section_area.end.y, 0.25) and\
-		((section == SaveData.LayoutLocation.TOP_LEFT and\
+		((section == SaveData.LayoutLocation.SIDE_PANEL_TOP and\
 		not is_dragged_part_the_only_top_left and (bottom_left_parts.is_empty() or\
 		is_dragged_part_the_only_bottom_left)) or\
-		(section == SaveData.LayoutLocation.BOTTOM_LEFT and top_left_parts.is_empty() and\
+		(section == SaveData.LayoutLocation.SIDE_PANEL_BOTTOM and top_left_parts.is_empty() and\
 		not is_dragged_part_the_only_top_left)):
 			# Hovering over the top side of the section, when one of the following is true:
 			# Case 1: The section is top left, and there's either nothing on the bottom left,
@@ -261,10 +261,10 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 			proposed_drop_location_direction = DropDirection.ABOVE
 			proposed_drop_idx = -1
 		elif at_position.y > lerpf(section_area.position.y, section_area.end.y, 0.75) and\
-		((section == SaveData.LayoutLocation.BOTTOM_LEFT and\
+		((section == SaveData.LayoutLocation.SIDE_PANEL_BOTTOM and\
 		not is_dragged_part_the_only_bottom_left and (top_left_parts.is_empty() or\
 		is_dragged_part_the_only_top_left)) or\
-		(section == SaveData.LayoutLocation.TOP_LEFT and bottom_left_parts.is_empty() and\
+		(section == SaveData.LayoutLocation.SIDE_PANEL_TOP and bottom_left_parts.is_empty() and\
 		not is_dragged_part_the_only_bottom_left)):
 			# Same logic as the previous big condition, but top and bottom are flipped.
 			proposed_drop_location_direction = DropDirection.BELOW
@@ -345,8 +345,8 @@ func update_areas() -> void:
 	for child in get_children():
 		child.queue_free()
 	
-	var top_left := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.TOP_LEFT)
-	var bottom_left := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.BOTTOM_LEFT)
+	var top_left := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_TOP)
+	var bottom_left := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.SIDE_PANEL_BOTTOM)
 	var excluded := Configs.savedata.get_layout_parts(SaveData.LayoutLocation.EXCLUDED)
 	
 	var width := size.x - PANEL_MARGIN * 2
@@ -358,21 +358,21 @@ func update_areas() -> void:
 			Rect2(PANEL_MARGIN, size.x * 0.75, 160, PART_UI_SIZE + 8)
 	
 	if not top_left.is_empty() and not bottom_left.is_empty():
-		section_areas[SaveData.LayoutLocation.TOP_LEFT] =\
+		section_areas[SaveData.LayoutLocation.SIDE_PANEL_TOP] =\
 				Rect2(included_rect.position, included_rect.size * Vector2(0.5, 0.5))
-		section_areas[SaveData.LayoutLocation.BOTTOM_LEFT] =\
+		section_areas[SaveData.LayoutLocation.SIDE_PANEL_BOTTOM] =\
 				Rect2(included_rect.position + included_rect.size * Vector2(0.0, 0.5),
 				included_rect.size * Vector2(0.5, 0.5))
 	elif bottom_left.is_empty():
-		section_areas[SaveData.LayoutLocation.TOP_LEFT] =\
+		section_areas[SaveData.LayoutLocation.SIDE_PANEL_TOP] =\
 				Rect2(included_rect.position, included_rect.size * Vector2(0.5, 1.0))
 	elif top_left.is_empty():
-		section_areas[SaveData.LayoutLocation.BOTTOM_LEFT] =\
+		section_areas[SaveData.LayoutLocation.SIDE_PANEL_BOTTOM] =\
 				Rect2(included_rect.position, included_rect.size * Vector2(0.5, 1.0))
 	
 	if not top_left.is_empty():
 		var top_left_count := top_left.size()
-		var top_left_rect_center := section_areas[SaveData.LayoutLocation.TOP_LEFT].\
+		var top_left_rect_center := section_areas[SaveData.LayoutLocation.SIDE_PANEL_TOP].\
 				get_center()
 		for i in top_left_count:
 			layout_part_areas[top_left[i]] = Rect2(top_left_rect_center.x -\
@@ -381,7 +381,7 @@ func update_areas() -> void:
 	
 	if not bottom_left.is_empty():
 		var bottom_left_count := bottom_left.size()
-		var bottom_left_rect_center := section_areas[SaveData.LayoutLocation.BOTTOM_LEFT].\
+		var bottom_left_rect_center := section_areas[SaveData.LayoutLocation.SIDE_PANEL_BOTTOM].\
 				get_center()
 		for i in bottom_left_count:
 			layout_part_areas[bottom_left[i]] = Rect2(bottom_left_rect_center.x -\

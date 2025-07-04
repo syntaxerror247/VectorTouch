@@ -59,11 +59,11 @@ func validate() -> void:
 		_active_tab_index = _active_tab_index  # Run the setter.
 	
 	# End of the method, would need to be rewritten if more things need validation.
-	for location in [LayoutLocation.TOP_LEFT, LayoutLocation.BOTTOM_LEFT]:
+	for location in [LayoutLocation.SIDE_PANEL_TOP, LayoutLocation.SIDE_PANEL_BOTTOM]:
 		if _layout.has(location) and not _layout[location].is_empty():
 			return
 	_layout = {
-		LayoutLocation.TOP_LEFT: [Utils.LayoutPart.INSPECTOR, Utils.LayoutPart.CODE_EDITOR]
+		LayoutLocation.SIDE_PANEL_TOP: [Utils.LayoutPart.INSPECTOR, Utils.LayoutPart.CODE_EDITOR]
 	}
 
 
@@ -755,7 +755,7 @@ func move_tab(old_idx: int, new_idx: int) -> void:
 	Configs.tabs_changed.emit()
 
 
-enum LayoutLocation {NONE, EXCLUDED, TOP_LEFT, BOTTOM_LEFT}
+enum LayoutLocation { NONE, EXCLUDED, SIDE_PANEL_TOP, SIDE_PANEL_BOTTOM }
 
 @export var _layout: Dictionary[LayoutLocation, Array]:  # Array[Utils.LayoutPart]
 	set(new_value):
@@ -840,14 +840,14 @@ func get_layout_part_index(part: Utils.LayoutPart) -> int:
 			main_splitter_offset = new_value
 			emit_changed()
 
-@export var top_vertical_splitter_offset := -240:
+@export var side_panel_splitter_offset := -240:
 	set(new_value):
 		# Validation
 		if is_nan(new_value):
 			new_value = 0
 		# Main part
-		if top_vertical_splitter_offset != new_value:
-			top_vertical_splitter_offset = new_value
+		if side_panel_splitter_offset != new_value:
+			side_panel_splitter_offset = new_value
 			emit_changed()
 
 

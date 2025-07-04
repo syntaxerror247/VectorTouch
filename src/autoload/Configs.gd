@@ -35,8 +35,31 @@ signal tab_removed
 signal tab_selected(index: int)
 @warning_ignore("unused_signal")
 signal layout_changed
+@warning_ignore("unused_signal")
+signal orientation_changed
 
 var current_sdk: int = -1
+
+enum orientation {PORTRAIT, LANDSCAPE}
+var current_orientation := orientation.PORTRAIT
+
+func _ready() -> void:
+	get_tree().root.size_changed.connect(check_orientation)
+
+func check_orientation():
+	var width = DisplayServer.window_get_size().x
+	var height = DisplayServer.window_get_size().y
+
+	var new_orientation: orientation
+	if width > height:
+		new_orientation = orientation.LANDSCAPE
+	else:
+		new_orientation = orientation.PORTRAIT
+
+	if new_orientation != current_orientation:
+		current_orientation = new_orientation
+		orientation_changed.emit()
+
 
 const savedata_path = "user://savedata.tres"
 var savedata: SaveData:

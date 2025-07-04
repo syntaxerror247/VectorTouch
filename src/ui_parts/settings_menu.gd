@@ -28,6 +28,9 @@ func _ready() -> void:
 	close_button.pressed.connect(queue_free)
 	Configs.language_changed.connect(setup_everything)
 	
+	change_orientation()
+	Configs.orientation_changed.connect(change_orientation)
+	
 	scroll_container.get_v_scroll_bar().visibility_changed.connect(adjust_right_margin)
 	adjust_right_margin()
 	
@@ -39,6 +42,14 @@ func _ready() -> void:
 	setup_theming()
 	Configs.savedata.editor_formatter.changed_deferred.connect(show_formatter.bind("editor"))
 	Configs.savedata.export_formatter.changed_deferred.connect(show_formatter.bind("export"))
+
+func change_orientation():
+	if Configs.current_orientation == Configs.orientation.PORTRAIT:
+		$VBoxContainer/BoxContainer.vertical = true
+		$VBoxContainer/BoxContainer/PanelContainer.size_flags_vertical = SIZE_EXPAND_FILL
+	else:
+		$VBoxContainer/BoxContainer.vertical = false
+		$VBoxContainer/BoxContainer/PanelContainer.size_flags_horizontal = SIZE_EXPAND_FILL
 
 func setup_theming() -> void:
 	var stylebox := get_theme_stylebox("panel").duplicate()

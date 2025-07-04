@@ -1,7 +1,6 @@
 extends VBoxContainer
 
 const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
-const TabsPanel = preload("res://src/ui_parts/tabs_panel.tscn")
 
 @onready var viewport: SubViewport = %Viewport
 @onready var reference_texture: TextureRect = %Viewport/ReferenceTexture
@@ -38,14 +37,6 @@ func _ready() -> void:
 	update_theme()
 	update_snap_config()
 	get_window().window_input.connect(_update_input_debug)
-	
-	tabs_panel = TabsPanel.instantiate()
-	var overlay_ref := ColorRect.new()
-	overlay_ref.color = Color(0, 0, 0, 0.4)
-	overlay_ref.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	overlay_ref.hide()
-	get_tree().root.add_child.call_deferred(overlay_ref)
-	overlay_ref.add_child(tabs_panel)
 
 func update_translations() -> void:
 	%LeftMenu/Visuals.tooltip_text = Translator.translate("Visuals")
@@ -59,10 +50,12 @@ func update_theme() -> void:
 	
 	var frame := StyleBoxFlat.new()
 	frame.draw_center = false
-	frame.border_width_top = 2
+	if Configs.current_orientation == Configs.orientation.PORTRAIT:
+		frame.border_width_top = 2
+	else:
+		frame.border_width_left = 2
 	frame.border_color = ThemeUtils.connected_button_border_color_pressed
-	frame.content_margin_left = 2.0
-	frame.content_margin_top = 2.0
+	frame.set_content_margin_all(2.0)
 	viewport_panel.add_theme_stylebox_override("panel", frame)
 
 func update_snap_config() -> void:
@@ -174,7 +167,7 @@ func _update_input_debug(event: InputEvent) -> void:
 
 func show_tabs_panel() -> void:
 	if should_refresh_tabs:
-		tabs_panel.refresh_tabs()
+		HandlerGUI.tabs_panel.refresh_tabs()
 		should_refresh_tabs = false
-	tabs_panel.get_parent().show()
-	tabs_panel.animate_in()
+	HandlerGUI.tabs_panel.get_parent().show()
+	HandlerGUI.tabs_panel.animate_in()
