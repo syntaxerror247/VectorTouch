@@ -26,6 +26,7 @@ func set_value(new_value: Variant, emit_changed := true) -> void:
 func _ready() -> void:
 	if not editing_enabled:
 		line_edit.editable = false
+		line_edit.gui_input.connect(_on_line_edit_gui_input)
 	line_edit.text_changed.connect(_on_text_changed)
 	line_edit.text_submitted.connect(_on_text_submitted)
 	_sync_line_edit()
@@ -36,6 +37,10 @@ func _ready() -> void:
 				HORIZONTAL_ALIGNMENT_LEFT, -1, line_edit.get_theme_font_size("font_size")).x),
 				max_width)
 	line_edit.size.x = max_width + 4
+
+func _on_line_edit_gui_input(event: InputEvent):
+	if event is InputEventScreenTouch:
+		if event.pressed: _on_button_pressed()
 
 func _on_button_pressed() -> void:
 	var btn_arr: Array[Button] = []

@@ -21,7 +21,7 @@ theme_override_fonts/font = ExtResource("2_v4n2i")
 script = ExtResource("3_y7lt6")
 
 [node name="Button" type="Button" parent="."]
-custom_minimum_size = Vector2(15, 0)
+custom_minimum_size = Vector2(20, 0)
 layout_mode = 2
 focus_mode = 0
 mouse_filter = 1
