@@ -15,6 +15,8 @@ extends HBoxContainer
 signal value_changed(new_value: Variant)
 var _value: Variant
 
+var tap_start_time := 0.0
+
 func set_value(new_value: Variant, emit_changed := true) -> void:
 	if _value != new_value:
 		_value = new_value
@@ -38,9 +40,15 @@ func _ready() -> void:
 				max_width)
 	line_edit.size.x = max_width + 4
 
-func _on_line_edit_gui_input(event: InputEvent):
+func _on_line_edit_gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
-		if event.pressed: _on_button_pressed()
+		if event.pressed:
+			tap_start_time = Time.get_ticks_msec()
+		else:
+			var tap_duration := Time.get_ticks_msec() - tap_start_time
+			if tap_duration <= 200:
+				line_edit.release_focus()
+				_on_button_pressed()
 
 func _on_button_pressed() -> void:
 	var btn_arr: Array[Button] = []
