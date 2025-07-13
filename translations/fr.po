@@ -32,12 +32,8 @@ msgid "Check for updates?"
 msgstr "Vérifier les mises à jour ?"
 
 #: src/autoload/HandlerGUI.gd:
-msgid ""
-"This will connect to github.com to compare version numbers. No other data is "
-"collected or transmitted."
-msgstr ""
-"Cette action effectuera une connexion à github.com pour comparer les numéros "
-"de version. Aucune autre information ne sera transmise ou collectée."
+msgid "This will connect to github.com to compare version numbers. No other data is collected or transmitted."
+msgstr "Une connexion à github.com sera effectuée pour comparer les numéros de version. Aucune autre information ne sera transmise ou collectée."
 
 #: src/autoload/HandlerGUI.gd: src/ui_widgets/alert_dialog.gd:
 msgid "OK"
@@ -45,7 +41,7 @@ msgstr "OK"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Do you want to proceed?"
-msgstr "Voulez-vous procéder ?"
+msgstr "Voulez-vous poursuivre ?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Export SVG"
@@ -57,18 +53,12 @@ msgid "Export"
 msgstr "Exporter"
 
 #: src/autoload/HandlerGUI.gd:
-msgid ""
-"The graphic can be exported only as SVG because its proportions are too "
-"extreme."
-msgstr ""
-"Le graphique ne peut être exporté qu'en SVG car ses proportions sont trop "
-"extrêmes."
+msgid "The graphic can be exported only as SVG because its proportions are too extreme."
+msgstr "Le graphique ne peut être exporté qu'en SVG car ses proportions sont trop extrêmes."
 
 #: src/autoload/HandlerGUI.gd:
-msgid ""
-"The graphic can be exported only as SVG because its size is not defined."
-msgstr ""
-"Le graphique ne peut être exporté qu'en SVG car sa taille n'est pas définie."
+msgid "The graphic can be exported only as SVG because its size is not defined."
+msgstr "Le graphique ne peut être exporté qu'en SVG car sa taille n'a pas été pas définie."
 
 #: src/autoload/State.gd: src/ui_parts/good_file_dialog.gd:
 #: src/ui_widgets/alert_dialog.gd: src/utils/FileUtils.gd:
@@ -84,9 +74,8 @@ msgid "Restore"
 msgstr "Restaurer"
 
 #: src/autoload/State.gd:
-#, fuzzy
 msgid "View in Inspector"
-msgstr "Voir en liste"
+msgstr "Voir dans l'inspecteur"
 
 #: src/autoload/State.gd:
 msgid "Convert To"
@@ -101,12 +90,8 @@ msgid "The last edited state of this tab could not be found."
 msgstr "Le dernier état modifié de cet onglet n'a pas pu être trouvé."
 
 #: src/autoload/State.gd:
-msgid ""
-"The tab is bound to the file path {file_path}. Do you want to restore the "
-"SVG from this path?"
-msgstr ""
-"L'onglet est lié au chemin d'accès {file_path}. Voulez-vous restaurer le SVG "
-"à partir de ce chemin ?"
+msgid "The tab is bound to the file path {file_path}. Do you want to restore the SVG from this path?"
+msgstr "L'onglet est lié au chemin d'accès {file_path}. Voulez-vous restaurer le SVG à partir de ce chemin ?"
 
 #: src/config_classes/Formatter.gd:
 msgid "Compact"
@@ -122,7 +107,7 @@ msgstr "Toujours"
 
 #: src/config_classes/Formatter.gd:
 msgid "All except containers"
-msgstr "Pour tout sauf les conteneurs"
+msgstr "Sauf pour les conteneurs"
 
 #: src/config_classes/Formatter.gd:
 msgid "Never"
@@ -144,6 +129,30 @@ msgstr "Héxadécimal de 3 ou 6 chiffres"
 msgid "6-digit hex"
 msgstr "Héxadécimal de 6 chiffres"
 
+#. Refers to a theme preset.
+#: src/config_classes/SaveData.gd:
+msgid "Dark"
+msgstr ""
+
+#. Refers to a theme preset.
+#: src/config_classes/SaveData.gd:
+#, fuzzy
+msgid "Light"
+msgstr "Hauteur"
+
+#. Refers to a theme preset.
+#: src/config_classes/SaveData.gd:
+msgid "Black (OLED)"
+msgstr ""
+
+#: src/config_classes/SaveData.gd:
+msgid "Default Dark"
+msgstr ""
+
+#: src/config_classes/SaveData.gd:
+msgid "Default Light"
+msgstr ""
+
 #: src/config_classes/TabData.gd:
 msgid "Empty"
 msgstr "Vide"
@@ -164,6 +173,18 @@ msgstr "Texte"
 msgid "{element} must be inside {allowed} to have any effect."
 msgstr "{element} doit être à l'intérieur de {allowed} pour avoir un effet."
 
+#: src/data_classes/ElementBaseGradient.gd:
+msgid "No \"id\" attribute defined."
+msgstr "Aucun attribut « id » défini."
+
+#: src/data_classes/ElementBaseGradient.gd:
+msgid "No <stop> elements under this gradient."
+msgstr "Aucun élément <stop> en dessous de ce dégradé."
+
+#: src/data_classes/ElementBaseGradient.gd:
+msgid "This gradient is a solid color."
+msgstr "Ce dégradé est une couleur solide."
+
 #: src/data_classes/ElementG.gd:
 msgid "This group has no elements."
 msgstr "Ce groupe n'a aucun élément."
@@ -171,18 +192,6 @@ msgstr "Ce groupe n'a aucun élément."
 #: src/data_classes/ElementG.gd:
 msgid "This group has only one element."
 msgstr "Ce groupe n'a qu'un seul élément."
-
-#: src/data_classes/GradientUtils.gd:
-msgid "No \"id\" attribute defined."
-msgstr "Aucun attribut « id » défini."
-
-#: src/data_classes/GradientUtils.gd:
-msgid "No <stop> elements under this gradient."
-msgstr "Aucun élément <stop> en dessous de ce dégradé."
-
-#: src/data_classes/GradientUtils.gd:
-msgid "This gradient is a solid color."
-msgstr "Ce dégradé est une couleur solide."
 
 #: src/data_classes/SVGParser.gd:
 msgid "Doesn’t describe an SVG."
@@ -200,11 +209,11 @@ msgstr "Fermer"
 
 #: src/ui_parts/about_menu.gd:
 msgid "Authors"
-msgstr "Auteurs"
+msgstr "Auteur·rices"
 
 #: src/ui_parts/about_menu.gd:
 msgid "Donors"
-msgstr "Donateurs"
+msgstr "Donateur·rices"
 
 #: src/ui_parts/about_menu.gd:
 msgid "License"
@@ -214,25 +223,26 @@ msgstr "Licence"
 msgid "Third-party licenses"
 msgstr "Licences tierces"
 
+#. If the language has different gendered versions, prefer the most neutral-sounding one, i.e., the one used when you don't know the person's gender. If that's not possible, use feminine.
 #: src/ui_parts/about_menu.gd:
 msgid "Project Founder and Manager"
-msgstr "Fondateur et gestionnaire du projet"
+msgstr "Fondatrice et gestionnaire du projet"
 
 #: src/ui_parts/about_menu.gd:
 msgid "Developers"
-msgstr "Développeurs"
+msgstr "Développeur·ses"
 
 #: src/ui_parts/about_menu.gd:
 msgid "Translators"
-msgstr "Traducteurs"
+msgstr "Traducteur·rices"
 
 #: src/ui_parts/about_menu.gd:
 msgid "Golden donors"
-msgstr "Donateurs Or"
+msgstr "Donateur·rices Or"
 
 #: src/ui_parts/about_menu.gd:
 msgid "Diamond donors"
-msgstr "Donateurs Diamant"
+msgstr "Donateur·rices Diamant"
 
 #: src/ui_parts/current_file_button.gd:
 msgid "Save SVG as…"
@@ -247,13 +257,12 @@ msgid "Snap size"
 msgstr "Taille d'aimantation"
 
 #: src/ui_parts/display.gd:
-#, fuzzy
 msgid "Paste reference image"
-msgstr "Charger une image de référence"
+msgstr "Coller une image de référence"
 
 #: src/ui_parts/donate_menu.gd:
 msgid "Links to donation platforms"
-msgstr ""
+msgstr "Liens vers les plateformes de dons"
 
 #: src/ui_parts/donate_menu.gd: src/ui_parts/export_menu.gd:
 #: src/ui_parts/import_warning_menu.gd: src/ui_widgets/choose_name_dialog.gd:
@@ -269,7 +278,7 @@ msgstr "Nouvel élément"
 msgid "Dimensions"
 msgstr "Dimensions"
 
-#: src/ui_parts/export_menu.gd:
+#: src/ui_parts/export_menu.gd: src/ui_parts/settings_menu.gd:
 msgid "Size"
 msgstr "Taille"
 
@@ -293,7 +302,7 @@ msgstr "Qualité"
 msgid "Scale"
 msgstr "Échelle"
 
-#: src/ui_parts/export_menu.gd:
+#: src/ui_parts/export_menu.gd: src/ui_parts/settings_menu.gd:
 msgid "Width"
 msgstr "Largeur"
 
@@ -374,12 +383,8 @@ msgid "Copy path"
 msgstr "Copier le chemin"
 
 #: src/ui_parts/good_file_dialog.gd:
-msgid ""
-"A file named \"{file_name}\" already exists. Replacing will overwrite its "
-"contents!"
-msgstr ""
-"Un fichier nommé « {file_name} » existe déjà. Le remplacer écrasera son "
-"contenu !"
+msgid "A file named \"{file_name}\" already exists. Replacing will overwrite its contents!"
+msgstr "Un fichier nommé « {file_name} » existe déjà. Le remplacer écrasera son contenu !"
 
 #: src/ui_parts/handles_manager.gd:
 msgid "New shape"
@@ -412,11 +417,11 @@ msgstr "Ajouter un élément"
 #. Refers to the zero, one, or multiple UI parts to not be shown in the final layout. It's of plural cardinality.
 #: src/ui_parts/layout_popup.gd:
 msgid "Excluded"
-msgstr ""
+msgstr "Exclu(s)"
 
 #: src/ui_parts/layout_popup.gd:
 msgid "Drag and drop to change the layout"
-msgstr ""
+msgstr "Glissez-déposez pour modifier la disposition"
 
 #: src/ui_parts/mac_menu.gd: src/ui_parts/settings_menu.gd:
 msgid "File"
@@ -456,15 +461,39 @@ msgstr "Thèmes"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Tab bar"
-msgstr ""
+msgstr "Barre d'onglets"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Other"
 msgstr "Autre"
 
 #: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Theme preset"
+msgstr "Réinitialiser le zoom"
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Primary theme colors"
+msgstr "Désactiver la couleur"
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Base color"
+msgstr "Couleurs basiques"
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Accent color"
+msgstr "Couleur de texte"
+
+#: src/ui_parts/settings_menu.gd:
 msgid "SVG Text colors"
 msgstr "Couleurs de texte SVG"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Highlighter preset"
+msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Symbol color"
@@ -499,10 +528,11 @@ msgstr "Couleur de CDATA"
 msgid "Error color"
 msgstr "Couleur d'erreur"
 
-#. Refers to the colors of the draggable handles.
+#. Refers to the draggable gizmos.
 #: src/ui_parts/settings_menu.gd:
-msgid "Handle colors"
-msgstr "Couleurs des poignées"
+#, fuzzy
+msgid "Handles"
+msgstr "Taille des poignées"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Inside color"
@@ -525,17 +555,36 @@ msgid "Hovered selected color"
 msgstr "Couleur d'élément selectionné survolé"
 
 #: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Selection rectangle"
+msgstr "Sélectionnez une image"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Speed"
+msgstr ""
+
+#. Refers to the selection rectangle's animated dashed stroke.
+#: src/ui_parts/settings_menu.gd:
+msgid "Dash length"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Color {index}"
+msgstr "Pipette"
+
+#: src/ui_parts/settings_menu.gd:
 msgid "Basic colors"
 msgstr "Couleurs basiques"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Background color"
-msgstr "Couleur d'arrière-plan"
+#, fuzzy
+msgid "Canvas color"
+msgstr "Couleur d'intérieur"
 
 #: src/ui_parts/settings_menu.gd:
-#, fuzzy
 msgid "Grid color"
-msgstr "Couleur valide"
+msgstr "Couleur de la grille"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Valid color"
@@ -551,19 +600,66 @@ msgstr "Entrée"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Close tabs with middle mouse button"
-msgstr ""
+msgstr "Fermer les onglets avec la molette de la souris"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "If turned on, clicking on a tab with the middle mouse button closes the tab. If turned off, it focuses the tab instead."
+msgstr "Si activé, cliquer sur un onglet avec la molette de la souris fermera l'onglet. Si désactivé, cette action le rendra actif."
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Invert zoom direction"
 msgstr "Inverser la direction du zoom"
 
 #: src/ui_parts/settings_menu.gd:
+msgid "Swaps the scroll directions for zooming in and zooming out."
+msgstr "Inverser les sens de défilement pour le zoom avant et le zoom arrière."
+
+#: src/ui_parts/settings_menu.gd:
 msgid "Wrap-around panning"
 msgstr "Défilement bouclé"
 
 #: src/ui_parts/settings_menu.gd:
+msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
+msgstr "Téléporte le curseur de l'autre côté de la vue à chaque fois qu'il en atteind la limite."
+
+#: src/ui_parts/settings_menu.gd:
 msgid "Use CTRL for zooming"
 msgstr "Utiliser CTRL pour zoomer"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
+msgstr "Si activé, défiler fera balayer la vue. Pour zoomer, maintenez CTRL en défilant."
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Display"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "UI scale"
+msgstr "Échelle de l'interface"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Determines the scale factor for the interface."
+msgstr "Détermine le facteur d'échelle de l'interface."
+
+#. Stands for "Vertical Synchronization".
+#: src/ui_parts/settings_menu.gd:
+msgid "V-Sync"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Synchronizes graphics rendering with display refresh rate to prevent screen tearing artifacts. May increase input lag slightly."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Maximum FPS"
+msgstr "Valeur d'IPS maximale personnalisée"
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "Determines the maximum number of frames per second."
+msgstr "Si le taux de rafraîchissement est limité, cette valeur déterminera le nombre maximum d'images par seconde."
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Miscellaneous"
@@ -571,24 +667,19 @@ msgstr "Divers"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Use native file dialog"
-msgstr "Utiliser la boîte de dialogue de fichiers native"
+msgstr "Utiliser le sélecteur de fichiers natif"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "If turned on, uses your operating system's native file dialog. If turned off, uses GodSVG's built-in file dialog."
+msgstr "Si activé, utilise le sélecteur de fichiers système. Si désactivé, utilise la boîte de dialogue intégrée de GodSVG."
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Sync window title to file name"
-msgstr "Synchroniser le titre de la fenêtre au nom du fichier"
-
-#. Refers to the size of the draggable handles.
-#: src/ui_parts/settings_menu.gd:
-msgid "Handle size"
-msgstr "Taille des poignées"
+msgstr "Synchroniser le titre de la fenêtre avec le nom du fichier"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "UI scale"
-msgstr "Échelle de l'interface"
-
-#: src/ui_parts/settings_menu.gd:
-msgid "Changes the scale factor for the interface."
-msgstr "Change le facteur d'échelle de l'interface."
+msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+msgstr "Si désactivé, le titre de la fenêtre restera simplement « GodSVG » quel que soit le fichier actuel."
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Language"
@@ -613,20 +704,16 @@ msgstr "Nouvelle palette depuis du XML"
 #. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_parts/settings_menu.gd:
 msgid "Editor formatter"
-msgstr "Formateur de l'éditeur"
+msgstr "Formatage de l'éditeur"
 
 #. Refers to the formatter used when exporting.
 #: src/ui_parts/settings_menu.gd:
 msgid "Export formatter"
-msgstr "Formateur d'exportation"
+msgstr "Formatage des fichiers exportés"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Help"
 msgstr "Aide"
-
-#: src/ui_parts/settings_menu.gd:
-msgid "Reset all to default"
-msgstr "Tout rénitialiser par défaut"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Preset"
@@ -674,7 +761,7 @@ msgstr "Retirer le zéro initial"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Use exponential when shorter"
-msgstr "Noter en exponentiel si c'est plus court"
+msgstr "Noter en écriture scientifique si c'est plus court"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Colors"
@@ -686,7 +773,7 @@ msgstr "Utiliser des couleurs nommées"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Primary syntax"
-msgstr "Syntaxe primaire"
+msgstr "Syntaxe principale"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Capitalize hexadecimal letters"
@@ -694,7 +781,7 @@ msgstr "Mettre en majuscule les nombres héxadécimaux"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Pathdata"
-msgstr "Données de chemin d'accès"
+msgstr "Données des chemins"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Compress numbers"
@@ -719,55 +806,6 @@ msgstr "Transformer les listes"
 #: src/ui_parts/settings_menu.gd:
 msgid "Remove unnecessary parameters"
 msgstr "Retirer les paramètres inutiles"
-
-#: src/ui_parts/settings_menu.gd:
-msgid ""
-"If turned on, clicking on a tab with the middle mouse button closes the tab. "
-"If turned off, it focuses the tab instead."
-msgstr ""
-
-#: src/ui_parts/settings_menu.gd:
-msgid "Swaps the scroll directions for zooming in and zooming out."
-msgstr ""
-"Inverser les directions de défilement pour le zoom avant et le zoom arrière."
-
-#: src/ui_parts/settings_menu.gd:
-msgid ""
-"Warps the cursor to the opposite side whenever it reaches a viewport "
-"boundary while panning."
-msgstr ""
-"Téléporte le curseur de l'autre côté de la vue à chaque fois qu'il en "
-"atteind la limite."
-
-#: src/ui_parts/settings_menu.gd:
-#, fuzzy
-msgid ""
-"If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
-msgstr ""
-"Si activé, défiler fera balayer la vue. Pour zoomer, maintenez CTRL en "
-"défilant."
-
-#: src/ui_parts/settings_menu.gd:
-msgid ""
-"If turned on, uses your operating system's native file dialog. If turned "
-"off, uses GodSVG's built-in file dialog."
-msgstr ""
-"Si activé, utilise la boîte de dialogue de fichiers native de votre système "
-"d'exploitation. Si désactivé, utilise la boîte de dialogue intégrée de "
-"GodSVG."
-
-#: src/ui_parts/settings_menu.gd:
-#, fuzzy
-msgid ""
-"If turned off, the window title remains as \"GodSVG\" without including the "
-"current file."
-msgstr ""
-"Si désactivé, le titre de la fenêtre restera simplement « GodSVG » quel que "
-"soit le fichier actuel."
-
-#: src/ui_parts/settings_menu.gd:
-msgid "Changes the visual size and grabbing area of handles."
-msgstr "Change la taille visuelle et la zone de saisie des poignées"
 
 #: src/ui_parts/shortcut_panel.gd:
 msgid "Horizontal strip"
@@ -807,7 +845,7 @@ msgstr "Réessayer"
 
 #: src/ui_parts/update_menu.gd:
 msgid "Show prereleases"
-msgstr "Inclure les versions préliminaires"
+msgstr "Afficher les versions préliminaires"
 
 #: src/ui_parts/update_menu.gd:
 msgid "Current Version"
@@ -815,7 +853,7 @@ msgstr "Version actuelle"
 
 #: src/ui_parts/update_menu.gd:
 msgid "Retrieving information..."
-msgstr "Récupération d'information en cours…"
+msgstr "Récupération d'informations en cours…"
 
 #. When checking for updates.
 #: src/ui_parts/update_menu.gd:
@@ -823,18 +861,16 @@ msgid "Update check failed"
 msgstr "Échec de la vérification de mise à jour"
 
 #: src/ui_parts/update_menu.gd:
-#, fuzzy
 msgid "View all releases"
-msgstr "Sélectionner tous les éléments"
+msgstr "Voir toutes les versions"
 
 #: src/ui_parts/update_menu.gd:
 msgid "GodSVG is up-to-date."
 msgstr "GodSVG est à jour."
 
 #: src/ui_parts/update_menu.gd:
-#, fuzzy
 msgid "New versions available!"
-msgstr "Nouvelles versions"
+msgstr "De nouvelles versions sont disponibles !"
 
 #: src/ui_widgets/choose_name_dialog.gd:
 msgid "Create"
@@ -850,7 +886,7 @@ msgstr "Pipette"
 
 #: src/ui_widgets/configure_color_popup.gd:
 msgid "Edit color name"
-msgstr "Éditer le nom de la couleur"
+msgstr "Modifier le nom de la couleur"
 
 #: src/ui_widgets/configure_color_popup.gd:
 msgid "Delete color"
@@ -859,6 +895,10 @@ msgstr "Supprimer la couleur"
 #: src/ui_widgets/configure_color_popup.gd: src/ui_widgets/palette_config.gd:
 msgid "Unnamed"
 msgstr "Sans nom"
+
+#: src/ui_widgets/fps_limit_dropdown.gd: src/ui_widgets/setting_frame.gd:
+msgid "Unlimited"
+msgstr ""
 
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Color keywords"
@@ -870,7 +910,7 @@ msgstr "Pipette"
 
 #: src/ui_widgets/palette_config.gd:
 msgid "Unnamed palettes won't be shown."
-msgstr "Les palettes sans nom ne seront pas affichées."
+msgstr "Les palettes sans nom ne seront pas montrées."
 
 #: src/ui_widgets/palette_config.gd:
 msgid "Multiple palettes can't have the same name."
@@ -925,9 +965,17 @@ msgstr "Aucun point"
 msgid "Also used by"
 msgstr "Aussi utilisé par"
 
+#: src/ui_widgets/profile_frame.gd:
+msgid "Apply"
+msgstr ""
+
+#: src/ui_widgets/profile_frame.gd:
+msgid "Apply all of this preset's defaults"
+msgstr ""
+
 #: src/ui_widgets/setting_frame.gd: src/ui_widgets/setting_shortcut.gd:
 msgid "Reset to default"
-msgstr "Rénitialiser par défaut"
+msgstr "Réinitialiser par défaut"
 
 #: src/ui_widgets/setting_shortcut.gd:
 msgid "Unused"
@@ -939,7 +987,7 @@ msgstr "Ajouter un raccourci"
 
 #: src/ui_widgets/setting_shortcut.gd:
 msgid "Press keys…"
-msgstr "Appuyez sur les touches…"
+msgstr "Appuyez sur des touches…"
 
 #: src/ui_widgets/transform_field.gd:
 msgid "No transforms"
@@ -963,24 +1011,23 @@ msgstr "GodSVG ne reconnaît pas cet attribut"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
-msgstr ""
+msgstr "Les fichiers suivants ont été abandonnés :"
 
 #: src/utils/FileUtils.gd:
 msgid "{file_name} was discarded."
-msgstr ""
+msgstr "{file_name} a été abandonné."
 
 #: src/utils/FileUtils.gd:
 msgid "Discarded files"
-msgstr ""
+msgstr "Fichiers abandonnés"
 
 #: src/utils/FileUtils.gd:
 msgid "Proceed"
-msgstr ""
+msgstr "Poursuivre"
 
 #: src/utils/FileUtils.gd:
-#, fuzzy
 msgid "{file_name} couldn't be opened."
-msgstr "Le fichier n'a pas pu être ouvert."
+msgstr "{file_name} n'a pas pu être ouvert."
 
 #: src/utils/FileUtils.gd:
 msgid "Check if the file still exists in the selected file path."
@@ -988,11 +1035,11 @@ msgstr "Vérifiez si le fichier existe encore au chemin selectionné."
 
 #: src/utils/FileUtils.gd:
 msgid "Proceed with importing the rest of the files?"
-msgstr ""
+msgstr "Poursuivre en important le reste des fichiers ?"
 
 #: src/utils/FileUtils.gd:
 msgid "Proceed for all files that can't be opened"
-msgstr ""
+msgstr "Poursuivre pour chaque fichier ne pouvant être ouvert"
 
 #: src/utils/FileUtils.gd:
 msgid "Save the file?"
@@ -1000,11 +1047,11 @@ msgstr "Enregistrer le fichier ?"
 
 #: src/utils/FileUtils.gd:
 msgid "Do you want to save this file?"
-msgstr "Voulez-vous enregistrer ce fichier ?"
+msgstr "Voulez-vous sauvegarder ce fichier ?"
 
 #: src/utils/FileUtils.gd:
 msgid "Save the changes?"
-msgstr "Enregistrer les changements?"
+msgstr "Sauvegarder les modifications ?"
 
 #: src/utils/FileUtils.gd:
 msgid "Your changes will be lost if you don't save them."
@@ -1015,15 +1062,12 @@ msgid "Don't save"
 msgstr "Ne pas enregistrer"
 
 #: src/utils/FileUtils.gd:
-#, fuzzy
 msgid "{file_path} is already being edited inside GodSVG."
-msgstr "Le fichier importé est déjà en cours de modification dans GodSVG."
+msgstr "{file_path} est déjà en cours de modification dans GodSVG."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
-msgstr ""
-"Si vous voulez rénitialiser vos changements au dernier enregistrement, "
-"utilisez {reset_svg}."
+msgstr "Si vous voulez réinitialiser vos modifications au dernier enregistrement, utilisez {reset_svg}."
 
 #: src/utils/FileUtils.gd:
 msgid "Do you want to save the changes made to {file_name}?"
@@ -1034,9 +1078,8 @@ msgid "Save SVG"
 msgstr "Sauvegarder le SVG"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Save SVG as"
-msgstr "Sauvegarder le SVG sous…"
+msgstr "Sauvegarder le SVG sous"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Close tabs to the left"
@@ -1051,14 +1094,12 @@ msgid "Close all other tabs"
 msgstr "Fermer les autres onglets"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Close empty tabs"
-msgstr "Fermer l'onglet"
+msgstr "Fermer les onglets vides"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Close saved tabs"
-msgstr "Fermer les autres onglets"
+msgstr "Fermer les onglets enregistrés"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Create tab"
@@ -1066,33 +1107,31 @@ msgstr "Créer un onglet"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Select the next tab"
-msgstr "Sélectionner l'onglet suivant"
+msgstr "Basculer à l'onglet suivant"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Select the previous tab"
-msgstr "Sélectionner l'onglet précédent"
+msgstr "Basculer à l'onglet précédent"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Optimize"
 msgstr "Optimiser"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Optimize SVG"
-msgstr "Optimiser"
+msgstr "Optimiser le SVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Copy all text"
 msgstr "Copier tout le texte"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Copy the SVG text"
-msgstr "Copier tout le texte"
+msgstr "Copier le texte SVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Reset SVG"
-msgstr "Rénitialiser le SVG"
+msgstr "Réinitialiser le SVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Open externally"
@@ -1143,7 +1182,6 @@ msgid "Delete the selection"
 msgstr "Supprimer les éléments sélectionnés"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Move up"
 msgstr "Remonter"
 
@@ -1152,7 +1190,6 @@ msgid "Move the selection up"
 msgstr "Remonter les éléments sélectionnés"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Move down"
 msgstr "Descendre"
 
@@ -1174,7 +1211,7 @@ msgstr "Zoom arrière"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Zoom reset"
-msgstr "Rénitialiser le zoom"
+msgstr "Réinitialiser le zoom"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Show grid"
@@ -1258,7 +1295,7 @@ msgstr "Quitter l'application"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Toggle fullscreen"
-msgstr ""
+msgstr "Activer/Désactiver le mode plein écran"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Move to"
@@ -1306,50 +1343,57 @@ msgstr "Absolu"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Code editor"
-msgstr ""
+msgstr "Éditeur de code"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Inspector"
-msgstr ""
+msgstr "Inspecteur"
 
 #. The viewport is the area where the graphic is displayed. In similar applications, it's often called the canvas.
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Viewport"
-msgstr "Affichage"
+msgstr "Zone d'affichage"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Select {format} files"
-msgstr "Sélectionner un fichier XML"
+msgstr "Sélectionner des fichiers {format}"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Select an image"
-msgstr "Sélectionner une image"
+msgstr "Sélectionnez une image"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Select an {format} file"
-msgstr "Sélectionner un fichier XML"
+msgstr "Sélectionner un fichier {format}"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Save the {format} file"
-msgstr "Enregistrer le fichier .\"{format}\""
+msgstr "Enregistrer le fichier {format}"
 
 #: src/utils/TranslationUtils.gd:
-#, fuzzy
 msgid "Only {extension_list} files are supported for this operation."
-msgstr ""
-"L'extension de fichier est vide. Seuls les fichiers {extension_list} sont "
-"supportés."
+msgstr "Seuls les fichiers {extension_list} sont supportés par cette opération."
 
-#~ msgid ""
-#~ "The file extension {extension} is unsupported for this operation. Only "
-#~ "{extension_list} files are supported."
-#~ msgstr ""
-#~ "L'extension de fichier {extension} n'est pas supportée pour cette "
-#~ "opération. Seuls les fichiers {extension_list} sont supportés."
+#~ msgid "Handle colors"
+#~ msgstr "Couleurs des poignées"
+
+#~ msgid "Background color"
+#~ msgstr "Couleur d'arrière-plan"
+
+#~ msgid "Uncapped framerate"
+#~ msgstr "Taux de rafraîchissement sans limite"
+
+#~ msgid "Determines if frames are rendered as fast as possible (may increase power consumption and heat)."
+#~ msgstr "Détermine si les rafraîchissements sont rendus aussi vite que possible (peut augmenter la consommation d'énergie et la chaleur)."
+
+#~ msgid "Reset all to default"
+#~ msgstr "Tout réinitialiser par défaut"
+
+#~ msgid "Determines the visual size and grabbing area of handles."
+#~ msgstr "Détermine la taille visuelle et la zone de saisie des poignées."
+
+#~ msgid "The file extension {extension} is unsupported for this operation. Only {extension_list} files are supported."
+#~ msgstr "L'extension de fichier {extension} n'est pas supportée pour cette opération. Seuls les fichiers {extension_list} sont supportés."
 
 #~ msgid "Save the .\"{format}\" file"
 #~ msgstr "Enregistrer le fichier .\"{format}\""
@@ -1383,17 +1427,13 @@ msgstr ""
 #~ msgstr "Redimensionne l'interface utilisateur selon la taille de l'écran."
 
 #~ msgid "Wrap mouse"
-#~ msgstr ""
-#~ "Déplacer la souris d'un bout à l'autre de l'écran lorsque le bord est "
-#~ "atteint"
+#~ msgstr "Déplacer la souris d'un bout à l'autre de l'écran lorsque le bord est atteint"
 
 #~ msgid "Swaps zoom in and zoom out with the mouse wheel."
 #~ msgstr "Échanger le zoom avant et le zoom arrière par molette de souris."
 
 #~ msgid "Wraps the mouse cursor around when panning the viewport."
-#~ msgstr ""
-#~ "Déplace le pointeur de souris d'un bout à l'autre de l'écran lorsque le "
-#~ "bord est atteint lors d'un balayage."
+#~ msgstr "Déplace le pointeur de souris d'un bout à l'autre de l'écran lorsque le bord est atteint lors d'un balayage."
 
 #~ msgid "This requires GodSVG to connect to the internet."
 #~ msgstr "Ceci nécessite que GodSVG se connecte à Internet."
@@ -1416,6 +1456,3 @@ msgstr ""
 
 #~ msgid "Enable the color"
 #~ msgstr "Activer la couleur"
-
-#~ msgid "Disable the color"
-#~ msgstr "Désactiver la couleur"

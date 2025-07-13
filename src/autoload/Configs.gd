@@ -1,42 +1,27 @@
 # This singleton handles session data and settings.
 extends Node
 
-@warning_ignore("unused_signal")
+@warning_ignore_start("unused_signal")
 signal highlighting_colors_changed
-@warning_ignore("unused_signal")
 signal snap_changed
-@warning_ignore("unused_signal")
 signal language_changed
-@warning_ignore("unused_signal")
 signal ui_scale_changed
-@warning_ignore("unused_signal")
 signal theme_changed
-@warning_ignore("unused_signal")
 signal shortcuts_changed
-@warning_ignore("unused_signal")
 signal basic_colors_changed
-@warning_ignore("unused_signal")
 signal handle_visuals_changed
-@warning_ignore("unused_signal")
+signal selection_rectangle_visuals_changed
 signal grid_color_changed
-@warning_ignore("unused_signal")
 signal shortcut_panel_changed
-@warning_ignore("unused_signal")
 signal active_tab_status_changed
-@warning_ignore("unused_signal")
 signal active_tab_reference_changed
-@warning_ignore("unused_signal")
 signal active_tab_changed
-@warning_ignore("unused_signal")
 signal tabs_changed
-@warning_ignore("unused_signal")
 signal tab_removed
-@warning_ignore("unused_signal")
 signal tab_selected(index: int)
-@warning_ignore("unused_signal")
 signal layout_changed
-@warning_ignore("unused_signal")
 signal orientation_changed
+@warning_ignore_restore("unused_signal")
 
 var current_sdk: int = -1
 
@@ -82,7 +67,6 @@ func _enter_tree() -> void:
 		if InputMap.has_action(action):
 			default_shortcuts[action] = InputMap.action_get_events(action)
 	load_config()
-	ThemeUtils.generate_and_apply_theme()
 
 
 func load_config() -> void:
@@ -109,8 +93,10 @@ func reset_settings() -> void:
 
 func post_load() -> void:
 	savedata.get_active_tab().activate()
-	sync_background_color()
+	sync_canvas_color()
 	sync_locale()
+	sync_max_fps()
+	sync_theme()
 
 
 func generate_highlighter() -> SVGHighlighter:
@@ -128,11 +114,22 @@ func generate_highlighter() -> SVGHighlighter:
 
 # Global effects from settings. Some of them should also be used on launch.
 
-func sync_background_color() -> void:
-	RenderingServer.set_default_clear_color(savedata.background_color)
+func sync_canvas_color() -> void:
+	RenderingServer.set_default_clear_color(savedata.canvas_color)
 
 func sync_locale() -> void:
 	if not savedata.language in TranslationServer.get_loaded_locales():
 		savedata.language = "en"
 	else:
 		TranslationServer.set_locale(savedata.language)
+
+func sync_vsync() -> void:
+	DisplayServer.window_set_vsync_mode(
+			DisplayServer.VSYNC_ENABLED if savedata.vsync else DisplayServer.VSYNC_DISABLED)
+
+func sync_max_fps() -> void:
+	Engine.max_fps = savedata.max_fps
+
+func sync_theme() -> void:
+	ThemeUtils.generate_and_apply_theme()
+	theme_changed.emit()

@@ -21,7 +21,7 @@ var mode: FileMode
 
 var current_dir := ""
 var extensions := PackedStringArray()
-var item_height := 16
+var item_height := 16.0
 var search_text := ""
 
 var default_saved_file := ""  # The file you opened this dialog with.
@@ -110,9 +110,10 @@ func _ready() -> void:
 		if mode == FileMode.MULTI_SELECT:
 			file_list.select_mode = ItemList.SELECT_MULTI
 	
-	var extension_panel_stylebox := extension_panel.get_theme_stylebox("panel")
+	var extension_panel_stylebox := extension_panel.get_theme_stylebox("panel").duplicate()
 	extension_panel_stylebox.content_margin_top -= 4.0
 	extension_panel.add_theme_stylebox_override("panel", extension_panel_stylebox)
+	extension_label.add_theme_color_override("font_color", ThemeUtils.dim_text_color)
 	if Configs.savedata.file_dialog_show_hidden:
 		show_hidden_button.set_pressed_no_signal(true)
 	folder_up_button.tooltip_text = Translator.translate("Go to parent folder")
@@ -175,6 +176,7 @@ func open_dir(dir: String) -> void:
 			continue
 		
 		var item_idx := drives_list.add_item(drive_name, get_drive_icon(drive_path))
+		drives_list.set_item_icon_modulate(item_idx, ThemeUtils.tinted_contrast_color)
 		drives_list.set_item_metadata(item_idx,
 				Actions.new(Callable(), open_dir.bind(drive_path)))
 		if current_dir == drive_path:
@@ -251,16 +253,15 @@ func _setup_file_images() -> void:
 					file_list.set_item_icon(item_idx, text_file_icon)
 				"svg":
 					# Setup a clean SVG graphic by using the scaling parameter.
-					var svg_buffer := FileAccess.get_file_as_bytes(current_dir.path_join(file))
+					var svg_text := FileAccess.get_file_as_string(current_dir.path_join(file))
 					var img := Image.new()
-					img.load_svg_from_buffer(svg_buffer)
+					img.load_svg_from_string(svg_text)
 					if !is_instance_valid(img) or img.is_empty():
 						file_list.set_item_icon(item_idx, broken_file_icon)
 					else:
-						var factor := item_height / maxf(img.get_width(), img.get_height())
-						if not is_equal_approx(factor, 1.0):
-							img.load_svg_from_buffer(svg_buffer, factor)
-						file_list.set_item_icon(item_idx, ImageTexture.create_from_image(img))
+						var svg_texture := SVGTexture.create_from_string(svg_text,
+								minf(item_height / img.get_width(), item_height / img.get_height()))
+						file_list.set_item_icon(item_idx, svg_texture)
 				_:
 					var img := Image.load_from_file(current_dir.path_join(file))
 					if !is_instance_valid(img) or img.is_empty():

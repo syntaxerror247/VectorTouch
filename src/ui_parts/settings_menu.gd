@@ -20,7 +20,7 @@ const reset_icon = preload("res://assets/icons/Reload.svg")
 
 var focused_tab := ""
 var current_setup_setting := ""
-var current_setup_resource: Resource
+var current_setup_resource: ConfigResource
 var setting_container: VBoxContainer
 var advice: Dictionary[String, String] = {}
 
@@ -38,10 +38,8 @@ func _ready() -> void:
 	update_close_button()
 	setup_tabs()
 	tabs.get_child(0).button_pressed = true
-	Configs.theme_changed.connect(setup_theming)
-	setup_theming()
-	Configs.savedata.editor_formatter.changed_deferred.connect(show_formatter.bind("editor"))
-	Configs.savedata.export_formatter.changed_deferred.connect(show_formatter.bind("export"))
+	Configs.theme_changed.connect(update_theme)
+	update_theme()
 
 func change_orientation():
 	if Configs.current_orientation == Configs.orientation.PORTRAIT:
@@ -51,8 +49,8 @@ func change_orientation():
 		$VBoxContainer/BoxContainer.vertical = false
 		$VBoxContainer/BoxContainer/PanelContainer.size_flags_horizontal = SIZE_EXPAND_FILL
 
-func setup_theming() -> void:
-	var stylebox := get_theme_stylebox("panel").duplicate()
+func update_theme() -> void:
+	var stylebox := ThemeDB.get_default_theme().get_stylebox("panel", theme_type_variation).duplicate()
 	stylebox.content_margin_top += 4.0
 	add_theme_stylebox_override("panel", stylebox)
 
@@ -100,8 +98,10 @@ func _on_tab_toggled(toggled_on: bool, tab_name: String) -> void:
 		focused_tab = tab_name
 		setup_content()
 
-func setup_content() -> void:
-	scroll_container.scroll_vertical = 0
+func setup_content(reset_scroll := true) -> void:
+	if reset_scroll:
+		scroll_container.scroll_vertical = 0
+	
 	for child in content_container.get_children():
 		child.queue_free()
 	
@@ -168,7 +168,26 @@ func setup_content() -> void:
 			content_container.add_child(setting_container)
 			
 			current_setup_resource = Configs.savedata
+			
+			current_setup_setting = "theme_preset"
+			add_profile_picker(Translator.translate("Theme preset"),
+					current_setup_resource.reset_theme_items_to_default,
+					SaveData.ThemePreset.size(), SaveData.get_theme_preset_value_text_map(),
+					current_setup_resource.is_theming_default)
+			
+			add_section(Translator.translate("Primary theme colors"))
+			current_setup_setting = "base_color"
+			add_color_edit(Translator.translate("Base color"), false)
+			current_setup_setting = "accent_color"
+			add_color_edit(Translator.translate("Accent color"), false)
+			
 			add_section(Translator.translate("SVG Text colors"))
+			current_setup_setting = "highlighter_preset"
+			add_profile_picker(Translator.translate("Highlighter preset"),
+					current_setup_resource.reset_highlighting_items_to_default,
+					SaveData.HighlighterPreset.size(),
+					SaveData.get_highlighter_preset_value_text_map(),
+					current_setup_resource.is_highlighting_default)
 			current_setup_setting = "highlighting_symbol_color"
 			add_color_edit(Translator.translate("Symbol color"))
 			current_setup_setting = "highlighting_element_color"
@@ -186,7 +205,11 @@ func setup_content() -> void:
 			current_setup_setting = "highlighting_error_color"
 			add_color_edit(Translator.translate("Error color"))
 			
-			add_section(Translator.translate("Handle colors"))
+			add_section(Translator.translate("Handles"))
+			current_setup_setting = "handle_size"
+			add_number_dropdown(Translator.translate("Size"),
+					[0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0], false, false,
+					SaveData.HANDLE_SIZE_MIN, SaveData.HANDLE_SIZE_MAX)
 			current_setup_setting = "handle_inner_color"
 			add_color_edit(Translator.translate("Inside color"), false)
 			current_setup_setting = "handle_color"
@@ -198,9 +221,28 @@ func setup_content() -> void:
 			current_setup_setting = "handle_hovered_selected_color"
 			add_color_edit(Translator.translate("Hovered selected color"), false)
 			
+			add_section(Translator.translate("Selection rectangle"))
+			current_setup_setting = "selection_rectangle_speed"
+			add_number_dropdown(Translator.translate("Speed"),
+					[0.0, 10.0, 20.0, 30.0, 50.0, 80.0, 130.0], false, false,
+					-SaveData.MAX_SELECTION_RECTANGLE_SPEED,
+					SaveData.MAX_SELECTION_RECTANGLE_SPEED)
+			current_setup_setting = "selection_rectangle_width"
+			add_number_dropdown(Translator.translate("Width"),
+					[1.0, 2.0, 3.0, 4.0], false, false, 1.0,
+					SaveData.MAX_SELECTION_RECTANGLE_WIDTH)
+			current_setup_setting = "selection_rectangle_dash_length"
+			add_number_dropdown(Translator.translate("Dash length"),
+					[5.0, 10.0, 15.0, 20.0], false, false, 1.0,
+					SaveData.MAX_SELECTION_RECTANGLE_DASH_LENGTH)
+			current_setup_setting = "selection_rectangle_color1"
+			add_color_edit(Translator.translate("Color {index}").format({"index": "1"}))
+			current_setup_setting = "selection_rectangle_color2"
+			add_color_edit(Translator.translate("Color {index}").format({"index": "2"}))
+			
 			add_section(Translator.translate("Basic colors"))
-			current_setup_setting = "background_color"
-			add_color_edit(Translator.translate("Background color"), false)
+			current_setup_setting = "canvas_color"
+			add_color_edit(Translator.translate("Canvas color"), false)
 			current_setup_setting = "grid_color"
 			add_color_edit(Translator.translate("Grid color"), false)
 			current_setup_setting = "basic_color_valid"
@@ -218,45 +260,26 @@ func setup_content() -> void:
 			add_section(Translator.translate("Input"))
 			current_setup_setting = "tab_mmb_close"
 			add_checkbox(Translator.translate("Close tabs with middle mouse button"))
-			add_advice(Translator.translate(
-					"If turned on, clicking on a tab with the middle mouse button closes the tab. If turned off, it focuses the tab instead."))
+			add_advice(Translator.translate("If turned on, clicking on a tab with the middle mouse button closes the tab. If turned off, it focuses the tab instead."))
 		"other":
 			advice_panel.show()
 			create_setting_container()
 			content_container.add_child(setting_container)
-			
 			current_setup_resource = Configs.savedata
+			
 			add_section(Translator.translate("Input"))
 			current_setup_setting = "invert_zoom"
 			add_checkbox(Translator.translate("Invert zoom direction"))
-			add_advice(Translator.translate(
-					"Swaps the scroll directions for zooming in and zooming out."))
+			add_advice(Translator.translate("Swaps the scroll directions for zooming in and zooming out."))
 			current_setup_setting = "wraparound_panning"
 			var wraparound_panning := add_checkbox(Translator.translate("Wrap-around panning"))
-			add_advice(Translator.translate(
-					"Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."))
+			add_advice(Translator.translate("Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."))
 			current_setup_setting = "use_ctrl_for_zoom"
 			add_checkbox(Translator.translate("Use CTRL for zooming"))
-			add_advice(Translator.translate(
-					"If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."))
+			add_advice(Translator.translate("If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."))
 			
-			add_section(Translator.translate("Miscellaneous"))
-			current_setup_setting = "use_native_file_dialog"
-			var use_native_file_dialog := add_checkbox(
-					Translator.translate("Use native file dialog"))
-			add_advice(Translator.translate(
-					"If turned on, uses your operating system's native file dialog. If turned off, uses GodSVG's built-in file dialog."))
-			current_setup_setting = "use_filename_for_window_title"
-			add_checkbox(Translator.translate("Sync window title to file name"))
-			add_advice(Translator.translate(
-					"If turned off, the window title remains as \"GodSVG\" without including the current file."))
-			current_setup_setting = "handle_size"
-			add_number_dropdown(Translator.translate("Handle size"),
-					[0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0], false, false,
-					SaveData.HANDLE_SIZE_MIN, SaveData.HANDLE_SIZE_MAX)
-			add_advice(Translator.translate(
-					"Changes the visual size and grabbing area of handles."))
-			
+			add_section(Translator.translate("Display"))
+			# Prepare parameters for the UI scale setting.
 			current_setup_setting = "ui_scale"
 			
 			var auto_scale: float = HandlerGUI.get_auto_ui_scale()
@@ -280,6 +303,23 @@ func setup_content() -> void:
 			
 			add_dropdown(Translator.translate("UI scale"), dropdown_map.keys(), dropdown_map)
 			add_advice(Translator.translate("Changes the scale factor for the interface."))
+			
+			current_setup_setting = "vsync"
+			add_checkbox(Translator.translate("V-Sync"))
+			add_advice(Translator.translate("Synchronizes graphics rendering with display refresh rate to prevent screen tearing artifacts. May increase input lag slightly."))
+			
+			current_setup_setting = "max_fps"
+			add_fps_limit_dropdown(Translator.translate("Maximum FPS"))
+			add_advice(Translator.translate("Determines the maximum number of frames per second."))
+			
+			add_section(Translator.translate("Miscellaneous"))
+			current_setup_setting = "use_native_file_dialog"
+			var use_native_file_dialog := add_checkbox(Translator.translate("Use native file dialog"))
+			add_advice(Translator.translate("If turned on, uses your operating system's native file dialog. If turned off, uses GodSVG's built-in file dialog."))
+			current_setup_setting = "use_filename_for_window_title"
+			add_checkbox(Translator.translate("Sync window title to file name"))
+			add_advice(Translator.translate("If turned off, the window title remains as \"GodSVG\" without including the current file."))
+			
 			# Disable mouse wrap if not available.
 			if not DisplayServer.has_feature(DisplayServer.FEATURE_MOUSE_WARP):
 				wraparound_panning.permanent_disable_checkbox(false)
@@ -288,6 +328,9 @@ func setup_content() -> void:
 				use_native_file_dialog.permanent_disable_checkbox(true)
 			elif not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE):
 				use_native_file_dialog.permanent_disable_checkbox(false)
+	
+	# Update hover.
+	HandlerGUI.throw_mouse_motion_event()
 
 
 func add_section(section_name: String) -> void:
@@ -295,12 +338,34 @@ func add_section(section_name: String) -> void:
 	vbox.add_theme_constant_override("separation", 0)
 	var label := Label.new()
 	label.add_theme_font_size_override("font_size", 15)
+	label.theme_type_variation = "TitleLabel"
 	label.text = section_name
 	vbox.add_child(label)
 	var spacer := Control.new()
 	spacer.custom_minimum_size.y = 2
 	vbox.add_child(spacer)
 	setting_container.add_child(vbox)
+
+func add_profile_picker(text: String, application_callback: Callable, profile_count: int,
+value_text_map: Dictionary, disabled_check_callback: Callable) -> void:
+	var bind := current_setup_setting
+	var frame := ProfileFrameScene.instantiate()
+	frame.setup_dropdown(range(profile_count), value_text_map)
+	frame.getter = current_setup_resource.get.bind(bind)
+	var resource_permanent_ref := current_setup_resource
+	frame.setter = func(p: Variant) -> void:
+			resource_permanent_ref.set(bind, p)
+	frame.text = text
+	frame.disabled_check_callback = disabled_check_callback
+	frame.value_changed.connect.call_deferred(setup_content.bind(false))
+	frame.defaults_applied.connect(application_callback)
+	frame.defaults_applied.connect(setup_content.bind(false))
+	add_frame(frame)
+	
+	resource_permanent_ref.changed_deferred.connect(frame.button_update_disabled)
+	frame.tree_exited.connect(resource_permanent_ref.changed_deferred.disconnect.bind(
+			frame.button_update_disabled), CONNECT_ONE_SHOT)
+	
 
 func add_checkbox(text: String, dim_text := false) -> Control:
 	var frame := SettingFrameScene.instantiate()
@@ -309,6 +374,10 @@ func add_checkbox(text: String, dim_text := false) -> Control:
 	setup_frame(frame)
 	frame.setup_checkbox()
 	add_frame(frame)
+	# Some checkboxes need to update the dimness of the text of other settings.
+	# There's nothing persistent in checkboxes, so it's safe to just rebuild the content
+	# for them, specifically.
+	frame.value_changed.connect(setup_content.bind(false))
 	return frame
 
 # TODO Typed Dictionary wonkiness
@@ -330,6 +399,15 @@ restricted := true, min_value := -INF, max_value := INF, dim_text := false) -> C
 	add_frame(frame)
 	return frame
 
+func add_fps_limit_dropdown(text: String, dim_text := false) -> Control:
+	var frame := SettingFrameScene.instantiate()
+	frame.dim_text = dim_text
+	frame.text = text
+	setup_frame(frame)
+	frame.setup_fps_limit_dropdown()
+	add_frame(frame)
+	return frame
+
 func add_color_edit(text: String, enable_alpha := true) -> Control:
 	var frame := SettingFrameScene.instantiate()
 	frame.text = text
@@ -347,7 +425,10 @@ func setup_frame(frame: Control) -> void:
 	frame.mouse_exited.connect(hide_advice.bind(current_setup_setting))
 
 func add_frame(frame: Control) -> void:
-	setting_container.get_child(-1).add_child(frame)
+	if setting_container.get_child_count() > 0:
+		setting_container.get_child(-1).add_child(frame)
+	else:
+		setting_container.add_child(frame)
 
 func add_advice(text: String) -> void:
 	advice[current_setup_setting] = text
@@ -502,25 +583,10 @@ func show_formatter(category: String) -> void:
 		"editor": current_setup_resource = Configs.savedata.editor_formatter
 		"export": current_setup_resource = Configs.savedata.export_formatter
 	
-	var button := Button.new()
-	button.theme_type_variation = "TranslucentButton"
-	button.text = Translator.translate("Reset all to default")
-	button.icon = reset_icon
-	button.focus_mode = Control.FOCUS_NONE
-	button.disabled = current_setup_resource.is_everything_default()
-	button.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
-			button.disabled else Control.CURSOR_POINTING_HAND
-	setting_container.add_child(button)
-	button.pressed.connect(current_setup_resource.reset_to_default)
-	
-	# The preset field shouldn't have a reset button or a section, so set it up manually.
-	var frame := ProfileFrameScene.instantiate()
-	frame.setup_dropdown(range(Formatter.Preset.size()),
-			Formatter.get_preset_value_text_map())
-	frame.getter = current_setup_resource.get.bind("preset")
-	frame.setter = func(p: Variant) -> void: current_setup_resource.set("preset", p)
-	frame.text = Translator.translate("Preset")
-	setting_container.add_child(frame)
+	current_setup_setting = "preset"
+	add_profile_picker(Translator.translate("Preset"),
+			current_setup_resource.reset_to_default, Formatter.Preset.size(),
+			Formatter.get_preset_value_text_map(), current_setup_resource.is_everything_default)
 	
 	add_section("XML")
 	current_setup_setting = "xml_keep_comments"

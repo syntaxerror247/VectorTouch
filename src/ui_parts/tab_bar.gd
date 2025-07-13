@@ -38,12 +38,7 @@ func _ready() -> void:
 	set_process(false)
 
 func _draw() -> void:
-	var background_stylebox: StyleBoxFlat =\
-			get_theme_stylebox("tab_unselected", "TabContainer").duplicate()
-	background_stylebox.corner_radius_top_left += 1
-	background_stylebox.corner_radius_top_right += 1
-	background_stylebox.bg_color = Color(ThemeUtils.common_panel_inner_color, 0.4)
-	draw_style_box(background_stylebox, get_rect())
+	get_theme_stylebox("tabbar_background", "TabContainer").draw(ci, get_rect())
 	
 	var has_transient_tab := not State.transient_tab_path.is_empty()
 	var mouse_pos := get_local_mouse_position()
@@ -74,14 +69,16 @@ func _draw() -> void:
 				var text_line := TextLine.new()
 				text_line.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 				text_line.add_string(current_tab_name, ThemeUtils.regular_font, 13)
-				text_line.width = text_line_width
+				text_line.width = text_line_width - 2
 				text_line.draw(ci, rect.position + Vector2(4, 3),
 						get_theme_color("font_selected_color", "TabContainer"))
-			var close_rect := get_close_button_rect()
-			if close_rect.has_area():
-				var close_icon_size := close_icon.get_size()
-				draw_texture_rect(close_icon, Rect2(close_rect.position +\
-						(close_rect.size - close_icon_size) / 2.0, close_icon_size), false)
+			if not drawing_transient_tab:
+				var close_rect := get_close_button_rect()
+				if close_rect.has_area():
+					var close_icon_size := close_icon.get_size()
+					draw_texture_rect(close_icon, Rect2(close_rect.position +\
+							(close_rect.size - close_icon_size) / 2.0, close_icon_size), false,
+							ThemeUtils.tinted_contrast_color)
 		else:
 			var is_hovered := rect.has_point(mouse_pos)
 			var tab_style := "tab_hovered" if is_hovered else "tab_unselected"
@@ -101,7 +98,8 @@ func _draw() -> void:
 	var add_button_rect := get_add_button_rect()
 	var plus_icon_size := plus_icon.get_size()
 	draw_texture_rect(plus_icon, Rect2(add_button_rect.position +\
-			(add_button_rect.size - plus_icon_size) / 2.0, plus_icon_size), false)
+			(add_button_rect.size - plus_icon_size) / 2.0, plus_icon_size), false,
+			ThemeUtils.tinted_contrast_color)
 	
 	var scroll_backwards_rect := get_scroll_backwards_area_rect()
 	if scroll_backwards_rect.has_area():
@@ -112,7 +110,7 @@ func _draw() -> void:
 		else:
 			var line_x := scroll_backwards_rect.end.x + 1
 			draw_line(Vector2(line_x, 0), Vector2(line_x, size.y),
-					ThemeUtils.common_panel_border_color)
+					ThemeUtils.basic_panel_border_color)
 			if scroll_backwards_rect.has_point(mouse_pos):
 				var stylebox_theme := "pressed" if\
 						Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) else "hover"
@@ -131,7 +129,7 @@ func _draw() -> void:
 		else:
 			var line_x := scroll_forwards_rect.position.x
 			draw_line(Vector2(line_x, 0), Vector2(line_x, size.y),
-					ThemeUtils.common_panel_border_color)
+					ThemeUtils.basic_panel_border_color)
 			if scroll_forwards_rect.has_point(mouse_pos):
 				var stylebox_theme := "pressed" if\
 						Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) else "hover"
@@ -425,24 +423,20 @@ func _get_tooltip(at_position: Vector2) -> String:
 			return Translator.translate("Scroll forwards")
 		
 		return ""
-	
-	var hovered_tab := Configs.savedata.get_tab(hovered_tab_idx)
-	# We have to pass some metadata to the tooltip.
-	# Since "*" isn't valid in filepaths, we use it as a delimiter.
-	if hovered_tab_idx == Configs.savedata.get_active_tab_index():
-		return "%s*active" % hovered_tab.get_presented_svg_file_path()
-	
-	return "%s*%d" % [hovered_tab.get_presented_svg_file_path(), hovered_tab.id]
+	else:
+		# Return tab index as metadata so _make_custom_tooltip can determine the tab
+		# even if the mouse moves.
+		return String.num_int64(hovered_tab_idx)
 
 func _make_custom_tooltip(for_text: String) -> Object:
-	var asterisk_pos := for_text.find("*")
-	if asterisk_pos == -1:
+	if not for_text.is_valid_int():
 		return null
 	
-	var hovered_tab := Configs.savedata.get_tab(get_hovered_index())
+	var hovered_tab_idx := for_text.to_int()
+	var hovered_tab := Configs.savedata.get_tab(hovered_tab_idx)
 	var is_saved := not hovered_tab.svg_file_path.is_empty()
 	
-	var path := for_text.left(asterisk_pos)
+	var path := hovered_tab.get_presented_svg_file_path()
 	var label := Label.new()
 	label.add_theme_font_override("font", ThemeUtils.mono_font if is_saved\
 			else ThemeUtils.regular_font)
@@ -453,11 +447,9 @@ func _make_custom_tooltip(for_text: String) -> Object:
 	Utils.set_max_text_width(label, 192.0, 4.0)
 	
 	# If the tab is active or empty, no need for an SVG preview.
-	var metadata := for_text.right(-asterisk_pos - 1)
-	if metadata == "active" or hovered_tab.empty_unsaved:
+	if hovered_tab.empty_unsaved or hovered_tab_idx == Configs.savedata.get_active_tab_index():
 		return label
 	
-	var id := metadata.to_int()
 	var margin_container := MarginContainer.new()
 	var tooltip_panel_stylebox := get_theme_stylebox("panel", "TooltipPanel")
 	margin_container.begin_bulk_theme_override()
@@ -475,7 +467,7 @@ func _make_custom_tooltip(for_text: String) -> Object:
 	preview_rect.custom_minimum_size = Vector2(96, 96)
 	preview_rect.size = Vector2.ZERO
 	preview_rect.setup_svg_without_dimensions(FileAccess.get_file_as_string(
-			TabData.get_edited_file_path_for_id(id)))
+			hovered_tab.get_edited_file_path()))
 	preview_rect.shrink_to_fit(16, 16)
 	hbox.add_child(label)
 	margin_container.add_child(hbox)
@@ -491,7 +483,7 @@ func get_tab_index_at(pos: Vector2) -> int:
 	return -1
 
 
-class TabDragData:
+class DragData:
 	var index := -1
 	func _init(new_index: int) -> void:
 		index = new_index
@@ -542,10 +534,10 @@ func _get_drag_data(at_position: Vector2) -> Variant:
 	
 	set_drag_preview(preview)
 	set_process(true)
-	return TabDragData.new(tab_index_at_position)
+	return DragData.new(tab_index_at_position)
 
 func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
-	if not data is TabDragData:
+	if not data is DragData:
 		proposed_drop_idx = -1
 		return false
 	var current_drop_idx := get_drop_index_at(at_position)
@@ -557,7 +549,7 @@ func _can_drop_data(at_position: Vector2, data: Variant) -> bool:
 		return true
 
 func _drop_data(at_position: Vector2, data: Variant) -> void:
-	if not data is TabDragData:
+	if not data is DragData:
 		return
 	set_process(false)
 	Configs.savedata.move_tab(data.index, get_drop_index_at(at_position))

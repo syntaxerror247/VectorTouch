@@ -8,6 +8,7 @@ signal value_changed
 const ColorEditScene = preload("res://src/ui_widgets/color_edit.tscn")
 const DropdownScene = preload("res://src/ui_widgets/dropdown.tscn")
 const NumberDropdownScene = preload("res://src/ui_widgets/number_dropdown.tscn")
+const FpsLimitDropdownScene = preload("res://src/ui_widgets/fps_limit_dropdown.tscn")
 
 var getter: Callable
 var setter: Callable
@@ -80,6 +81,13 @@ min_value: float, max_value: float) -> void:
 	type = Type.NUMBER_DROPDOWN
 	panel_width = 100
 
+func setup_fps_limit_dropdown() -> void:
+	widget = FpsLimitDropdownScene.instantiate()
+	add_child(widget)
+	widget.value_changed.connect(_fps_limit_dropdown_modification)
+	type = Type.NUMBER_DROPDOWN
+	panel_width = 100
+
 func _ready() -> void:
 	widget.size = Vector2(panel_width - 32, 22)
 	mouse_entered.connect(_on_mouse_entered)
@@ -125,6 +133,22 @@ func _number_dropdown_modification(value: String) -> void:
 		setter.call(actual_number)
 	post_modification()
 
+# TODO This was written very hastily, probably has a lot of redundancy.
+func _fps_limit_dropdown_modification(value: String) -> void:
+	var actual_number: int
+	if value == Translator.translate("Unlimited"):
+		actual_number = 0
+	else:
+		actual_number = roundi(NumstringParser.evaluate(value))
+	
+	if is_nan(actual_number) or actual_number == INF:
+		actual_number = 0
+	elif actual_number != 0:
+		actual_number = clampi(actual_number, widget.min_value, widget.max_value)
+	setter.call(actual_number)
+	post_modification()
+
+
 func post_modification() -> void:
 	update_widgets()
 	value_changed.emit()
@@ -163,13 +187,17 @@ func _on_mouse_exited() -> void:
 
 func _draw() -> void:
 	if is_hovered:
-		get_theme_stylebox("hover", "FlatButton").draw(ci, Rect2(Vector2.ZERO, size))
+		var sb := StyleBoxFlat.new()
+		sb.set_corner_radius_all(3)
+		sb.set_content_margin_all(2)
+		sb.bg_color = ThemeUtils.soft_hover_overlay_color
+		sb.draw(ci, Rect2(Vector2.ZERO, size))
 	
-	var color := ThemeUtils.common_text_color
+	var color := ThemeUtils.text_color
 	if disabled:
-		color = ThemeUtils.common_subtle_text_color
+		color = ThemeUtils.subtle_text_color
 	elif dim_text:
-		color = ThemeUtils.common_dimmer_text_color
+		color = ThemeUtils.dimmer_text_color
 	
 	var non_panel_width := size.x - panel_width
 	var text_obj := TextLine.new()
@@ -177,5 +205,5 @@ func _draw() -> void:
 	text_obj.width = non_panel_width - 16
 	text_obj.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	text_obj.draw(ci, Vector2(4, 5), color)
-	get_theme_stylebox("panel", "DarkPanel").draw(ci, Rect2(non_panel_width - 2, 2,
+	get_theme_stylebox("panel", "SubtleFlatPanel").draw(ci, Rect2(non_panel_width - 2, 2,
 			panel_width, size.y - 4))
