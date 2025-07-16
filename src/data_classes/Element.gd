@@ -1,5 +1,5 @@
-# An SVG element, standalone (<element/>) or container (<element>...</element>).
-class_name Element extends XNode
+# Represents an element, either standalone (<element/>) or container (<element>...</element>).
+@abstract class_name Element extends XNode
 
 signal attribute_changed(name: String)
 signal ancestor_attribute_changed(name: String)
@@ -187,9 +187,9 @@ func get_attribute_num(attribute_name: String) -> float:
 				DB.PercentageHandling.NORMALIZED: return 1024 * num
 		else:
 			match percentage_handling:
-				DB.PercentageHandling.HORIZONTAL: return svg.width * num
-				DB.PercentageHandling.VERTICAL: return svg.height * num
-				DB.PercentageHandling.NORMALIZED: return svg.normalized_diagonal * num
+				DB.PercentageHandling.HORIZONTAL: return svg.viewbox.size.x * num
+				DB.PercentageHandling.VERTICAL: return svg.viewbox.size.y * num
+				DB.PercentageHandling.NORMALIZED: return svg.viewbox_normalized_diagonal * num
 	return num
 
 func is_attribute_percentage(attribute_name: String) -> bool:

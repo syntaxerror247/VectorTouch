@@ -4,6 +4,7 @@ extends HBoxContainer
 signal value_changed(new_value: String)
 
 @onready var line_edit: BetterLineEdit = $LineEdit
+@onready var button: Button = $Button
 
 @export var values: PackedFloat64Array
 @export var is_integer := false
@@ -23,8 +24,15 @@ func set_value(new_value: String) -> void:
 	if not is_equal_approx(current_num, proposed_num):
 		_value = to_str(proposed_num)
 		value_changed.emit(_value)
+	elif _value.is_empty():
+		_value = to_str(proposed_num)
 	if is_instance_valid(line_edit):
 		line_edit.text = _value
+
+func _ready() -> void:
+	line_edit.text_changed.connect(_on_text_changed)
+	line_edit.text_submitted.connect(_on_text_submitted)
+	button.pressed.connect(_on_button_pressed)
 
 func _on_button_pressed() -> void:
 	var btn_arr: Array[Button] = []

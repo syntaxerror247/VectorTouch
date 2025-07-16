@@ -1,5 +1,8 @@
 class_name SaveData extends ConfigResource
 
+enum ThemePreset {DARK, LIGHT, BLACK}
+enum HighlighterPreset {DEFAULT_DARK, DEFAULT_LIGHT}
+
 const GoodColorPicker = preload("res://src/ui_widgets/good_color_picker.gd")
 const ShortcutPanel = preload("res://src/ui_parts/shortcut_panel.gd")
 
@@ -9,37 +12,106 @@ var _shortcut_validities: Dictionary[Key, bool] = {}
 # Most settings don't need a default.
 func get_setting_default(setting: String) -> Variant:
 	match setting:
-		"highlighting_symbol_color": return Color("abc9ff")
-		"highlighting_element_color": return Color("ff8ccc")
-		"highlighting_attribute_color": return Color("bce0ff")
-		"highlighting_string_color": return Color("a1ffe0")
-		"highlighting_comment_color": return Color("cdcfd280")
-		"highlighting_text_color": return Color("cdcfeaac")
-		"highlighting_cdata_color": return Color("ffeda1ac")
-		"highlighting_error_color": return Color("ff5555")
+		"base_color":
+			match theme_preset:
+				ThemePreset.DARK: return Color("10101d")
+				ThemePreset.LIGHT: return Color("e6e6ff")
+				ThemePreset.BLACK: return Color("000")
+		"accent_color":
+			match theme_preset:
+				ThemePreset.DARK: return Color("668cff")
+				ThemePreset.LIGHT: return Color("0830a6ff")
+				ThemePreset.BLACK: return Color("7c8dbf")
+		"highlighter_preset":
+			match theme_preset:
+				ThemePreset.DARK, ThemePreset.BLACK: return HighlighterPreset.DEFAULT_DARK
+				ThemePreset.LIGHT: return HighlighterPreset.DEFAULT_LIGHT
+		"highlighting_symbol_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("abc9ff")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("23488c")
+		"highlighting_element_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("ff8ccc")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("8c004b")
+		"highlighting_attribute_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("bce0ff")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("003666")
+		"highlighting_string_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("a1ffe0")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("006644")
+		"highlighting_comment_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("d4d6d980")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("3e3e4080")
+		"highlighting_text_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("d5d7f2aa")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("242433aa")
+		"highlighting_cdata_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("ffeda1ac")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("40360dac")
+		"highlighting_error_color":
+			match highlighter_preset:
+				HighlighterPreset.DEFAULT_DARK: return Color("f55")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("cc0000")
+		"basic_color_valid":
+			match theme_preset:
+				ThemePreset.DARK,ThemePreset.BLACK: return Color("9f9")
+				ThemePreset.LIGHT: return Color("2b2")
+		"basic_color_error":
+			match theme_preset:
+				ThemePreset.DARK,ThemePreset.BLACK: return Color("f99")
+				ThemePreset.LIGHT: return Color("b22")
+		"basic_color_warning":
+			match theme_preset:
+				ThemePreset.DARK,ThemePreset.BLACK: return Color("ee5")
+				ThemePreset.LIGHT: return Color("991")
+		"handle_size": return 1.0 if OS.get_name() != "Android" else 2.0
 		"handle_inner_color": return Color("fff")
 		"handle_color": return Color("111")
 		"handle_hovered_color": return Color("aaa")
 		"handle_selected_color": return Color("46f")
 		"handle_hovered_selected_color": return Color("f44")
-		"background_color": return Color(0.12, 0.132, 0.2, 1)
-		"grid_color": return Color(0.5, 0.5, 0.5)
-		"basic_color_valid": return Color("9f9")
-		"basic_color_error": return Color("f99")
-		"basic_color_warning": return Color("ee5")
+		"selection_rectangle_speed": return 30.0
+		"selection_rectangle_width": return 2.0
+		"selection_rectangle_dash_length": return 10.0
+		"selection_rectangle_color1": return Color("fffc")
+		"selection_rectangle_color2": return Color("000c")
+		"canvas_color":
+			match theme_preset:
+				ThemePreset.DARK: return Color("1f2233")
+				ThemePreset.LIGHT: return Color("fff")
+				ThemePreset.BLACK: return Color("000")
+		"grid_color":
+			match theme_preset:
+				ThemePreset.DARK,ThemePreset.BLACK: return Color("808080")
+				ThemePreset.LIGHT: return Color("666")
 		
 		"invert_zoom": return false
 		"wraparound_panning": return false
 		"use_ctrl_for_zoom": return true
 		"use_native_file_dialog": return true
 		"use_filename_for_window_title": return true
-		"handle_size": return 1.0 if OS.get_name() != "Android" else 2.0
 		"ui_scale": return ScalingApproach.AUTO
-		"custom_ui_scale": return true
+		"vsync": return true
+		"max_fps": return 0
 	return null
 
 func reset_to_default() -> void:
 	for setting in _get_setting_names():
+		set(setting, get_setting_default(setting))
+
+func reset_theme_items_to_default() -> void:
+	for setting in theme_items:
+		set(setting, get_setting_default(setting))
+	reset_highlighting_items_to_default()
+
+func reset_highlighting_items_to_default() -> void:
+	for setting in highlighting_items:
 		set(setting, get_setting_default(setting))
 
 func _get_setting_names() -> PackedStringArray:
@@ -49,6 +121,71 @@ func _get_setting_names() -> PackedStringArray:
 			if get_setting_default(p.name) != null:
 				arr.append(p.name)
 	return arr
+
+const theme_items: PackedStringArray = [
+	"base_color",
+	"accent_color",
+	"highlighter_preset",
+	"basic_color_valid",
+	"basic_color_error",
+	"basic_color_warning",
+	"handle_size",
+	"handle_inner_color",
+	"handle_color",
+	"handle_hovered_color",
+	"handle_selected_color",
+	"handle_hovered_selected_color",
+	"selection_rectangle_speed",
+	"selection_rectangle_width",
+	"selection_rectangle_dash_length",
+	"selection_rectangle_color1",
+	"selection_rectangle_color2",
+	"canvas_color",
+	"grid_color",
+]
+
+func is_theming_default() -> bool:
+	for setting in theme_items:
+		if get(setting) != get_setting_default(setting):
+			return false
+	return true
+
+# TODO Typed Dictionary wonkiness  Dictionary[ThemePreset, String]. This one was copied
+# from an earlier similar implementation, but I didn't bother to test if it's still
+# necessary because GodSVG was disheveled while I was implementing the feature.
+static func get_theme_preset_value_text_map() -> Dictionary:
+	return {
+		ThemePreset.DARK: Translator.translate("Dark"),
+		ThemePreset.LIGHT: Translator.translate("Light"),
+		ThemePreset.BLACK: Translator.translate("Black (OLED)"),
+	}
+
+const highlighting_items: PackedStringArray = [
+	"highlighting_symbol_color",
+	"highlighting_element_color",
+	"highlighting_attribute_color",
+	"highlighting_string_color",
+	"highlighting_comment_color",
+	"highlighting_text_color",
+	"highlighting_cdata_color",
+	"highlighting_error_color",
+]
+
+func is_highlighting_default() -> bool:
+	for setting in highlighting_items:
+		if get(setting) != get_setting_default(setting):
+			return false
+	return true
+
+# TODO Typed Dictionary wonkiness  Dictionary[ThemePreset, String]. This one was copied
+# from an earlier similar implementation, but I didn't bother to test if it's still
+# necessary because GodSVG was disheveled while I was implementing the feature.
+static func get_highlighter_preset_value_text_map() -> Dictionary:
+	return {
+		HighlighterPreset.DEFAULT_DARK: Translator.translate("Default Dark"),
+		HighlighterPreset.DEFAULT_LIGHT: Translator.translate("Default Light"),
+	}
+
 
 func validate() -> void:
 	if not is_instance_valid(editor_formatter):
@@ -79,10 +216,45 @@ const CURRENT_VERSION = 1
 		if language != new_value:
 			language = new_value
 			emit_changed()
-			Configs.sync_locale.call_deferred()
-			Configs.language_changed.emit.call_deferred()
+			external_call(Configs.sync_locale)
+			external_call(Configs.language_changed.emit)
+
 
 # Theming
+
+@export var theme_preset := ThemePreset.DARK:
+	set(new_value):
+		if theme_preset != new_value:
+			# Validation
+			if not (new_value >= 0 and new_value < ThemePreset.size()):
+				new_value = ThemePreset.DARK
+			theme_preset = new_value
+			emit_changed()
+
+@export var base_color := Color("10101d"):
+	set(new_value):
+		if base_color != new_value:
+			base_color = new_value
+			emit_changed()
+			external_call(Configs.sync_theme)
+
+@export var accent_color := Color("668cff"):
+	set(new_value):
+		if accent_color != new_value:
+			accent_color = new_value
+			emit_changed()
+			external_call(Configs.sync_theme)
+
+
+@export var highlighter_preset := HighlighterPreset.DEFAULT_DARK:
+	set(new_value):
+		if highlighter_preset != new_value:
+			# Validation
+			if not (new_value >= 0 and new_value < HighlighterPreset.size()):
+				new_value = HighlighterPreset.DEFAULT_DARK
+			highlighter_preset = new_value
+			emit_changed()
+
 @export var highlighting_symbol_color := Color("abc9ff"):
 	set(new_value):
 		if highlighting_symbol_color != new_value:
@@ -111,14 +283,14 @@ const CURRENT_VERSION = 1
 			emit_changed()
 			Configs.highlighting_colors_changed.emit()
 
-@export var highlighting_comment_color := Color("cdcfd280"):
+@export var highlighting_comment_color := Color("d4d6d980"):
 	set(new_value):
 		if highlighting_comment_color != new_value:
 			highlighting_comment_color = new_value
 			emit_changed()
 			Configs.highlighting_colors_changed.emit()
 
-@export var highlighting_text_color := Color("cdcfeaac"):
+@export var highlighting_text_color := Color("d5d7f2aa"):
 	set(new_value):
 		if highlighting_text_color != new_value:
 			highlighting_text_color = new_value
@@ -132,12 +304,50 @@ const CURRENT_VERSION = 1
 			emit_changed()
 			Configs.highlighting_colors_changed.emit()
 
-@export var highlighting_error_color := Color("ff866b"):
+@export var highlighting_error_color := Color("f55"):
 	set(new_value):
 		if highlighting_error_color != new_value:
 			highlighting_error_color = new_value
 			emit_changed()
 			Configs.highlighting_colors_changed.emit()
+
+
+@export var basic_color_valid := Color("9f9"):
+	set(new_value):
+		if basic_color_valid != new_value:
+			basic_color_valid = new_value
+			emit_changed()
+			Configs.basic_colors_changed.emit()
+
+@export var basic_color_error := Color("f99"):
+	set(new_value):
+		if basic_color_error != new_value:
+			basic_color_error = new_value
+			emit_changed()
+			Configs.basic_colors_changed.emit()
+
+@export var basic_color_warning := Color("ee5"):
+	set(new_value):
+		if basic_color_warning != new_value:
+			basic_color_warning = new_value
+			emit_changed()
+			Configs.basic_colors_changed.emit()
+
+
+const HANDLE_SIZE_MIN = 0.5
+const HANDLE_SIZE_MAX = 4.0
+@export var handle_size := 1.0:
+	set(new_value):
+		# Validation
+		if is_nan(new_value):
+			new_value = get_setting_default("handle_size")
+		else:
+			new_value = clampf(new_value, HANDLE_SIZE_MIN, HANDLE_SIZE_MAX)
+		# Main part
+		if handle_size != new_value:
+			handle_size = new_value
+			emit_changed()
+			Configs.handle_visuals_changed.emit()
 
 @export var handle_inner_color := Color("fff"):
 	set(new_value):
@@ -174,43 +384,89 @@ const CURRENT_VERSION = 1
 			emit_changed()
 			Configs.handle_visuals_changed.emit()
 
-@export var background_color := Color(0.12, 0.132, 0.2, 1):
+const MAX_SELECTION_RECTANGLE_SPEED = 600.0
+@export var selection_rectangle_speed := 30.0:
 	set(new_value):
-		if background_color != new_value:
-			background_color = new_value
+		# Validation
+		if is_nan(new_value):
+			new_value = get_setting_default("selection_rectangle_speed")
+		else:
+			new_value = clampf(new_value, -MAX_SELECTION_RECTANGLE_SPEED,
+					MAX_SELECTION_RECTANGLE_SPEED)
+		# Main part
+		if selection_rectangle_speed != new_value:
+			selection_rectangle_speed = new_value
 			emit_changed()
-			Configs.sync_background_color.call_deferred()
+			Configs.selection_rectangle_visuals_changed.emit()
 
-@export var grid_color := Color(0.5, 0.5, 0.5):
+const MAX_SELECTION_RECTANGLE_WIDTH = 8.0
+@export var selection_rectangle_width := 2.0:
+	set(new_value):
+		# Validation
+		if is_nan(new_value):
+			new_value = get_setting_default("selection_rectangle_width")
+		else:
+			new_value = clampf(new_value, 1.0, MAX_SELECTION_RECTANGLE_WIDTH)
+		# Main part
+		if selection_rectangle_width != new_value:
+			selection_rectangle_width = new_value
+			emit_changed()
+			Configs.selection_rectangle_visuals_changed.emit()
+
+const MAX_SELECTION_RECTANGLE_DASH_LENGTH = 600.0
+@export var selection_rectangle_dash_length := 10.0:
+	set(new_value):
+		# Validation
+		if is_nan(new_value):
+			new_value = get_setting_default("selection_rectangle_dash_length")
+		else:
+			new_value = clampf(new_value, 1.0, MAX_SELECTION_RECTANGLE_DASH_LENGTH)
+		# Main part
+		if selection_rectangle_dash_length != new_value:
+			selection_rectangle_dash_length = new_value
+			emit_changed()
+			Configs.selection_rectangle_visuals_changed.emit()
+
+@export var selection_rectangle_color1 := Color("fffc"):
+	set(new_value):
+		if selection_rectangle_color1 != new_value:
+			selection_rectangle_color1 = new_value
+			emit_changed()
+			Configs.selection_rectangle_visuals_changed.emit()
+
+@export var selection_rectangle_color2 := Color("000c"):
+	set(new_value):
+		if selection_rectangle_color2 != new_value:
+			selection_rectangle_color2 = new_value
+			emit_changed()
+			Configs.selection_rectangle_visuals_changed.emit()
+
+@export var canvas_color := Color("1f2233"):
+	set(new_value):
+		if canvas_color != new_value:
+			canvas_color = new_value
+			emit_changed()
+			external_call(Configs.sync_canvas_color)
+
+@export var grid_color := Color("808080"):
 	set(new_value):
 		if grid_color != new_value:
 			grid_color = new_value
 			emit_changed()
 			Configs.grid_color_changed.emit()
 
-@export var basic_color_valid := Color("9f9"):
-	set(new_value):
-		if basic_color_valid != new_value:
-			basic_color_valid = new_value
-			emit_changed()
-			Configs.basic_colors_changed.emit()
 
-@export var basic_color_error := Color("f99"):
-	set(new_value):
-		if basic_color_error != new_value:
-			basic_color_error = new_value
-			emit_changed()
-			Configs.basic_colors_changed.emit()
+# Tab bar
 
-@export var basic_color_warning := Color("ee5"):
+@export var tab_mmb_close := true:
 	set(new_value):
-		if basic_color_warning != new_value:
-			basic_color_warning = new_value
+		if tab_mmb_close != new_value:
+			tab_mmb_close = new_value
 			emit_changed()
-			Configs.basic_colors_changed.emit()
 
 
 # Other
+
 @export var invert_zoom := false:
 	set(new_value):
 		if invert_zoom != new_value:
@@ -240,22 +496,7 @@ const CURRENT_VERSION = 1
 		if use_filename_for_window_title != new_value:
 			use_filename_for_window_title = new_value
 			emit_changed()
-			HandlerGUI.update_window_title.call_deferred()
-
-const HANDLE_SIZE_MIN = 0.5
-const HANDLE_SIZE_MAX = 4.0
-@export var handle_size := 1.0:
-	set(new_value):
-		# Validation
-		if is_nan(new_value):
-			new_value = get_setting_default("handle_size")
-		else:
-			new_value = clampf(new_value, HANDLE_SIZE_MIN, HANDLE_SIZE_MAX)
-		# Main part
-		if handle_size != new_value:
-			handle_size = new_value
-			emit_changed()
-			Configs.handle_visuals_changed.emit()
+			external_call(HandlerGUI.update_window_title)
 
 enum ScalingApproach {AUTO, CONSTANT_075, CONSTANT_100, CONSTANT_125, CONSTANT_150,
 		CONSTANT_175, CONSTANT_200, CONSTANT_225, CONSTANT_250, CONSTANT_275, CONSTANT_300, CONSTANT_400, MAX}
@@ -270,8 +511,31 @@ enum ScalingApproach {AUTO, CONSTANT_075, CONSTANT_100, CONSTANT_125, CONSTANT_1
 			emit_changed()
 			Configs.ui_scale_changed.emit()
 
+@export var vsync := true:
+	set(new_value):
+		if vsync != new_value:
+			vsync = new_value
+			emit_changed()
+			external_call(Configs.sync_vsync)
+
+const MAX_FPS_MIN = 12
+const MAX_FPS_MAX = 600
+@export var max_fps := 0:
+	set(new_value):
+		# Clamp unless it's 0 (unlimited).
+		if is_nan(new_value):
+			new_value = get_setting_default("max_fps")
+		elif new_value != 0:
+			new_value = clampi(new_value, MAX_FPS_MIN, MAX_FPS_MAX)
+		
+		if max_fps != new_value:
+			max_fps = new_value
+			emit_changed()
+			external_call(Configs.sync_max_fps)
+
 
 # Session
+
 const MAX_SNAP = 16384
 @export var snap := -0.5:  # Negative when disabled.
 	set(new_value):

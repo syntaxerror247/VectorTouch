@@ -46,6 +46,7 @@ enabled=PackedStringArray()
 
 [filesystem]
 
+import/fbx2gltf/enabled=false
 import/blender/enabled=false
 import/fbx/enabled=false
 

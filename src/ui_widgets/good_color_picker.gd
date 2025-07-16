@@ -89,18 +89,21 @@ func setup_color(new_color: String, default_color: Color) -> void:
 	update()
 
 
-func add_color_space_buttons() -> void:
+func update_color_space_buttons() -> void:
+	for child in color_space_container.get_children():
+		child.queue_free()
+	
 	var normal_stylebox := StyleBoxFlat.new()
-	normal_stylebox.bg_color = ThemeUtils.translucent_button_color_normal
+	normal_stylebox.bg_color = ThemeUtils.hover_overlay_color
 	
 	var hover_stylebox := normal_stylebox.duplicate()
-	hover_stylebox.bg_color = ThemeUtils.translucent_button_color_hover
+	hover_stylebox.bg_color = ThemeUtils.strong_hover_overlay_color
 	
 	var pressed_stylebox := StyleBoxFlat.new()
-	pressed_stylebox.bg_color = ThemeUtils.translucent_button_color_pressed
+	pressed_stylebox.bg_color = ThemeUtils.hover_pressed_overlay_color
 	pressed_stylebox.border_width_top = 2
 	pressed_stylebox.content_margin_bottom = 2.0
-	pressed_stylebox.border_color = Color(ThemeUtils.common_editable_text_color, 0.7)
+	pressed_stylebox.border_color = Color(ThemeUtils.editable_text_color, 0.7)
 	
 	for color_space: SliderMode in [SliderMode.RGB, SliderMode.HSV]:
 		var btn := Button.new()
@@ -109,6 +112,7 @@ func add_color_space_buttons() -> void:
 		btn.add_theme_stylebox_override("normal", normal_stylebox)
 		btn.add_theme_stylebox_override("hover", hover_stylebox)
 		btn.add_theme_stylebox_override("pressed", pressed_stylebox)
+		btn.add_theme_stylebox_override("hover_pressed", pressed_stylebox)
 		btn.end_bulk_theme_override()
 		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.focus_mode = Control.FOCUS_NONE
@@ -136,7 +140,8 @@ func update_keyword_button() -> void:
 		keyword_button.show()
 
 func _ready() -> void:
-	add_color_space_buttons()
+	Configs.theme_changed.connect(update_color_space_buttons)
+	update_color_space_buttons()
 	# Set up signals.
 	widgets_arr[0].gui_input.connect(parse_slider_input.bind(0, true))
 	widgets_arr[1].gui_input.connect(parse_slider_input.bind(1))
@@ -431,7 +436,9 @@ func _on_color_rect_draw() -> void:
 
 # Draw inside the side slider to give it a little arrow to the side.
 func _on_side_slider_draw() -> void:
-	var arrow_modulate := Color(1, 1, 1) if sliders_dragged[0] else Color(1, 1, 1, 0.7)
+	var arrow_modulate := ThemeUtils.tinted_contrast_color
+	if not sliders_dragged[0]:
+		arrow_modulate.a = 0.7
 	widgets_arr[0].draw_texture(side_slider_arrow, Vector2(0, tracks_arr[0].position.y +\
 			tracks_arr[0].size.y * (1 - display_color.v) -\
 			side_slider_arrow.get_height() / 2.0), arrow_modulate)
@@ -446,12 +453,14 @@ func _draw() -> void:
 
 # Helper for drawing the horizontal sliders.
 func draw_hslider(idx: int, offset: float, chr: String) -> void:
-	var arrow_modulate := Color(1, 1, 1) if sliders_dragged[idx] else Color(1, 1, 1, 0.7)
+	var arrow_modulate := ThemeUtils.tinted_contrast_color
+	if not sliders_dragged[idx]:
+		arrow_modulate.a = 0.7
 	widgets_arr[idx].draw_texture(slider_arrow, Vector2(tracks_arr[idx].position.x +\
 			tracks_arr[idx].size.x * offset - slider_arrow.get_width() / 2.0,
 			tracks_arr[idx].size.y), arrow_modulate)
-	widgets_arr[idx].draw_string(get_theme_default_font(),
-			Vector2(-12, 11), chr, HORIZONTAL_ALIGNMENT_CENTER, 12, 14)
+	widgets_arr[idx].draw_string(get_theme_default_font(), Vector2(-12, 11), chr,
+			HORIZONTAL_ALIGNMENT_CENTER, 12, 14, ThemeUtils.text_color)
 
 # Make sure the arrows are redrawn when the tracks finish resizing.
 func _on_track_resized() -> void:
@@ -534,4 +543,4 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_eyedropper_pressed() -> void:
 	var eyedropper_popup := EyedropperPopupScene.instantiate()
 	eyedropper_popup.color_picked.connect(register_visual_change.bind(false))
-	HandlerGUI.add_popup(eyedropper_popup)
+	HandlerGUI.add_popup(eyedropper_popup, false)
