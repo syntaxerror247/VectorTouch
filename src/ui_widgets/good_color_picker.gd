@@ -89,7 +89,7 @@ func setup_color(new_color: String, default_color: Color) -> void:
 	update()
 
 
-func update_color_space_buttons() -> void:
+func sync_color_space_buttons() -> void:
 	for child in color_space_container.get_children():
 		child.queue_free()
 	
@@ -140,8 +140,8 @@ func update_keyword_button() -> void:
 		keyword_button.show()
 
 func _ready() -> void:
-	Configs.theme_changed.connect(update_color_space_buttons)
-	update_color_space_buttons()
+	Configs.theme_changed.connect(sync_color_space_buttons)
+	sync_color_space_buttons()
 	# Set up signals.
 	widgets_arr[0].gui_input.connect(parse_slider_input.bind(0, true))
 	widgets_arr[1].gui_input.connect(parse_slider_input.bind(1))
@@ -179,13 +179,16 @@ func _on_slider_mode_changed() -> void:
 	update()
 
 
+# If the change was continuous, like a color wheel adjustment, the backup color
+# should be used as it stores the color from before the operation.
 func register_visual_change(new_color: Color, use_backup := true) -> void:
-	if use_backup and new_color == backup_display_color:
-		return
-	elif not use_backup and new_color == display_color:
+	# Return early if the color didn't change. If the color is a keyword, all visual
+	# changes reset it to a normal color.
+	if not color in ["none", "currentColor"] and\
+	new_color == (backup_display_color if use_backup else display_color):
 		return
 	
-	undo_redo.create_action("")
+	undo_redo.create_action()
 	undo_redo.add_do_method(set_color.bind(hex(new_color), new_color))
 	if use_backup:
 		undo_redo.add_undo_method(set_color.bind(backup_color, backup_display_color))
@@ -195,13 +198,13 @@ func register_visual_change(new_color: Color, use_backup := true) -> void:
 
 
 func set_color(new_color: String, new_display_color: Color) -> void:
-	set_display_color(new_display_color)
 	if color == new_color:
-		return
-	
-	color = new_color
-	update()
-	color_changed.emit(new_color)
+		set_display_color(new_display_color)
+	else:
+		display_color = new_display_color
+		color = new_color
+		update()
+		color_changed.emit(new_color)
 
 
 func set_display_color(new_display_color: Color) -> void:
@@ -392,7 +395,7 @@ func _on_keyword_button_pressed() -> void:
 			get_viewport())
 
 func set_to_keyword(keyword: String) -> void:
-	undo_redo.create_action("")
+	undo_redo.create_action()
 	if color.strip_edges() == keyword:
 		undo_redo.add_do_method(set_color.bind(backup_color, backup_display_color))
 		undo_redo.add_undo_method(set_color.bind(color, display_color))
@@ -404,7 +407,7 @@ func set_to_keyword(keyword: String) -> void:
 
 func _on_reset_color_button_pressed() -> void:
 	reset_color_button.disabled = true
-	undo_redo.create_action("")
+	undo_redo.create_action()
 	undo_redo.add_do_method(set_color.bind(starting_color, starting_display_color))
 	undo_redo.add_undo_method(set_color.bind(color, display_color))
 	undo_redo.commit_action()
@@ -499,18 +502,16 @@ func update_color_button() -> void:
 		reset_color_button.disabled = true
 		return
 	reset_color_button.disabled = false
+	reset_color_button.begin_bulk_theme_override()
 	if display_color.get_luminance() < 0.455:
-		reset_color_button.begin_bulk_theme_override()
 		reset_color_button.add_theme_color_override("icon_hover_color", Color.WHITE)
 		reset_color_button.add_theme_color_override("icon_pressed_color",
 				Color(0.5, 1, 1))
-		reset_color_button.end_bulk_theme_override()
 	else:
-		reset_color_button.begin_bulk_theme_override()
 		reset_color_button.add_theme_color_override("icon_hover_color", Color.BLACK)
 		reset_color_button.add_theme_color_override("icon_pressed_color",
 				Color(0, 0.5, 0.5))
-		reset_color_button.end_bulk_theme_override()
+	reset_color_button.end_bulk_theme_override()
 
 func hex(col: Color) -> String:
 	# Removing the saturation and hue clamping fixes hex conversion in edge cases.

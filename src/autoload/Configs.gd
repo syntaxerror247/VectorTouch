@@ -96,20 +96,8 @@ func post_load() -> void:
 	sync_canvas_color()
 	sync_locale()
 	sync_max_fps()
+	sync_keep_screen_on()
 	sync_theme()
-
-
-func generate_highlighter() -> SVGHighlighter:
-	var new_highlighter := SVGHighlighter.new()
-	new_highlighter.symbol_color = Configs.savedata.highlighting_symbol_color
-	new_highlighter.element_color = Configs.savedata.highlighting_element_color
-	new_highlighter.attribute_color = Configs.savedata.highlighting_attribute_color
-	new_highlighter.string_color = Configs.savedata.highlighting_string_color
-	new_highlighter.comment_color = Configs.savedata.highlighting_comment_color
-	new_highlighter.text_color = Configs.savedata.highlighting_text_color
-	new_highlighter.cdata_color = Configs.savedata.highlighting_cdata_color
-	new_highlighter.error_color = Configs.savedata.highlighting_error_color
-	return new_highlighter
 
 
 # Global effects from settings. Some of them should also be used on launch.
@@ -129,6 +117,9 @@ func sync_vsync() -> void:
 
 func sync_max_fps() -> void:
 	Engine.max_fps = savedata.max_fps
+
+func sync_keep_screen_on() -> void:
+	DisplayServer.screen_set_keep_on(savedata.keep_screen_on)
 
 func sync_theme() -> void:
 	ThemeUtils.generate_and_apply_theme()

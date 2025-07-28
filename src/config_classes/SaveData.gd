@@ -20,7 +20,7 @@ func get_setting_default(setting: String) -> Variant:
 		"accent_color":
 			match theme_preset:
 				ThemePreset.DARK: return Color("3e8cfc")
-				ThemePreset.LIGHT: return Color("0830a6ff")
+				ThemePreset.LIGHT: return Color("0031bf")
 				ThemePreset.BLACK: return Color("7c8dbf")
 		"highlighter_preset":
 			match theme_preset:
@@ -68,7 +68,7 @@ func get_setting_default(setting: String) -> Variant:
 				ThemePreset.LIGHT: return Color("b22")
 		"basic_color_warning":
 			match theme_preset:
-				ThemePreset.DARK,ThemePreset.BLACK: return Color("ee5")
+				ThemePreset.DARK,ThemePreset.BLACK: return Color("ee6")
 				ThemePreset.LIGHT: return Color("991")
 		"handle_size": return 1.0 if OS.get_name() != "Android" else 2.0
 		"handle_inner_color": return Color("fff")
@@ -94,11 +94,12 @@ func get_setting_default(setting: String) -> Variant:
 		"invert_zoom": return false
 		"wraparound_panning": return false
 		"use_ctrl_for_zoom": return true
-		"use_native_file_dialog": return true
-		"use_filename_for_window_title": return true
 		"ui_scale": return ScalingApproach.AUTO
 		"vsync": return true
 		"max_fps": return 0
+		"keep_screen_on": return false
+		"use_native_file_dialog": return true
+		"use_filename_for_window_title": return true
 	return null
 
 func reset_to_default() -> void:
@@ -106,9 +107,11 @@ func reset_to_default() -> void:
 		set(setting, get_setting_default(setting))
 
 func reset_theme_items_to_default() -> void:
+	var old_highlighter_preset_value := highlighter_preset
 	for setting in theme_items:
 		set(setting, get_setting_default(setting))
-	reset_highlighting_items_to_default()
+	if old_highlighter_preset_value != highlighter_preset:
+		reset_highlighting_items_to_default()
 
 func reset_highlighting_items_to_default() -> void:
 	for setting in highlighting_items:
@@ -129,17 +132,6 @@ const theme_items: PackedStringArray = [
 	"basic_color_valid",
 	"basic_color_error",
 	"basic_color_warning",
-	"handle_size",
-	"handle_inner_color",
-	"handle_color",
-	"handle_hovered_color",
-	"handle_selected_color",
-	"handle_hovered_selected_color",
-	"selection_rectangle_speed",
-	"selection_rectangle_width",
-	"selection_rectangle_dash_length",
-	"selection_rectangle_color1",
-	"selection_rectangle_color2",
 	"canvas_color",
 	"grid_color",
 ]
@@ -326,7 +318,7 @@ const CURRENT_VERSION = 1
 			emit_changed()
 			Configs.basic_colors_changed.emit()
 
-@export var basic_color_warning := Color("ee5"):
+@export var basic_color_warning := Color("ee6"):
 	set(new_value):
 		if basic_color_warning != new_value:
 			basic_color_warning = new_value
@@ -485,19 +477,6 @@ const MAX_SELECTION_RECTANGLE_DASH_LENGTH = 600.0
 			use_ctrl_for_zoom = new_value
 			emit_changed()
 
-@export var use_native_file_dialog := true:
-	set(new_value):
-		if use_native_file_dialog != new_value:
-			use_native_file_dialog = new_value
-			emit_changed()
-
-@export var use_filename_for_window_title := true:
-	set(new_value):
-		if use_filename_for_window_title != new_value:
-			use_filename_for_window_title = new_value
-			emit_changed()
-			external_call(HandlerGUI.update_window_title)
-
 enum ScalingApproach {AUTO, CONSTANT_075, CONSTANT_100, CONSTANT_125, CONSTANT_150,
 		CONSTANT_175, CONSTANT_200, CONSTANT_225, CONSTANT_250, CONSTANT_275, CONSTANT_300, CONSTANT_400, MAX}
 @export var ui_scale := ScalingApproach.AUTO:
@@ -532,6 +511,26 @@ const MAX_FPS_MAX = 600
 			max_fps = new_value
 			emit_changed()
 			external_call(Configs.sync_max_fps)
+
+@export var keep_screen_on := false:
+	set(new_value):
+		if keep_screen_on != new_value:
+			keep_screen_on = new_value
+			emit_changed()
+			external_call(Configs.sync_keep_screen_on)
+
+@export var use_native_file_dialog := true:
+	set(new_value):
+		if use_native_file_dialog != new_value:
+			use_native_file_dialog = new_value
+			emit_changed()
+
+@export var use_filename_for_window_title := true:
+	set(new_value):
+		if use_filename_for_window_title != new_value:
+			use_filename_for_window_title = new_value
+			emit_changed()
+			external_call(HandlerGUI.update_window_title)
 
 
 # Session

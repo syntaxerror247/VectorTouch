@@ -473,6 +473,10 @@ msgid "Theme preset"
 msgstr "Скинути масштаб"
 
 #: src/ui_parts/settings_menu.gd:
+msgid "Determines the default values of theming-related settings, including the highlighter preset."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
 msgid "Primary theme colors"
 msgstr ""
 
@@ -492,6 +496,10 @@ msgstr "Колір SVG тексту"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Highlighter preset"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Determines the default values of SVG highlighter settings."
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
@@ -602,7 +610,8 @@ msgid "Close tabs with middle mouse button"
 msgstr "Закривати вкладки при натисканні середньої кнопки миші"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "If turned on, clicking on a tab with the middle mouse button closes the tab. If turned off, it focuses the tab instead."
+#, fuzzy
+msgid "When enabled, clicking on a tab with the middle mouse button closes it instead of simply focusing it."
 msgstr "Якщо увімкнено - клацання на вкладку середньою кнопкою миші закриє її. Якщо вимкнено - фокус буде замінено на неї."
 
 #: src/ui_parts/settings_menu.gd:
@@ -618,15 +627,12 @@ msgid "Wrap-around panning"
 msgstr "Захопити курсор при гортанні"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
-msgstr "Курсор буде телепортуватися від одного краю до протилежного при пересуванні вікна перегляду."
-
-#: src/ui_parts/settings_menu.gd:
 msgid "Use CTRL for zooming"
 msgstr "Використовувати CTRL для масштабування"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
+#, fuzzy
+msgid "When enabled, scrolling pans the view instead of zooming in. To zoom, hold CTRL while scrolling."
 msgstr "Якщо увімкнено - гортання буде рухати вікно перегляду. Щоб масштабувати, затисніть CTRL доки гортаєте."
 
 #: src/ui_parts/settings_menu.gd:
@@ -660,6 +666,14 @@ msgid "Determines the maximum number of frames per second."
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
+msgid "Keep Screen On"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Keeps the screen on even after inactivity, so the screensaver does not take over."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
 msgid "Miscellaneous"
 msgstr "Різне"
 
@@ -668,16 +682,12 @@ msgid "Use native file dialog"
 msgstr "Використовувати рідний файловий діалог"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "If turned on, uses your operating system's native file dialog. If turned off, uses GodSVG's built-in file dialog."
-msgstr "Якщо увімкнено, то буде використовувати рідний файловий діалог вашої операційної системи для обирання файлів. Якщо вимкнено, то замість буде використовуватися вбудований файловий діалог."
-
-#: src/ui_parts/settings_menu.gd:
 msgid "Sync window title to file name"
 msgstr "Синхронізувати заголовок вікна з назвою поточного файлу"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
-msgstr "Якщо вимкнено - заголовок вікна залишиться як \"GodSVG\", не включаючи назву поточного файлу."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Language"
@@ -719,12 +729,13 @@ msgid "Preset"
 msgstr "Пресет"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Keep comments"
-msgstr "Зберігати коментарі"
+#, fuzzy
+msgid "Determines the default values of the formatter configs."
+msgstr "Змінити масштаб інтерфейсу користувача."
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Keep unrecognized XML structures"
-msgstr "Зберігати не розпізнані структури XML"
+msgid "Keep comments"
+msgstr "Зберігати коментарі"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Add trailing newline"
@@ -808,6 +819,27 @@ msgstr "Список трансформацій"
 #: src/ui_parts/settings_menu.gd:
 msgid "Remove unnecessary parameters"
 msgstr "Видалити необов'язкові параметри"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "When enabled, uses several spaces instead of a single tab for indentation."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
+msgstr "Курсор буде телепортуватися від одного краю до протилежного при пересуванні вікна перегляду."
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Якщо увімкнено, то буде використовувати рідний файловий діалог вашої операційної системи для обирання файлів. Якщо вимкнено, то замість буде використовуватися вбудований файловий діалог."
+
+#: src/ui_parts/settings_menu.gd:
+msgid "The setting has no effect in the current configuration."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "The setting can't be changed on this platform."
+msgstr ""
 
 #: src/ui_parts/shortcut_panel.gd:
 msgid "Horizontal strip"
@@ -1376,6 +1408,12 @@ msgstr "Зберегти {format} файл"
 #: src/utils/TranslationUtils.gd:
 msgid "Only {extension_list} files are supported for this operation."
 msgstr "Тільки файли з розширеннями {extension_list} підтримуються для цієї операції."
+
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Якщо вимкнено - заголовок вікна залишиться як \"GodSVG\", не включаючи назву поточного файлу."
+
+#~ msgid "Keep unrecognized XML structures"
+#~ msgstr "Зберігати не розпізнані структури XML"
 
 #~ msgid "Handle colors"
 #~ msgstr "Колір ручки редагування"

@@ -19,10 +19,12 @@ var should_refresh_tabs := false
 var reference_overlay := false
 
 func _ready() -> void:
-	Configs.language_changed.connect(update_translations)
+	Configs.language_changed.connect(sync_localization)
+	sync_localization()
 	Configs.snap_changed.connect(update_snap_config)
-	Configs.theme_changed.connect(update_theme)
-	Configs.tabs_changed.connect(set.bind("should_refresh_tabs" ,true))
+	update_snap_config()
+	Configs.theme_changed.connect(sync_theming)
+	sync_theming()
 	Configs.active_tab_changed.connect(sync_reference_image)
 	Configs.active_tab_reference_changed.connect(sync_reference_image)
 	sync_reference_image()
@@ -32,15 +34,13 @@ func _ready() -> void:
 	_on_overlay_reference_updated()
 	State.show_debug_changed.connect(_on_show_debug_changed)
 	_on_show_debug_changed()
-	update_translations()
-	update_theme()
-	update_snap_config()
 	get_window().window_input.connect(_update_input_debug)
 
-func update_translations() -> void:
+
+func sync_localization() -> void:
 	%LeftMenu/Snapping/SnapNumberEdit.tooltip_text = Translator.translate("Snap size")
 
-func update_theme() -> void:
+func sync_theming() -> void:
 	var frame := StyleBoxFlat.new()
 	frame.draw_center = false
 	frame.set_content_margin_all(2.0)

@@ -475,6 +475,10 @@ msgid "Theme preset"
 msgstr "Zoom resetten"
 
 #: src/ui_parts/settings_menu.gd:
+msgid "Determines the default values of theming-related settings, including the highlighter preset."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
 #, fuzzy
 msgid "Primary theme colors"
 msgstr "De kleur uitzetten"
@@ -495,6 +499,10 @@ msgstr "SVG tekstkleuren"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Highlighter preset"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Determines the default values of SVG highlighter settings."
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
@@ -606,7 +614,7 @@ msgid "Close tabs with middle mouse button"
 msgstr "Sluit tabbladen met de middelste muisknop"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "If turned on, clicking on a tab with the middle mouse button closes the tab. If turned off, it focuses the tab instead."
+msgid "When enabled, clicking on a tab with the middle mouse button closes it instead of simply focusing it."
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
@@ -622,16 +630,12 @@ msgid "Wrap-around panning"
 msgstr "Omwikkeld rondkijken"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
-msgstr "Verplaatst de cursur naar de overkant wanneer het buiten de viewport gaat tijdens het rondkijken."
-
-#: src/ui_parts/settings_menu.gd:
 msgid "Use CTRL for zooming"
 msgstr "Gebruik CTRL om in te zoomen"
 
 #: src/ui_parts/settings_menu.gd:
 #, fuzzy
-msgid "If turned on, scrolling pans the view. To zoom, hold CTRL while scrolling."
+msgid "When enabled, scrolling pans the view instead of zooming in. To zoom, hold CTRL while scrolling."
 msgstr "Als ingeschakeld, scrollen zal het weergave verschuiven. Om te zoomen,houd CTRL ingedrukt tijdens scrollen."
 
 #: src/ui_parts/settings_menu.gd:
@@ -665,6 +669,14 @@ msgid "Determines the maximum number of frames per second."
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
+msgid "Keep Screen On"
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Keeps the screen on even after inactivity, so the screensaver does not take over."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
 msgid "Miscellaneous"
 msgstr "Overige"
 
@@ -673,17 +685,12 @@ msgid "Use native file dialog"
 msgstr "Gebruik inheemse bestandendialoog"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "If turned on, uses your operating system's native file dialog. If turned off, uses GodSVG's built-in file dialog."
-msgstr "Waneer ingeschakeld, gebruikt jouw besturingssysteem's inheemse bestandendialoog. Wanneer uitgeschakeld, gebruikt GodSVG's ingebouwde bestandendialoog."
-
-#: src/ui_parts/settings_menu.gd:
 msgid "Sync window title to file name"
 msgstr "Synchroniseer venstertitel naar bestandsnaam"
 
 #: src/ui_parts/settings_menu.gd:
-#, fuzzy
-msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
-msgstr "Als dit uitgeschakelt is, blijft de venstertitel simpelweg \"GodSVG\" achteloos van het huidige bestand."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Language"
@@ -724,12 +731,13 @@ msgid "Preset"
 msgstr "Voorinstelling"
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Keep comments"
-msgstr "Houdt commentaar bij"
+#, fuzzy
+msgid "Determines the default values of the formatter configs."
+msgstr "Verandert het maat-factor van de gebruikersinterface."
 
 #: src/ui_parts/settings_menu.gd:
-msgid "Keep unrecognized XML structures"
-msgstr "Houdt onherkende XML structuren bij"
+msgid "Keep comments"
+msgstr "Houdt commentaar bij"
 
 #: src/ui_parts/settings_menu.gd:
 msgid "Add trailing newline"
@@ -810,6 +818,27 @@ msgstr "Transformeer lijsten"
 #: src/ui_parts/settings_menu.gd:
 msgid "Remove unnecessary parameters"
 msgstr "Verwijder onnodige parameters"
+
+#: src/ui_parts/settings_menu.gd:
+msgid "When enabled, uses several spaces instead of a single tab for indentation."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
+msgstr "Verplaatst de cursur naar de overkant wanneer het buiten de viewport gaat tijdens het rondkijken."
+
+#: src/ui_parts/settings_menu.gd:
+#, fuzzy
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Waneer ingeschakeld, gebruikt jouw besturingssysteem's inheemse bestandendialoog. Wanneer uitgeschakeld, gebruikt GodSVG's ingebouwde bestandendialoog."
+
+#: src/ui_parts/settings_menu.gd:
+msgid "The setting has no effect in the current configuration."
+msgstr ""
+
+#: src/ui_parts/settings_menu.gd:
+msgid "The setting can't be changed on this platform."
+msgstr ""
 
 #: src/ui_parts/shortcut_panel.gd:
 msgid "Horizontal strip"
@@ -1393,6 +1422,13 @@ msgstr "Bewaar het .\"{format}\" bestand"
 #, fuzzy
 msgid "Only {extension_list} files are supported for this operation."
 msgstr "Deze bestandsextensie is leeg. Alleen {extension_list} bestanden zijn ondersteund."
+
+#, fuzzy
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Als dit uitgeschakelt is, blijft de venstertitel simpelweg \"GodSVG\" achteloos van het huidige bestand."
+
+#~ msgid "Keep unrecognized XML structures"
+#~ msgstr "Houdt onherkende XML structuren bij"
 
 #~ msgid "Handle colors"
 #~ msgstr "Handvatkleuren"
