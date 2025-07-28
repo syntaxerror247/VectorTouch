@@ -1,7 +1,5 @@
 extends PanelContainer
 
-const app_info_json = preload("res://app_info.json")
-
 @onready var close_button: Button = $VBoxContainer/CloseButton
 @onready var translators_vbox: VBoxContainer = %TranslatorsVBox
 @onready var developers_list: PanelGrid = %DevelopersList
@@ -31,10 +29,17 @@ func _ready() -> void:
 	tab_container.tab_changed.connect(_on_tab_changed)
 	_on_tab_changed(0)
 
+func _unhandled_input(event: InputEvent) -> void:
+	var tab_count := tab_container.get_tab_count()
+	if ShortcutUtils.is_action_pressed(event, "select_next_tab"):
+		tab_container.current_tab = (tab_container.current_tab + 1) % tab_count
+	elif ShortcutUtils.is_action_pressed(event, "select_previous_tab"):
+		tab_container.current_tab = (tab_container.current_tab + tab_count - 1) % tab_count
+
 func _on_tab_changed(idx: int) -> void:
 	match idx:
 		0:
-			var app_info: Dictionary = app_info_json.data
+			var app_info := get_app_info()
 			
 			%ProjectFounderLabel.text = Translator.translate("Project Founder and Manager") +\
 					": " + app_info.project_founder_and_manager
@@ -64,11 +69,12 @@ func _on_tab_changed(idx: int) -> void:
 				list.items = credits
 				translators_vbox.add_child(list)
 		1:
+			var app_info := get_app_info()
+			
 			%Donors/Label.text = Translator.translate("Donors")
 			%GoldenDonors/Label.text = Translator.translate("Golden donors")
 			%DiamondDonors/Label.text = Translator.translate("Diamond donors")
 			
-			var app_info: Dictionary = app_info_json.data
 			# Once the past donors lists start filling up, they will never unfill,
 			# so no need to bother with logic, we can just unhide it manually.
 			if app_info.donors.is_empty() and app_info.anonymous_donors == 0:
@@ -126,7 +132,7 @@ func _on_tab_changed(idx: int) -> void:
 			var godsvg_parts_label := Label.new()
 			godsvg_parts_label.text = "GodSVG components"
 			var godot_parts_label := Label.new()
-			godot_parts_label.text = "Godot components"
+			godot_parts_label.text = "Godot Engine components"
 			var license_texts_label := Label.new()
 			license_texts_label.text = "Licenses"
 			for label: Label in [godsvg_parts_label, godot_parts_label, license_texts_label]:
@@ -244,3 +250,68 @@ func _on_tab_changed(idx: int) -> void:
 				license_text.text = licenses_dict[license_name]
 				license_vbox.add_child(license_text)
 				%LicenseTexts.add_child(license_vbox)
+
+
+# Just enough of a parser to handle app_data.toml
+func get_app_info() -> Dictionary[String, Variant]:
+	var toml_text := FileAccess.get_file_as_string("res://app_info.toml")
+	var lines := toml_text.split("\n", false)
+	var result: Dictionary[String, Variant]
+	var i := 0
+	
+	while i < lines.size():
+		var line := lines[i].get_slice("#", 0).strip_edges()
+		if line.is_empty():
+			i += 1
+			continue
+		
+		var parts := line.split("=", false, 2)
+		if parts.size() != 2:
+			i += 1
+			continue
+		
+		var key := parts[0].strip_edges()
+		var raw_value := parts[1].strip_edges()
+		
+		if raw_value.begins_with("["):
+			var array_text := ""
+			if raw_value.ends_with("]"):
+				array_text = raw_value.substr(1, raw_value.length() - 2)
+			else:
+				array_text = raw_value.right(-1)
+				while true:
+					i += 1
+					if i >= lines.size():
+						break
+					var next_line := lines[i].get_slice("#", 0).strip_edges()
+					if next_line.ends_with("]"):
+						array_text += " " + next_line.substr(0, next_line.length() - 1)
+						break
+					else:
+						array_text += " " + next_line
+			
+			var elements := array_text.split(",", false)
+			var arr := []
+			for elem in elements:
+				var v := elem.strip_edges()
+				if (v.begins_with('"') and v.ends_with('"')) or\
+				(v.begins_with("'") and v.ends_with("'")):
+					arr.append(v.substr(1, v.length() - 2))
+				elif v.is_valid_int():
+					arr.append(v.to_int())
+				elif v.is_valid_float():
+					arr.append(v.to_float())
+			result[key] = arr
+		
+		else:
+			if (raw_value.begins_with('"') and raw_value.ends_with('"')) or\
+			(raw_value.begins_with("'") and raw_value.ends_with("'")):
+				result[key] = raw_value.substr(1, raw_value.length() - 2)
+			elif raw_value.is_valid_int():
+				result[key] = raw_value.to_int()
+			elif raw_value.is_valid_float():
+				result[key] = raw_value.to_float()
+		
+		i += 1
+	
+	return result
