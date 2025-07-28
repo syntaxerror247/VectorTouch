@@ -59,7 +59,7 @@ func _ready() -> void:
 	update_ui_scale()
 	
 	android_runtime = Engine.get_singleton("AndroidRuntime")
-	set_system_bar_color(ThemeUtils.overlay_panel_inner_color, true)
+	set_system_bar_color(ThemeUtils.base_color, true)
 	
 	shortcut_panel = ShortcutPanelScene.instantiate()
 	get_tree().root.add_child(shortcut_panel)
