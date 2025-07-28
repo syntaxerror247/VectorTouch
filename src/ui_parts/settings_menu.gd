@@ -4,11 +4,11 @@ const SettingsContentGeneric = preload("res://src/ui_widgets/settings_content_ge
 const SettingsContentPalettes = preload("res://src/ui_widgets/settings_content_palettes.tscn")
 const SettingsContentShortcuts = preload("res://src/ui_widgets/settings_content_shortcuts.tscn")
 
-@onready var lang_button: Button = $VBoxContainer/Language
+@onready var lang_button: Button = $VBoxContainer/PanelContainer/Language
 @onready var scroll_container: ScrollContainer = %ScrollContainer
 @onready var content_container: MarginContainer = %ScrollContainer/ContentContainer
-@onready var tabs: VBoxContainer = %Tabs
-@onready var close_button: Button = $VBoxContainer/CloseButton
+@onready var tabs: BoxContainer = $VBoxContainer/BoxContainer/Tabs
+@onready var back_button: Button = $VBoxContainer/PanelContainer/BackButton
 @onready var preview_panel: PanelContainer = $VBoxContainer/PreviewPanel
 
 enum TabIndex {FORMATTING, PALETTES, SHORTCUTS, THEMING, TAB_BAR, OTHER}
@@ -27,15 +27,13 @@ func get_tab_localized_name(tab_index: TabIndex) -> String:
 var focused_tab_index := -1 as TabIndex
 
 func _ready() -> void:
-	close_button.pressed.connect(queue_free)
+	back_button.pressed.connect(queue_free)
 	change_orientation()
 	Configs.orientation_changed.connect(change_orientation)
 	
 	scroll_container.get_v_scroll_bar().visibility_changed.connect(adjust_right_margin)
 	adjust_right_margin()
 	
-	Configs.theme_changed.connect(sync_theming)
-	sync_theming()
 	Configs.language_changed.connect(sync_localization)
 	sync_localization()
 	press_tab(0)
@@ -43,9 +41,11 @@ func _ready() -> void:
 func change_orientation():
 	if Configs.current_orientation == Configs.orientation.PORTRAIT:
 		$VBoxContainer/BoxContainer.vertical = true
+		tabs.vertical = false
 		$VBoxContainer/BoxContainer/PanelContainer.size_flags_vertical = SIZE_EXPAND_FILL
 	else:
 		$VBoxContainer/BoxContainer.vertical = false
+		tabs.vertical = true
 		$VBoxContainer/BoxContainer/PanelContainer.size_flags_horizontal = SIZE_EXPAND_FILL
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -58,13 +58,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func press_tab(index: int) -> void:
 	tabs.get_child(index).button_pressed = true
 
-func sync_theming() -> void:
-	var stylebox := ThemeDB.get_default_theme().get_stylebox("panel", theme_type_variation).duplicate()
-	stylebox.content_margin_top += 4.0
-	add_theme_stylebox_override("panel", stylebox)
-
 func sync_localization() -> void:
-	close_button.text = Translator.translate("Close")
 	lang_button.text = Translator.translate("Language") + ": " +\
 			TranslationUtils.get_locale_string(TranslationServer.get_locale())
 	setup_tabs()
@@ -84,7 +78,6 @@ func setup_tabs() -> void:
 		var tab := Button.new()
 		tab.text = get_tab_localized_name(tab_index)
 		tab.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		tab.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		tab.toggle_mode = true
 		tab.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 		tab.focus_mode = Control.FOCUS_NONE

@@ -26,7 +26,7 @@ var dim_text := false  # For settings that wouldn't have an effect.
 var widget: Control
 var panel_width := 0
 
-var is_hovered := false
+var is_focused := false
 
 @onready var reset_button: Button = $ResetButton
 var ci := get_canvas_item()
@@ -90,8 +90,8 @@ func setup_fps_limit_dropdown() -> void:
 
 func _ready() -> void:
 	widget.size = Vector2(panel_width - 32, 22)
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
+	focus_entered.connect(_on_focus_entered)
+	focus_exited.connect(_on_focus_exited)
 	resized.connect(_on_resized)
 	reset_button.reset_size()
 	if type != Type.NONE:
@@ -177,16 +177,16 @@ func update_widgets() -> void:
 			reset_button.visible = not (disabled or is_equal_approx(getter.call(), default))
 	queue_redraw()
 
-func _on_mouse_entered() -> void:
-	is_hovered = true
+func _on_focus_entered() -> void:
+	is_focused = true
 	queue_redraw()
 
-func _on_mouse_exited() -> void:
-	is_hovered = false
+func _on_focus_exited() -> void:
+	is_focused = false
 	queue_redraw()
 
 func _draw() -> void:
-	if is_hovered:
+	if is_focused:
 		var sb := StyleBoxFlat.new()
 		sb.set_corner_radius_all(3)
 		sb.set_content_margin_all(2)

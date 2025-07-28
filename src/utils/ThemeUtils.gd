@@ -346,28 +346,28 @@ static func _setup_panelcontainer(theme: Theme) -> void:
 	textbox_stylebox.border_color = subtle_panel_border_color
 	theme.set_stylebox("panel", "TextBox", textbox_stylebox)
 
-	theme.add_type("SideTabBar")
-	theme.set_type_variation("SideTabBar", "PanelContainer")
-	var side_tabbar_stylebox := StyleBoxFlat.new()
-	side_tabbar_stylebox.bg_color = soft_base_color
-	side_tabbar_stylebox.set_content_margin_all(0)
-	side_tabbar_stylebox.corner_radius_top_left = 8
-	side_tabbar_stylebox.corner_radius_bottom_left = 8
-	theme.set_stylebox("panel", "SideTabBar", side_tabbar_stylebox)
-
 	theme.add_type("SideBarContent")
 	theme.set_type_variation("SideBarContent", "PanelContainer")
 	var panel_stylebox := StyleBoxFlat.new()
 	panel_stylebox.bg_color = tab_container_panel_inner_color
 	panel_stylebox.border_color = tab_container_panel_border_color
 	panel_stylebox.set_border_width_all(1)
-	panel_stylebox.corner_radius_top_right = 8
-	panel_stylebox.corner_radius_bottom_right = 8
+	panel_stylebox.set_corner_radius_all(8)
 	panel_stylebox.content_margin_left = 16
 	panel_stylebox.content_margin_right = 8
 	panel_stylebox.content_margin_top = 8
 	panel_stylebox.content_margin_bottom = 8
 	theme.set_stylebox("panel", "SideBarContent", panel_stylebox)
+	
+	theme.add_type("BasePanel")
+	theme.set_type_variation("BasePanel", "PanelContainer")
+	var base_panel_stylebox := StyleBoxFlat.new()
+	base_panel_stylebox.content_margin_left = 8.0
+	base_panel_stylebox.content_margin_right = 8.0
+	base_panel_stylebox.content_margin_top = 6.0
+	base_panel_stylebox.content_margin_bottom = 6.0
+	base_panel_stylebox.bg_color = base_color
+	theme.set_stylebox("panel", "BasePanel", base_panel_stylebox)
 
 
 static func _setup_button(theme: Theme) -> void:
@@ -789,9 +789,7 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_type_variation("SideTab", "Button")
 	
 	var normal_sidetab_stylebox := StyleBoxFlat.new()
-	normal_sidetab_stylebox.bg_color = softer_intermediate_color
-	normal_sidetab_stylebox.corner_radius_top_left = 4
-	normal_sidetab_stylebox.corner_radius_bottom_left = 4
+	normal_sidetab_stylebox.draw_center = false
 	normal_sidetab_stylebox.content_margin_left = 6.0
 	normal_sidetab_stylebox.content_margin_right = 6.0
 	normal_sidetab_stylebox.content_margin_bottom = 3.0
@@ -800,16 +798,13 @@ static func _setup_button(theme: Theme) -> void:
 	
 	var hovered_sidetab_stylebox := normal_sidetab_stylebox.duplicate()
 	hovered_sidetab_stylebox.bg_color = softer_intermediate_hover_color
+	hovered_sidetab_stylebox.draw_center = true
 	theme.set_stylebox("hover", "SideTab", hovered_sidetab_stylebox)
 	
-	var pressed_sidetab_stylebox := StyleBoxFlat.new()
+	var pressed_sidetab_stylebox := normal_sidetab_stylebox.duplicate()
 	pressed_sidetab_stylebox.bg_color = selected_tab_color
 	pressed_sidetab_stylebox.border_color = selected_tab_border_color
-	pressed_sidetab_stylebox.border_width_left = 2
-	pressed_sidetab_stylebox.content_margin_left = 10.0
-	pressed_sidetab_stylebox.content_margin_right = 6.0
-	pressed_sidetab_stylebox.content_margin_bottom = 3.0
-	pressed_sidetab_stylebox.content_margin_top = 3.0
+	pressed_sidetab_stylebox.border_width_bottom = 2
 	theme.set_stylebox("pressed", "SideTab", pressed_sidetab_stylebox)
 	theme.set_stylebox("hover_pressed", "SideTab", pressed_sidetab_stylebox)
 	

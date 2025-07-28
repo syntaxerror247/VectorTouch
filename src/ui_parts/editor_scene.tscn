@@ -9,5 +9,5 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
-theme_type_variation = &"SubtleFlatPanel"
+theme_type_variation = &"BasePanel"
 script = ExtResource("1_o7lif")
