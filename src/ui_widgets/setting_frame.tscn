@@ -9,6 +9,7 @@ layout_mode = 3
 anchors_preset = 10
 anchor_right = 1.0
 grow_horizontal = 2
+focus_mode = 1
 mouse_filter = 1
 script = ExtResource("1_p1ngn")
 

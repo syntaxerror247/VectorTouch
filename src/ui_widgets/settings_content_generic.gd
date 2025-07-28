@@ -698,8 +698,8 @@ func setup_frame(frame: Control, has_default := true) -> void:
 	frame.getter = resource_ref.get.bind(bind)
 	if has_default:
 		frame.default = resource_ref.get_setting_default(current_setup_setting)
-	frame.mouse_entered.connect(set_preview.bind(current_setup_setting))
-	frame.mouse_exited.connect(remove_preview.bind(current_setup_setting))
+	frame.focus_entered.connect(set_preview.bind(current_setup_setting))
+	frame.focus_exited.connect(remove_preview.bind(current_setup_setting))
 
 func add_frame(frame: Control) -> void:
 	if setting_container.get_child_count() > 0:
@@ -786,6 +786,7 @@ func emit_preview_changed() -> void:
 		preview_changed.emit(margin_container)
 	elif preview is SettingCodePreview:
 		var code_preview := BetterTextEdit.new()
+		code_preview.scroll_fit_content_height = true
 		code_preview.editable = false
 		var update_highlighter := func() -> void:
 				code_preview.syntax_highlighter = SVGHighlighter.new()
@@ -807,6 +808,7 @@ func emit_preview_changed() -> void:
 		preview_changed.emit(code_preview)
 	elif preview is SettingFormatterPreview:
 		var code_preview := BetterTextEdit.new()
+		code_preview.scroll_fit_content_height = true
 		code_preview.editable = false
 		
 		var update_highlighter := func() -> void:
@@ -837,19 +839,4 @@ func emit_preview_changed() -> void:
 		code_preview.tree_exiting.connect(preview.resource_bind.changed_deferred.disconnect.bind(
 				update_text), CONNECT_ONE_SHOT)
 		update_text.call()
-		# TODO Impressively, all this is necessary for scrollbars to work.
-		# TextEdit is so damn janky.
-		code_preview.hide()
-		code_preview.show()
-		await get_tree().process_frame
-		await get_tree().process_frame
-		if is_instance_valid(code_preview) and\
-		not is_zero_approx(code_preview.get_v_scroll_bar().max_value):
-			var tw := code_preview.create_tween().set_loops()
-			tw.tween_interval(1.75)
-			tw.tween_property(code_preview.get_v_scroll_bar(), ^"value",
-					floorf(code_preview.get_v_scroll_bar().max_value -\
-					code_preview.get_visible_line_count()), 0.5)
-			tw.tween_interval(1.75)
-			tw.tween_property(code_preview.get_v_scroll_bar(), ^"value", 0.0, 0.5)
 		preview_changed.emit(code_preview)
