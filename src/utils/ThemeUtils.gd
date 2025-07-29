@@ -460,7 +460,6 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_stylebox("pressed", "OutlinedButton", pressed_outlined)
 
 	theme.set_stylebox("disabled", "OutlinedButton", outlined_style)
-
 	
 	theme.add_type("IconButton")
 	theme.set_type_variation("IconButton", "Button")
@@ -658,13 +657,22 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_color("icon_pressed_color", "FlatButton", icon_pressed_color)
 	theme.set_color("icon_hover_pressed_color", "FlatButton", icon_pressed_color)
 	
-	theme.set_stylebox("normal", "FlatButton", icon_button_stylebox)
+	var flat_button_stylebox := normal_button_stylebox.duplicate()
+	flat_button_stylebox.draw_center = false
+	flat_button_stylebox.set_content_margin_all(4)
 	
-	theme.set_stylebox("hover", "FlatButton", icon_button_stylebox)
+	theme.set_stylebox("normal", "FlatButton", flat_button_stylebox)
 	
-	theme.set_stylebox("pressed", "FlatButton", pressed_button_stylebox)
+	theme.set_stylebox("hover", "FlatButton", flat_button_stylebox)
 	
-	var disabled_flat_button_stylebox := icon_button_stylebox.duplicate()
+	var pressed_flat_button_stylebox := pressed_button_stylebox.duplicate()
+	pressed_flat_button_stylebox.set_corner_radius_all(8)
+	pressed_flat_button_stylebox.set_content_margin_all(4)
+	theme.set_stylebox("pressed", "FlatButton", pressed_flat_button_stylebox)
+	
+	theme.set_stylebox("hover_pressed", "FlatButton", pressed_flat_button_stylebox)
+	
+	var disabled_flat_button_stylebox := flat_button_stylebox.duplicate()
 	disabled_flat_button_stylebox.bg_color = flat_button_color_disabled
 	disabled_flat_button_stylebox.draw_center = true
 	theme.set_stylebox("disabled", "FlatButton", disabled_flat_button_stylebox)

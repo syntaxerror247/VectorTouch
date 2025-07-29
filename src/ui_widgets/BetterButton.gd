@@ -43,3 +43,4 @@ func end_highlight() -> void:
 	remove_theme_stylebox_override("normal")
 	remove_theme_stylebox_override("hover")
 	timer = null
+	
