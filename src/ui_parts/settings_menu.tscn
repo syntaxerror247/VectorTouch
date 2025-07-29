@@ -17,7 +17,6 @@ script = ExtResource("1_1gf4m")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 8
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer"]
 layout_mode = 2
@@ -35,6 +34,10 @@ focus_mode = 0
 mouse_default_cursor_shape = 2
 icon = ExtResource("2_ndyp7")
 
+[node name="spacer" type="Control" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
 [node name="BoxContainer" type="BoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -44,7 +47,7 @@ vertical = true
 custom_minimum_size = Vector2(120, 0)
 layout_mode = 2
 size_flags_horizontal = 0
-theme_override_constants/separation = 8
+theme_override_constants/separation = 0
 
 [node name="PanelContainer" type="PanelContainer" parent="VBoxContainer/BoxContainer"]
 layout_mode = 2

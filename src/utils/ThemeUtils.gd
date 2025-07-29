@@ -785,28 +785,26 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_stylebox("hover_pressed", "TextButton", text_button_empty_stylebox)
 	theme.set_stylebox("disabled", "TextButton", text_button_empty_stylebox)
 	
-	theme.add_type("SideTab")
-	theme.set_type_variation("SideTab", "Button")
+	theme.add_type("TabButton")
+	theme.set_type_variation("TabButton", "Button")
 	
-	var normal_sidetab_stylebox := StyleBoxFlat.new()
-	normal_sidetab_stylebox.draw_center = false
-	normal_sidetab_stylebox.content_margin_left = 6.0
-	normal_sidetab_stylebox.content_margin_right = 6.0
-	normal_sidetab_stylebox.content_margin_bottom = 3.0
-	normal_sidetab_stylebox.content_margin_top = 3.0
-	theme.set_stylebox("normal", "SideTab", normal_sidetab_stylebox)
+	var normal_tab_stylebox := StyleBoxFlat.new()
+	normal_tab_stylebox.draw_center = false
+	normal_tab_stylebox.set_content_margin_all(8)
+	theme.set_stylebox("normal", "TabButton", normal_tab_stylebox)
 	
-	var hovered_sidetab_stylebox := normal_sidetab_stylebox.duplicate()
-	hovered_sidetab_stylebox.bg_color = softer_intermediate_hover_color
-	hovered_sidetab_stylebox.draw_center = true
-	theme.set_stylebox("hover", "SideTab", hovered_sidetab_stylebox)
+	var hovered_tab_stylebox := normal_tab_stylebox.duplicate()
+	hovered_tab_stylebox.bg_color = softer_intermediate_hover_color
+	hovered_tab_stylebox.draw_center = true
+	theme.set_stylebox("hover", "TabButton", hovered_tab_stylebox)
 	
-	var pressed_sidetab_stylebox := normal_sidetab_stylebox.duplicate()
-	pressed_sidetab_stylebox.bg_color = selected_tab_color
-	pressed_sidetab_stylebox.border_color = selected_tab_border_color
-	pressed_sidetab_stylebox.border_width_bottom = 2
-	theme.set_stylebox("pressed", "SideTab", pressed_sidetab_stylebox)
-	theme.set_stylebox("hover_pressed", "SideTab", pressed_sidetab_stylebox)
+	var pressed_tab_stylebox := normal_tab_stylebox.duplicate()
+	pressed_tab_stylebox.draw_center = true
+	pressed_tab_stylebox.bg_color = selected_tab_color
+	pressed_tab_stylebox.border_color = selected_tab_border_color
+	pressed_tab_stylebox.border_width_bottom = 2
+	theme.set_stylebox("pressed", "TabButton", pressed_tab_stylebox)
+	theme.set_stylebox("hover_pressed", "TabButton", pressed_tab_stylebox)
 	
 	theme.add_type("Swatch")
 	theme.set_type_variation("Swatch", "Button")
