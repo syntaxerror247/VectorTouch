@@ -81,7 +81,7 @@ func setup_tabs() -> void:
 		tab.toggle_mode = true
 		tab.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 		tab.focus_mode = Control.FOCUS_NONE
-		tab.theme_type_variation = "SideTab"
+		tab.theme_type_variation = "TabButton"
 		tab.toggled.connect(_on_tab_toggled.bind(tab_index))
 		tab.button_group = button_group
 		tab.button_pressed = (tab_index == focused_tab_index)
