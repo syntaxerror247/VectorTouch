@@ -21,6 +21,8 @@ var tabs_panel: PanelContainer
 var android_runtime: JNISingleton
 var is_light_system_bars: bool = false
 
+var status_bar_visible: bool = true
+
 func set_system_bar_color(color: Color, override_appearance := false) -> void:
 	if not android_runtime:
 		return
@@ -42,6 +44,24 @@ func set_system_bar_color(color: Color, override_appearance := false) -> void:
 	
 	activity.runOnUiThread(android_runtime.createRunnableFromGodotCallable(callable))
 
+func toogle_status_bar(visible: bool, override := false) -> void:
+	if (status_bar_visible == visible and not override) or not android_runtime:
+		return
+	
+	var activity = android_runtime.getActivity()
+	var callable = func ():
+		var window = activity.getWindow()
+		var WindowInsetsControllerCompat = JavaClassWrapper.wrap("androidx.core.view.WindowInsetsControllerCompat")
+		var controller = WindowInsetsControllerCompat.call("<init>", window, window.getDecorView())
+		var type = JavaClassWrapper.wrap("androidx.core.view.WindowInsetsCompat$Type")
+		if visible:
+			controller.show(type.statusBars())
+		else:
+			controller.hide(type.statusBars())
+			controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
+		status_bar_visible = visible
+	
+	activity.runOnUiThread(android_runtime.createRunnableFromGodotCallable(callable))
 
 func _enter_tree() -> void:
 	var window := get_window()
@@ -60,6 +80,9 @@ func _ready() -> void:
 	
 	android_runtime = Engine.get_singleton("AndroidRuntime")
 	set_system_bar_color(ThemeUtils.base_color, true)
+	toogle_status_bar(Configs.current_orientation == Configs.orientation.PORTRAIT)
+	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
+	if version: Configs.current_sdk = version.SDK_INT
 	
 	shortcut_panel = ShortcutPanelScene.instantiate()
 	get_tree().root.add_child(shortcut_panel)
@@ -73,9 +96,9 @@ func _ready() -> void:
 	overlay_ref.add_child(tabs_panel)
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_WM_ABOUT:
-		# TODO Keep track of #101410.
-		open_about.call_deferred()
+	if what == NOTIFICATION_APPLICATION_RESUMED:
+		if not status_bar_visible:
+			toogle_status_bar(false, true)
 
 # Drag-and-drop of files.
 func _on_files_dropped(files: PackedStringArray) -> void:

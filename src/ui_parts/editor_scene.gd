@@ -14,8 +14,6 @@ func _ready() -> void:
 	Configs.layout_changed.connect(update_layout)
 	Configs.orientation_changed.connect(update_orientation)
 	update_layout()
-	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
-	if version: Configs.current_sdk = version.SDK_INT
 
 func update_orientation():
 	if Configs.current_orientation == Configs.orientation.PORTRAIT:
