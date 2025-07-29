@@ -1,0 +1,7 @@
+[gd_resource type="FontVariation" load_steps=2 format=3 uid="uid://dg5vsg45k8y7w"]
+
+[ext_resource type="FontFile" uid="uid://depydd16jq777" path="res://assets/fonts/FontMono.ttf" id="1_67ox0"]
+
+[resource]
+base_font = ExtResource("1_67ox0")
+spacing_bottom = -15

@@ -4,9 +4,9 @@ const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
 
 @onready var viewport: SubViewport = %Viewport
 @onready var reference_texture: TextureRect = %Viewport/ReferenceTexture
-@onready var reference_button: Button = %LeftMenu/Reference
-@onready var snapper: NumberEdit = %LeftMenu/Snapping/SnapNumberEdit
-@onready var snap_button: BetterButton = %LeftMenu/Snapping/SnapButton
+@onready var reference_button: Button = %ViewportOptions/Reference
+@onready var snapper: NumberEdit = %ViewportOptions/Snapping/SnapNumberEdit
+@onready var snap_button: BetterButton = %ViewportOptions/Snapping/SnapButton
 @onready var viewport_panel: PanelContainer = $ViewportPanel
 @onready var debug_container: MarginContainer = $ViewportPanel/DebugMargins
 @onready var debug_label: Label = %DebugContainer/DebugLabel
@@ -38,7 +38,7 @@ func _ready() -> void:
 
 
 func sync_localization() -> void:
-	%LeftMenu/Snapping/SnapNumberEdit.tooltip_text = Translator.translate("Snap size")
+	%ViewportOptions/Snapping/SnapNumberEdit.tooltip_text = Translator.translate("Snap size")
 
 func sync_theming() -> void:
 	var frame := StyleBoxFlat.new()
