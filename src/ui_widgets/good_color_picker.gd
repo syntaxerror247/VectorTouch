@@ -120,10 +120,13 @@ func sync_color_space_buttons() -> void:
 		btn.button_group = color_space_button_group
 		btn.toggle_mode = true
 		btn.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
-		slider_mode_changed.connect(func() -> void:
+		
+		var on_slider_mode_changed := func() -> void:
 				btn.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
 				slider_mode == color_space else Control.CURSOR_POINTING_HAND
-		)
+		
+		slider_mode_changed.connect(on_slider_mode_changed)
+		btn.tree_exiting.connect(slider_mode_changed.disconnect.bind(on_slider_mode_changed))
 		if color_space == Configs.savedata.color_picker_slider_mode:
 			btn.button_pressed = true
 		btn.pressed.connect(change_slider_mode.bind(color_space))
@@ -531,13 +534,11 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
 	
-	if ShortcutUtils.is_action_pressed(event, "ui_redo"):
-		if undo_redo.has_redo():
-			undo_redo.redo()
+	if ShortcutUtils.is_action_pressed(event, "ui_undo"):
+		undo_redo.undo()
 		accept_event()
-	elif ShortcutUtils.is_action_pressed(event, "ui_undo"):
-		if undo_redo.has_undo():
-			undo_redo.undo()
+	elif ShortcutUtils.is_action_pressed(event, "ui_redo"):
+		undo_redo.redo()
 		accept_event()
 
 
