@@ -11,11 +11,11 @@ env:
   # Which godot version to use for exporting.
   GODOT_VERSION: 4.5
   # Which godot release to use for exporting. (stable/rc/beta/alpha)
-  GODOT_RELEASE: beta2
+  GODOT_RELEASE: beta4
   # Used in the editor config file name. Do not change this for patch releases.
   GODOT_FEATURE_VERSION: 4.5
   # Commit hash
-  GODOT_COMMIT_HASH: e1b4101e3
+  GODOT_COMMIT_HASH: 2d113cc22
   PROJECT_NAME: GodSVG Mobile
   BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes disable_physics_2d=yes disable_navigation_2d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes module_mbedtls_enabled=yes swappy=no build_profile=../godsvg/.github/disabled_classes.build
   GODOT_REPO: https://github.com/godotengine/godot.git
