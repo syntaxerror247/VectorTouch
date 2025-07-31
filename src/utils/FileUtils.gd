@@ -27,7 +27,7 @@ static func compare_svg_to_disk_contents(idx := -1) -> FileState:
 	var content := FileAccess.get_file_as_string(tab.svg_file_path)
 	if content.is_empty():
 		return FileState.DOES_NOT_EXIST
-	# Check if importing the file's text into GodSVG would change the current SVG text.
+	# Check if importing the file's text into VectorTouch would change the current SVG text.
 	# Avoid the parsing if checking the active tab.
 	var state_svg_text := State.svg_text if idx == -1 else\
 			SVGParser.root_to_editor_text(SVGParser.text_to_root(tab.get_true_svg_text()).svg)
@@ -339,7 +339,7 @@ is_last_file := true) -> void:
 	if existing_tab_idx != -1:
 		Configs.savedata.add_tab_with_path(file_path)
 		var alert_message := Translator.translate(
-				"{file_path} is already being edited inside GodSVG.").format(
+				"{file_path} is already being edited inside VectorTouch.").format(
 					{"file_path": Utils.simplify_file_path(file_path)})
 		if compare_svg_to_disk_contents(existing_tab_idx) == FileState.DIFFERENT:
 			alert_message += "\n\n" + Translator.translate(

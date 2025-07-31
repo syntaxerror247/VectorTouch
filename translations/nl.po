@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GodSVG\n"
+"Project-Id-Version: VectorTouch\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -16,12 +16,12 @@ msgid "translation-credits"
 msgstr "Racer911dash1, jas31415"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit GodSVG"
-msgstr "GodSVG afsluiten"
+msgid "Quit VectorTouch"
+msgstr "VectorTouch afsluiten"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit GodSVG?"
-msgstr "Wil je GodSVG afsluiten?"
+msgid "Do you want to quit VectorTouch?"
+msgstr "Wil je VectorTouch afsluiten?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -532,8 +532,8 @@ msgid "View all releases"
 msgstr "Selecteer alle elementen"
 
 #: src/ui_parts/update_menu.gd:
-msgid "GodSVG is up-to-date."
-msgstr "GodSVG is up-to-date."
+msgid "VectorTouch is up-to-date."
+msgstr "VectorTouch is up-to-date."
 
 #: src/ui_parts/update_menu.gd:
 #, fuzzy
@@ -657,7 +657,7 @@ msgstr "Snelkoppeling toevoegen"
 msgid "Press keys…"
 msgstr "Druk op toetsen…"
 
-#. Refers to the formatter used for GodSVG's code editor.
+#. Refers to the formatter used for VectorTouch's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Editor-formatter"
@@ -980,7 +980,7 @@ msgid "Sync window title to file name"
 msgstr "Synchroniseer venstertitel naar bestandsnaam"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -993,8 +993,8 @@ msgstr "Verplaatst de cursur naar de overkant wanneer het buiten de viewport gaa
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
-msgstr "Waneer ingeschakeld, gebruikt jouw besturingssysteem's inheemse bestandendialoog. Wanneer uitgeschakeld, gebruikt GodSVG's ingebouwde bestandendialoog."
+msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
+msgstr "Waneer ingeschakeld, gebruikt jouw besturingssysteem's inheemse bestandendialoog. Wanneer uitgeschakeld, gebruikt VectorTouch's ingebouwde bestandendialoog."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1041,8 +1041,8 @@ msgid "New transform"
 msgstr "Nieuwe transformatie"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "GodSVG doesn’t recognize this attribute"
-msgstr "GodSVG herkent deze attribuut niet"
+msgid "VectorTouch doesn’t recognize this attribute"
+msgstr "VectorTouch herkent deze attribuut niet"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1099,8 +1099,8 @@ msgstr "Niet opslaan."
 
 #: src/utils/FileUtils.gd:
 #, fuzzy
-msgid "{file_path} is already being edited inside GodSVG."
-msgstr "Het geïmporteerde bestand is al geöpend in GodSVG"
+msgid "{file_path} is already being edited inside VectorTouch."
+msgstr "Het geïmporteerde bestand is al geöpend in VectorTouch"
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1314,20 +1314,20 @@ msgid "Open Donate menu"
 msgstr "Open Doneermenu"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG repository"
-msgstr "GodSVG opslagplaats"
+msgid "VectorTouch repository"
+msgstr "VectorTouch opslagplaats"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG repository"
-msgstr "Open GodSVG opslagplaats"
+msgid "Open VectorTouch repository"
+msgstr "Open VectorTouch opslagplaats"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG website"
-msgstr "GodSVG website"
+msgid "VectorTouch website"
+msgstr "VectorTouch website"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG website"
-msgstr "Open GodSVG website"
+msgid "Open VectorTouch website"
+msgstr "Open VectorTouch website"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1424,8 +1424,8 @@ msgid "Only {extension_list} files are supported for this operation."
 msgstr "Deze bestandsextensie is leeg. Alleen {extension_list} bestanden zijn ondersteund."
 
 #, fuzzy
-#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
-#~ msgstr "Als dit uitgeschakelt is, blijft de venstertitel simpelweg \"GodSVG\" achteloos van het huidige bestand."
+#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
+#~ msgstr "Als dit uitgeschakelt is, blijft de venstertitel simpelweg \"VectorTouch\" achteloos van het huidige bestand."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Houdt onherkende XML structuren bij"
@@ -1486,8 +1486,8 @@ msgstr "Deze bestandsextensie is leeg. Alleen {extension_list} bestanden zijn on
 #~ msgid "Wraps the mouse cursor around when panning the viewport."
 #~ msgstr "Wikkelt de muiscursor rond tijdens het verschuiven van de kijkvenster."
 
-#~ msgid "This requires GodSVG to connect to the internet."
-#~ msgstr "Hiervoor moet GodSVG verbinding maken met het internet."
+#~ msgid "This requires VectorTouch to connect to the internet."
+#~ msgstr "Hiervoor moet VectorTouch verbinding maken met het internet."
 
 #~ msgid "Open file"
 #~ msgstr "Open bestand"
