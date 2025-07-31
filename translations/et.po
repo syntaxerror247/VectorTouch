@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GodSVG\n"
+"Project-Id-Version: VectorTouch\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -16,12 +16,12 @@ msgid "translation-credits"
 msgstr "Kiisu-Master"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit GodSVG"
-msgstr "Sulge GodSVG"
+msgid "Quit VectorTouch"
+msgstr "Sulge VectorTouch"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit GodSVG?"
-msgstr "Kas te tahate sulgeda GodSVG?"
+msgid "Do you want to quit VectorTouch?"
+msgstr "Kas te tahate sulgeda VectorTouch?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -529,8 +529,8 @@ msgid "View all releases"
 msgstr "Näita kõiki väljaandeid"
 
 #: src/ui_parts/update_menu.gd:
-msgid "GodSVG is up-to-date."
-msgstr "GodSVG on ajakohane."
+msgid "VectorTouch is up-to-date."
+msgstr "VectorTouch on ajakohane."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -653,7 +653,7 @@ msgstr "Lisa kiirklahv"
 msgid "Press keys…"
 msgstr "Vajuta klahve…"
 
-#. Refers to the formatter used for GodSVG's code editor.
+#. Refers to the formatter used for VectorTouch's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Redaktori vormindus"
@@ -975,7 +975,7 @@ msgid "Sync window title to file name"
 msgstr "Sünkrooni akna tiitel avatud faili nimega"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -988,8 +988,8 @@ msgstr "Viib kursori akna vastaspoolele, kui see jõuab vaate liigutamise ajal s
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
-msgstr "Sisselülitamisel kasutab süsteemi vaikefailidialoogi. Väljalülitamisel GodSVG sisseehitatud failidialoogi."
+msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
+msgstr "Sisselülitamisel kasutab süsteemi vaikefailidialoogi. Väljalülitamisel VectorTouch sisseehitatud failidialoogi."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1036,8 +1036,8 @@ msgid "New transform"
 msgstr "Uus teisendus"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "GodSVG doesn’t recognize this attribute"
-msgstr "GodSVG ei tunne seda atribuuti"
+msgid "VectorTouch doesn’t recognize this attribute"
+msgstr "VectorTouch ei tunne seda atribuuti"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1092,8 +1092,8 @@ msgid "Don't save"
 msgstr "Ära salvesta"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside GodSVG."
-msgstr "{file_path} on juba avatud GodSVGs."
+msgid "{file_path} is already being edited inside VectorTouch."
+msgstr "{file_path} on juba avatud VectorTouchs."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1300,20 +1300,20 @@ msgid "Open Donate menu"
 msgstr "Ava annetuste menüü"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG repository"
-msgstr "GodSVG repositoorium"
+msgid "VectorTouch repository"
+msgstr "VectorTouch repositoorium"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG repository"
-msgstr "Ava GodSVG repositoorium"
+msgid "Open VectorTouch repository"
+msgstr "Ava VectorTouch repositoorium"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG website"
-msgstr "GodSVG veebileht"
+msgid "VectorTouch website"
+msgstr "VectorTouch veebileht"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG website"
-msgstr "Ava GodSVG veebileht"
+msgid "Open VectorTouch website"
+msgstr "Ava VectorTouch veebileht"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1404,8 +1404,8 @@ msgstr "Salvesta {format} fail"
 msgid "Only {extension_list} files are supported for this operation."
 msgstr "Ainult {extension_list} failid on toetatud selle tehingu jaoks."
 
-#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
-#~ msgstr "Väljalülitamisel jääb akna nimieks \"GodSVG\" sõltumata avatud failist."
+#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
+#~ msgstr "Väljalülitamisel jääb akna nimieks \"VectorTouch\" sõltumata avatud failist."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Hoia tundmatud XML struktuurid alles"

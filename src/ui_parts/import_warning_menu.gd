@@ -27,7 +27,7 @@ func _ready() -> void:
 	ok_button.pressed.connect(finish_import)
 	cancel_button.pressed.connect(queue_free)
 	
-	# Convert forward and backward to show how GodSVG would display the given SVG.
+	# Convert forward and backward to show how VectorTouch would display the given SVG.
 	var imported_text_parse_result := SVGParser.text_to_root(imported_text)
 	if is_instance_valid(imported_text_parse_result.svg):
 		var preview_text := SVGParser.root_to_editor_text(imported_text_parse_result.svg)

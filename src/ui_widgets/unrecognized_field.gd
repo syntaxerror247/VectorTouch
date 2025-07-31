@@ -1,4 +1,4 @@
-# An editor to be tied to an attribute GodSVG can't recognize, allowing to still edit it.
+# An editor to be tied to an attribute VectorTouch can't recognize, allowing to still edit it.
 extends BetterLineEdit
 
 var element: Element
@@ -22,4 +22,4 @@ func sync() -> void:
 
 func sync_localization() -> void:
 	tooltip_text = attribute_name + "\n(%s)" %\
-			Translator.translate("GodSVG doesn’t recognize this attribute")
+			Translator.translate("VectorTouch doesn’t recognize this attribute")

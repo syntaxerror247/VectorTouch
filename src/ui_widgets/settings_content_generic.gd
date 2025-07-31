@@ -592,7 +592,7 @@ func setup_other_content() -> void:
 	var use_native_file_dialog_forced_off :=\
 			(not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE))
 	add_preview(SettingTextPreview.new(Translator.translate(
-			"When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."),
+			"When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."),
 			SettingTextPreview.get_platform_availability_warning(
 			use_native_file_dialog_forced_on or use_native_file_dialog_forced_off)))
 	# Disable fallback file dialog on web, and native file dialog if not available.
@@ -604,7 +604,7 @@ func setup_other_content() -> void:
 	current_setup_setting = "use_filename_for_window_title"
 	add_checkbox(Translator.translate("Sync window title to file name"))
 	add_preview(SettingTextPreview.new(
-			Translator.translate("When enabled, adds the current file name before the \"GodSVG\" window title.")))
+			Translator.translate("When enabled, adds the current file name before the \"VectorTouch\" window title.")))
 
 
 func add_section(section_name: String) -> void:

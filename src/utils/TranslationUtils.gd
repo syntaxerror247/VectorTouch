@@ -93,10 +93,10 @@ static func get_action_description(action_name: String, for_button := false) -> 
 				for_button else Translator.translate("Open About menu")
 		"about_donate": return Translator.translate("Donate…") if\
 				for_button else Translator.translate("Open Donate menu")
-		"about_repo": return Translator.translate("GodSVG repository") if\
-				for_button else Translator.translate("Open GodSVG repository")
-		"about_website": return Translator.translate("GodSVG website") if\
-				for_button else Translator.translate("Open GodSVG website")
+		"about_repo": return Translator.translate("VectorTouch repository") if\
+				for_button else Translator.translate("Open VectorTouch repository")
+		"about_website": return Translator.translate("VectorTouch website") if\
+				for_button else Translator.translate("Open VectorTouch website")
 		"check_updates": return Translator.translate("Check for updates")
 		"quit": return Translator.translate("Quit the application")
 		"toggle_fullscreen": return Translator.translate("Toggle fullscreen")

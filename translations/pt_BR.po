@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GodSVG\n"
+"Project-Id-Version: VectorTouch\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -16,12 +16,12 @@ msgid "translation-credits"
 msgstr "Felipe Sena Costa <felipe.sena.work.contact@gmail.com>"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit GodSVG"
-msgstr "Sair do GodSVG"
+msgid "Quit VectorTouch"
+msgstr "Sair do VectorTouch"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit GodSVG?"
-msgstr "Você deseja sair do GodSVG?"
+msgid "Do you want to quit VectorTouch?"
+msgstr "Você deseja sair do VectorTouch?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -530,8 +530,8 @@ msgid "View all releases"
 msgstr "Ver todos os lançamentos"
 
 #: src/ui_parts/update_menu.gd:
-msgid "GodSVG is up-to-date."
-msgstr "GodSVG está atualizado."
+msgid "VectorTouch is up-to-date."
+msgstr "VectorTouch está atualizado."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -654,7 +654,7 @@ msgstr "Adicionar atalho"
 msgid "Press keys…"
 msgstr "Pressione as teclas…"
 
-#. Refers to the formatter used for GodSVG's code editor.
+#. Refers to the formatter used for VectorTouch's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Formatador do editor"
@@ -976,7 +976,7 @@ msgid "Sync window title to file name"
 msgstr "Sincronizar título de janela com o nome do arquivo"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -989,8 +989,8 @@ msgstr "Passa o cursor para o lado oposto da tela quando ele atinge uma borda da
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
-msgstr "Se habilitado, usa o diálogo de arquivo nativo do sistema operacional. Se desabilitado, usa o diálogo de arquivo embutido no GodSVG."
+msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
+msgstr "Se habilitado, usa o diálogo de arquivo nativo do sistema operacional. Se desabilitado, usa o diálogo de arquivo embutido no VectorTouch."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1037,8 +1037,8 @@ msgid "New transform"
 msgstr "Nova transformação"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "GodSVG doesn’t recognize this attribute"
-msgstr "O GodSVG não reconhece este atributo"
+msgid "VectorTouch doesn’t recognize this attribute"
+msgstr "O VectorTouch não reconhece este atributo"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1093,8 +1093,8 @@ msgid "Don't save"
 msgstr "Não salvar"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside GodSVG."
-msgstr "{file_path} já está sendo editado dentro do GodSVG."
+msgid "{file_path} is already being edited inside VectorTouch."
+msgstr "{file_path} já está sendo editado dentro do VectorTouch."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1301,20 +1301,20 @@ msgid "Open Donate menu"
 msgstr "Abrir o menu Doar"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG repository"
-msgstr "Repositório do GodSVG"
+msgid "VectorTouch repository"
+msgstr "Repositório do VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG repository"
-msgstr "Abrir o repositório do GodSVG"
+msgid "Open VectorTouch repository"
+msgstr "Abrir o repositório do VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG website"
-msgstr "Website do GodSVG"
+msgid "VectorTouch website"
+msgstr "Website do VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG website"
-msgstr "Abrir website do GodSVG"
+msgid "Open VectorTouch website"
+msgstr "Abrir website do VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1405,8 +1405,8 @@ msgstr "Salvar o arquivo do tipo {format}"
 msgid "Only {extension_list} files are supported for this operation."
 msgstr "A extensão de arquivo está vazia. Somente arquivos {extension_list} são suportados."
 
-#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
-#~ msgstr "Se desabilitado, o título da janela permanecerá como \"GodSVG\" sem incluir o nome do arquivo aberto."
+#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
+#~ msgstr "Se desabilitado, o título da janela permanecerá como \"VectorTouch\" sem incluir o nome do arquivo aberto."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Manter estrutura XML não reconhecida"

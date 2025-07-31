@@ -1,10 +1,10 @@
-# GodSVG Mobile
+# VectorTouch
 
 <p align="center">
   <img src="godot_only/source_assets/splash.svg" width="480" alt="GodSVG logo">
 </p>
 
-**GodSVG Mobile** brings the power of the **GodSVG** to your Android device, allowing you to edit Scalable Vector Graphics (SVG) files directly on mobile. This version is optimized for touch-based interaction, providing an intuitive and mobile-friendly interface for editing SVG files.
+**VectorTouch** brings the power of the **GodSVG** to your Android device, allowing you to edit Scalable Vector Graphics (SVG) files directly on mobile. This version is optimized for touch-based interaction, providing an intuitive and mobile-friendly interface for editing SVG files.
 
 For the desktop version of GodSVG, please visit the [GodSVG repository](https://github.com/MewPurPur/GodSVG).
 
@@ -13,7 +13,7 @@ For the desktop version of GodSVG, please visit the [GodSVG repository](https://
 
 ## Installation
 
-Download the latest release of the Android version from the [releases](https://github.com/syntaxerror247/GodSVG-Mobile/releases).
+Download the latest release of the Android version from the [releases](https://github.com/syntaxerror247/VectorTouch/releases).
 
 ## License
 

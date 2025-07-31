@@ -31,7 +31,7 @@ func _ready() -> void:
 	
 	github_link.pressed.connect(OS.shell_open.bind("https://github.com/sponsors/MewPurPur"))
 	ko_fi_link.pressed.connect(OS.shell_open.bind("https://ko-fi.com/mewpurpur"))
-	patreon_link.pressed.connect(OS.shell_open.bind("https://www.patreon.com/GodSVG"))
+	patreon_link.pressed.connect(OS.shell_open.bind("https://www.patreon.com/VectorTouch"))
 	github_link.mouse_entered.connect(set_link.bind(Link.GITHUB))
 	ko_fi_link.mouse_entered.connect(set_link.bind(Link.KO_FI))
 	patreon_link.mouse_entered.connect(set_link.bind(Link.PATREON))

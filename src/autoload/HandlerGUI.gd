@@ -307,7 +307,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				"about_donate": open_donate()
 				"check_updates": open_update_checker()
 				"open_settings": open_settings()
-				"about_repo": OS.shell_open("https://github.com/syntaxerror247/GodSVG-Mobile")
+				"about_repo": OS.shell_open("https://github.com/syntaxerror247/VectorTouch")
 				"about_website": OS.shell_open("https://godsvg.com")
 				"open_externally": FileUtils.open_svg(
 						Configs.savedata.get_active_tab().svg_file_path)
@@ -482,8 +482,8 @@ func prompt_quit() -> void:
 	remove_all_menus()
 	var confirm_dialog := ConfirmDialogScene.instantiate()
 	add_menu(confirm_dialog)
-	confirm_dialog.setup(Translator.translate("Quit GodSVG"),
-			Translator.translate("Do you want to quit GodSVG?"),
+	confirm_dialog.setup(Translator.translate("Quit VectorTouch"),
+			Translator.translate("Do you want to quit VectorTouch?"),
 			Translator.translate("Quit"), get_tree().quit)
 
 
@@ -569,9 +569,9 @@ func open_export() -> void:
 func update_window_title() -> void:
 	if Configs.savedata.use_filename_for_window_title and\
 	not Configs.savedata.get_active_tab().svg_file_path.is_empty():
-		get_window().title = Configs.savedata.get_active_tab().presented_name + " - GodSVG"
+		get_window().title = Configs.savedata.get_active_tab().presented_name + " - VectorTouch"
 	else:
-		get_window().title = "GodSVG"
+		get_window().title = "VectorTouch"
 
 
 # Helpers

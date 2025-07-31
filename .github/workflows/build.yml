@@ -16,8 +16,8 @@ env:
   GODOT_FEATURE_VERSION: 4.5
   # Commit hash
   GODOT_COMMIT_HASH: 2d113cc22
-  PROJECT_NAME: GodSVG Mobile
-  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes disable_physics_2d=yes disable_navigation_2d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes module_mbedtls_enabled=yes swappy=no build_profile=../godsvg/.github/disabled_classes.build
+  PROJECT_NAME: VectorTouch
+  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes disable_physics_2d=yes disable_navigation_2d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes module_mbedtls_enabled=yes swappy=no build_profile=../vectortouch/.github/disabled_classes.build
   GODOT_REPO: https://github.com/godotengine/godot.git
 
 jobs:
@@ -91,7 +91,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: godsvg
+          path: vectortouch
 
       - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
         name: Build Godot template for Android
@@ -118,9 +118,9 @@ jobs:
           GODOT_ANDROID_KEYSTORE_DEBUG_USER: "androiddebugkey"
           GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: "android"
         run: |
-          cd godsvg
+          cd vectortouch
           mkdir -p build/android
-          godot --headless --export-debug "Android" build/android/GodSVG-Mobile-debug.apk
+          godot --headless --export-debug "Android" build/android/VectorTouch-debug.apk
 
       - name: Export release project
         if: github.event.pull_request.head.repo.fork != true
@@ -129,17 +129,17 @@ jobs:
           GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.KEY_ALIAS }}
           GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
-          cd godsvg
+          cd vectortouch
           mkdir -p build/android
           echo "${{ secrets.KEYSTORE }}" | base64 -d > /tmp/release.keystore
-          godot --headless --export-release "Android(arm32)" build/android/GodSVG-Mobile-arm32.apk
-          godot --headless --export-release "Android" build/android/GodSVG-Mobile.apk
+          godot --headless --export-release "Android(arm32)" build/android/VectorTouch-arm32.apk
+          godot --headless --export-release "Android" build/android/VectorTouch.apk
 
       - name: Upload debug artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}.debug
-          path: godsvg/build/android/GodSVG-Mobile-debug.apk
+          path: vectortouch/build/android/VectorTouch-debug.apk
           if-no-files-found: error
           retention-days: 28
 
@@ -147,7 +147,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}
-          path: godsvg/build/android/GodSVG-Mobile.apk
+          path: vectortouch/build/android/VectorTouch.apk
           if-no-files-found: ignore
           retention-days: 28
 
@@ -155,6 +155,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}-arm32
-          path: godsvg/build/android/GodSVG-Mobile-arm32.apk
+          path: vectortouch/build/android/VectorTouch-arm32.apk
           if-no-files-found: ignore
           retention-days: 28

@@ -29,8 +29,8 @@ func _ready() -> void:
 func request() -> void:
 	retry_button.hide()
 	status_label.text = Translator.translate("Retrieving information...")
-	var err := http.request("https://api.github.com/repos/syntaxerror247/GodSVG-Mobile/releases",
-			["User-Agent: syntaxerror247/GodSVG-Mobile"])
+	var err := http.request("https://api.github.com/repos/syntaxerror247/VectorTouch-Mobile/releases",
+			["User-Agent: syntaxerror247/VectorTouch-Mobile"])
 	if err != OK:
 		display_error_message(error_string(err))
 
@@ -84,7 +84,7 @@ _headers: PackedStringArray, body: PackedByteArray) -> void:
 func display_error_message(msg: String) -> void:
 	status_label.text = Translator.translate("Update check failed")
 	results_panel.show()
-	results_label.text = "%s\n[url=https://github.com/syntaxerror247/GodSVG-Mobile/releases]%s[/url]" %\
+	results_label.text = "%s\n[url=https://github.com/syntaxerror247/VectorTouch-Mobile/releases]%s[/url]" %\
 			[msg, Translator.translate("View all releases")]
 	retry_button.show()
 
@@ -101,7 +101,7 @@ func display_results() -> void:
 	# Set the text.
 	results_label.text = ""
 	if not has_results:
-		status_label.text = Translator.translate("GodSVG is up-to-date.")
+		status_label.text = Translator.translate("VectorTouch is up-to-date.")
 		results_panel.hide()
 		return
 	else:

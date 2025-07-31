@@ -1,5 +1,5 @@
 # Vector2 and Transform2D aren't precise enough to have their numbers used directly
-# in the SVG, as they are 32-bit. GodSVG uses PackedFloat64Array to mock them
+# in the SVG, as they are 32-bit. VectorTouch uses PackedFloat64Array to mock them
 # and this class implements the necessary functionality to make them work.
 @abstract class_name Utils64Bit
 

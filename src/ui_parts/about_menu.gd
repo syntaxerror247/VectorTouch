@@ -17,7 +17,7 @@ func _ready() -> void:
 	stylebox.content_margin_top += 2.0
 	add_theme_stylebox_override("panel", stylebox)
 	
-	%VersionLabel.text = "GodSVG Mobile v" + ProjectSettings.get_setting("application/config/version")
+	%VersionLabel.text = "VectorTouch Mobile v" + ProjectSettings.get_setting("application/config/version")
 	
 	close_button.pressed.connect(queue_free)
 	close_button.text = Translator.translate("Close")
@@ -118,10 +118,10 @@ func _on_tab_changed(idx: int) -> void:
 		2:
 			# This part doesn't need to be translated.
 			%LicenseLabel.text = "MIT License\n\nCopyright (c) 2025 Anish Mishra\n" +\
-					"Copyright (c) 2023-present GodSVG contributors\n\n" +\
+					"Copyright (c) 2023-present VectorTouch contributors\n\n" +\
 					Engine.get_license_info()["Expat"]
 		3:
-			for child in %GodSVGParts.get_children():
+			for child in %VectorTouchParts.get_children():
 				child.queue_free()
 			for child in %GodotParts.get_children():
 				child.queue_free()
@@ -129,17 +129,17 @@ func _on_tab_changed(idx: int) -> void:
 				child.queue_free()
 			
 			# This part doesn't need to be translated.
-			var godsvg_parts_label := Label.new()
-			godsvg_parts_label.text = "GodSVG components"
+			var vectortouch_parts_label := Label.new()
+			vectortouch_parts_label.text = "VectorTouch components"
 			var godot_parts_label := Label.new()
 			godot_parts_label.text = "Godot Engine components"
 			var license_texts_label := Label.new()
 			license_texts_label.text = "Licenses"
-			for label: Label in [godsvg_parts_label, godot_parts_label, license_texts_label]:
+			for label: Label in [vectortouch_parts_label, godot_parts_label, license_texts_label]:
 				label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 				label.theme_type_variation = "TitleLabel"
 				label.add_theme_font_size_override("font_size", 17)
-			%GodSVGParts.add_child(godsvg_parts_label)
+			%VectorTouchParts.add_child(vectortouch_parts_label)
 			%GodotParts.add_child(godot_parts_label)
 			%LicenseTexts.add_child(license_texts_label)
 			
@@ -151,7 +151,7 @@ func _on_tab_changed(idx: int) -> void:
 					godot_engine_copyright = dict
 					break
 			
-			var godsvg_copyright_info: Array[Dictionary] = [
+			var vectortouch_copyright_info: Array[Dictionary] = [
 				godot_engine_copyright,
 				{
 					"name": "Noto Sans font",
@@ -175,7 +175,7 @@ func _on_tab_changed(idx: int) -> void:
 				}
 			]
 			
-			for copyright_info in godsvg_copyright_info:
+			for copyright_info in vectortouch_copyright_info:
 				var label := Label.new()
 				label.add_theme_font_size_override("font_size", 11)
 				for part in copyright_info["parts"]:
@@ -189,7 +189,7 @@ func _on_tab_changed(idx: int) -> void:
 				name_label.text = copyright_info["name"]
 				vbox.add_child(name_label)
 				vbox.add_child(label)
-				%GodSVGParts.add_child(vbox)
+				%VectorTouchParts.add_child(vbox)
 			
 			# Clean up Godot's copyright info from some stripped modules
 			# to show more relevant components and load the UI faster.
