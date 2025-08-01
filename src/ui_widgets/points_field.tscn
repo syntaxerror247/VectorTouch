@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://1hox6gd5pxku" path="res://src/ui_widgets/BetterLineEdit.gd" id="2_4uivs"]
 
 [node name="PointsField" type="VBoxContainer"]
+anchors_preset = -1
 offset_right = 300.0
 offset_bottom = 45.0
 theme_override_constants/separation = 2

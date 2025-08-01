@@ -5,7 +5,6 @@
 [node name="LayoutPopup" type="Control"]
 custom_minimum_size = Vector2(168, 168)
 layout_mode = 3
-anchors_preset = 0
 offset_right = 168.0
 offset_bottom = 168.0
 script = ExtResource("1_1fo7n")

@@ -5,7 +5,6 @@
 [node name="ColorField" type="Control"]
 custom_minimum_size = Vector2(68, 0)
 layout_mode = 3
-anchors_preset = 0
 offset_right = 68.0
 script = ExtResource("1_2pe1j")
 button_visuals = false

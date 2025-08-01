@@ -34,6 +34,7 @@ corner_radius_top_right = 3
 
 [node name="FlagField" type="Button"]
 custom_minimum_size = Vector2(0, 18)
+anchors_preset = -1
 offset_right = 19.0
 offset_bottom = 18.0
 focus_mode = 0

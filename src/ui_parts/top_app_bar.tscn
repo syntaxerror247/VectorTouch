@@ -12,7 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://d0uvwj0t44n6v" path="res://assets/icons/Export.svg" id="9_yt30r"]
 
 [node name="TopAppBar" type="HBoxContainer"]
-anchors_preset = 10
+anchors_preset = -1
 anchor_right = 1.0
 offset_bottom = 24.0
 grow_horizontal = 2

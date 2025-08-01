@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://1hox6gd5pxku" path="res://src/ui_widgets/BetterLineEdit.gd" id="2_48xgh"]
 
 [node name="PathdataField" type="VBoxContainer"]
+anchors_preset = -1
 offset_right = 250.0
 offset_bottom = 45.0
 theme_override_constants/separation = 2
