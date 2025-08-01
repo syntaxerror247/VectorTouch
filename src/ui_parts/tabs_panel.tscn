@@ -5,7 +5,7 @@
 
 [node name="TabsPanel" type="PanelContainer"]
 custom_minimum_size = Vector2(180, 0)
-anchors_preset = 9
+anchors_preset = -1
 anchor_bottom = 1.0
 offset_right = 96.0
 grow_vertical = 2

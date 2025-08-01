@@ -15,6 +15,7 @@ corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [node name="TransformEditor" type="PanelContainer"]
+anchors_preset = -1
 offset_right = 31.0
 offset_bottom = 24.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_af5dq")

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://3gwwpcy3jctv" path="res://src/ui_widgets/confirm_dialog.gd" id="1_g3djf"]
 
 [node name="ConfirmDialog" type="PanelContainer"]
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

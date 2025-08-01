@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://eif2ioi0mw17" path="res://assets/icons/Plus.svg" id="2_284x5"]
 
 [node name="ZoomMenu" type="HBoxContainer"]
+anchors_preset = -1
 offset_right = 114.0
 offset_bottom = 24.0
 alignment = 1

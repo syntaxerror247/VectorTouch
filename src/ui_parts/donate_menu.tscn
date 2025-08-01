@@ -7,7 +7,7 @@
 
 [node name="DonateMenu" type="PanelContainer"]
 custom_minimum_size = Vector2(300, 240)
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

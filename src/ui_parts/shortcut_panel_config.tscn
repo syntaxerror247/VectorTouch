@@ -5,7 +5,7 @@
 
 [node name="ShortcutPanelConfig" type="PanelContainer"]
 custom_minimum_size = Vector2(200, 300)
-anchors_preset = 8
+anchors_preset = -1
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

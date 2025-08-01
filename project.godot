@@ -20,6 +20,7 @@ run/low_processor_mode=true
 boot_splash/bg_color=Color(0.101960786, 0.101960786, 0.101960786, 1)
 boot_splash/fullsize=false
 boot_splash/image="uid://csx7rrk4qdh40"
+config/icon="uid://bt124msoa30ho"
 
 [audio]
 

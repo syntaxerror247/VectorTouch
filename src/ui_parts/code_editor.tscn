@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://dh5mir6i27u4u" path="res://src/ui_widgets/BetterTextEdit.gd" id="8_ser4i"]
 
 [node name="CodeEditor" type="VBoxContainer"]
+anchors_preset = -1
 offset_right = 24.0
 offset_bottom = 120.0
 size_flags_vertical = 3
