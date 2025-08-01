@@ -112,6 +112,20 @@ jobs:
           mv ./bin/android_release.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
 
+      - name: Set up android build template
+        run: |
+          cd vectortouch
+          mkdir -p android/build
+          unzip -q ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip -d android/build
+          touch android/build/.gdignore
+          echo "${GODOT_VERSION}.${GODOT_RELEASE}" > android/.build_version
+
+      - name: Add splash animation file
+        run: |
+          cd vectortouch
+          mkdir -p android/build/res/drawable
+          cp godot_only/splash_anim.xml android/build/res/drawable/splash_anim.xml
+
       - name: Export debug project
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: "./godot_only/debug.keystore"
@@ -119,42 +133,42 @@ jobs:
           GODOT_ANDROID_KEYSTORE_DEBUG_PASSWORD: "android"
         run: |
           cd vectortouch
-          mkdir -p build/android
-          godot --headless --export-debug "Android" build/android/VectorTouch-debug.apk
+          mkdir -p artifacts
+          godot --headless --export-debug "Android" artifacts/VectorTouch-debug.apk
 
       - name: Export release project
-        if: github.event.pull_request.head.repo.fork != true
+        if: github.event_name == 'workflow_dispatch'
         env:
           GODOT_ANDROID_KEYSTORE_RELEASE_PATH: "/tmp/release.keystore"
           GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.KEY_ALIAS }}
           GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         run: |
           cd vectortouch
-          mkdir -p build/android
+          mkdir -p artifacts
           echo "${{ secrets.KEYSTORE }}" | base64 -d > /tmp/release.keystore
-          godot --headless --export-release "Android(arm32)" build/android/VectorTouch-arm32.apk
-          godot --headless --export-release "Android" build/android/VectorTouch.apk
+          godot --headless --export-release "Android" artifacts/VectorTouch.apk
+          godot --headless --export-release "Android-aab" artifacts/VectorTouch.aab
 
-      - name: Upload debug artifact
+      - name: Upload debug apk
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PROJECT_NAME }}.debug
-          path: vectortouch/build/android/VectorTouch-debug.apk
+          name: ${{ env.PROJECT_NAME }}-debug
+          path: vectortouch/artifacts/VectorTouch-debug.apk
           if-no-files-found: error
           retention-days: 28
 
-      - name: Upload release artifact
+      - name: Upload release apk
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.PROJECT_NAME }}
-          path: vectortouch/build/android/VectorTouch.apk
+          path: vectortouch/artifacts/VectorTouch.apk
           if-no-files-found: ignore
           retention-days: 28
 
-      - name: Upload arm32 APK
+      - name: Upload release aab
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.PROJECT_NAME }}-arm32
-          path: vectortouch/build/android/VectorTouch-arm32.apk
+          name: ${{ env.PROJECT_NAME }}-aab
+          path: vectortouch/artifacts/VectorTouch.aab
           if-no-files-found: ignore
           retention-days: 28

@@ -1,0 +1,75 @@
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="320dp"
+            android:height="320dp"
+            android:viewportWidth="288"
+            android:viewportHeight="288">
+
+            <path
+                android:name="ring_path"
+                android:pathData="M144,144m-110,0a110,110 0,1 1,220 0a110,110 0,1 1,-220 0"
+                android:strokeWidth="18"
+                android:fillColor="#00000000">
+                <aapt:attr name="android:strokeColor">
+                    <gradient
+                        android:startX="34"
+                        android:startY="34"
+                        android:endX="254"
+                        android:endY="254"
+                        android:type="linear">
+                        <item android:offset="0" android:color="#FFFF5F6D"/>
+                        <item android:offset="0.25" android:color="#FFFFC371"/>
+                        <item android:offset="0.5" android:color="#FF47E891"/>
+                        <item android:offset="0.75" android:color="#FF3FA7FF"/>
+                        <item android:offset="1" android:color="#FFA56DFF"/>
+                    </gradient>
+                </aapt:attr>
+            </path>
+
+            <group android:name="v_group" android:pivotX="144" android:pivotY="144">
+                <path android:pathData="M72,106 L124,202 144,166 112,106Z" android:fillColor="#0af"/>
+                <path android:pathData="M144,166 L164,202 216,106H184Z" android:fillColor="#07c"/>
+                <path android:pathData="M124,202 L144,166 164,202Z" android:fillColor="#057"/>
+            </group>
+
+        </vector>
+    </aapt:attr>
+
+    <target android:name="ring_path">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:propertyName="strokeAlpha"
+                android:duration="300"
+                android:valueFrom="0"
+                android:valueTo="1"
+                android:interpolator="@android:interpolator/fast_out_slow_in"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="v_group">
+        <aapt:attr name="android:animation">
+            <set android:ordering="together">
+                <objectAnimator
+                    android:propertyName="scaleX"
+                    android:duration="750"
+                    android:valueFrom="1"
+                    android:valueTo="1.07"
+                    android:repeatCount="infinite"
+                    android:repeatMode="reverse"
+                    android:interpolator="@android:interpolator/accelerate_decelerate" />
+                <objectAnimator
+                    android:propertyName="scaleY"
+                    android:duration="750"
+                    android:valueFrom="1"
+                    android:valueTo="1.07"
+                    android:repeatCount="infinite"
+                    android:repeatMode="reverse"
+                    android:interpolator="@android:interpolator/accelerate_decelerate" />
+            </set>
+        </aapt:attr>
+    </target>
+
+</animated-vector>
