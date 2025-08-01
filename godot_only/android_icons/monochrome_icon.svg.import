@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cop6bgxvtv4uq"
-path="res://.godot/imported/monochrome_white.png-336fe08161ffbbd756752ed6dada0830.ctex"
+uid="uid://hyoj00yqsoux"
+path="res://.godot/imported/monochrome_icon.svg-9db366abbe2b4418fe4eb97e6f637e4f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://godot_only/android_icons/monochrome_white.png"
-dest_files=["res://.godot/imported/monochrome_white.png-336fe08161ffbbd756752ed6dada0830.ctex"]
+source_file="res://godot_only/android_icons/monochrome_icon.svg"
+dest_files=["res://.godot/imported/monochrome_icon.svg-9db366abbe2b4418fe4eb97e6f637e4f.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

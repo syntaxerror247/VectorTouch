@@ -17,10 +17,9 @@ run/main_scene="uid://bihwwoedqcyo8"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
-boot_splash/bg_color=Color(0.1065, 0.1181, 0.15, 1)
+boot_splash/bg_color=Color(0.101960786, 0.101960786, 0.101960786, 1)
 boot_splash/fullsize=false
-boot_splash/image="res://assets/logos/splash.png"
-config/icon="res://assets/logos/icon.png"
+boot_splash/image="uid://csx7rrk4qdh40"
 
 [audio]
 
