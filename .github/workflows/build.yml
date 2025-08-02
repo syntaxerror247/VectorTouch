@@ -97,7 +97,8 @@ jobs:
         name: Build Godot template for Android
         run: |
           cd godot
-          scons p=android arch=arm64 generate_apk=yes ${BUILD_OPTIONS} target=template_debug
+          scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_debug
+          scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_debug generate_apk=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_debug.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
@@ -106,6 +107,8 @@ jobs:
         name: Build Godot release template for Android
         run: |
           cd godot
+          scons p=android arch=x86_32 ${BUILD_OPTIONS} target=template_release
+          scons p=android arch=x86_64 ${BUILD_OPTIONS} target=template_release
           scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release
           scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release generate_apk=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
