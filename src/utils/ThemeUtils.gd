@@ -173,7 +173,7 @@ static func recalculate_colors() -> void:
 	tab_container_panel_inner_color = base_color.lerp(extreme_theme_color, 0.12)
 	tab_container_panel_border_color = max_contrast_color.lerp(base_color, 0.9)
 
-	subtle_flat_panel_color = base_color
+	subtle_flat_panel_color = base_color.lerp(max_contrast_color, 0.05)
 	contrast_flat_panel_color = Color(tinted_contrast_color, 0.1)
 
 	# Selection

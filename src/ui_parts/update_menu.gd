@@ -29,8 +29,8 @@ func _ready() -> void:
 func request() -> void:
 	retry_button.hide()
 	status_label.text = Translator.translate("Retrieving information...")
-	var err := http.request("https://api.github.com/repos/syntaxerror247/VectorTouch-Mobile/releases",
-			["User-Agent: syntaxerror247/VectorTouch-Mobile"])
+	var err := http.request("https://api.github.com/repos/syntaxerror247/VectorTouch/releases",
+			["User-Agent: syntaxerror247/VectorTouch"])
 	if err != OK:
 		display_error_message(error_string(err))
 
@@ -84,7 +84,7 @@ _headers: PackedStringArray, body: PackedByteArray) -> void:
 func display_error_message(msg: String) -> void:
 	status_label.text = Translator.translate("Update check failed")
 	results_panel.show()
-	results_label.text = "%s\n[url=https://github.com/syntaxerror247/VectorTouch-Mobile/releases]%s[/url]" %\
+	results_label.text = "%s\n[url=https://github.com/syntaxerror247/VectorTouch/releases]%s[/url]" %\
 			[msg, Translator.translate("View all releases")]
 	retry_button.show()
 
