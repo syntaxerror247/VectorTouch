@@ -11,7 +11,9 @@ For the desktop version of GodSVG, please visit the [GodSVG repository](https://
 
 ## Installation
 
-Download the latest release of the Android version from the [releases](https://github.com/syntaxerror247/VectorTouch/releases).
+Download the latest release of the app from the [releases](https://github.com/syntaxerror247/VectorTouch/releases).
+
+To try the latest version, download the apk from the last [CI run](https://github.com/syntaxerror247/VectorTouch/actions) artifact.
 
 ## License
 
