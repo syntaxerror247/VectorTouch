@@ -18,8 +18,7 @@ config/use_custom_user_dir=true
 config/features=PackedStringArray("4.5")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0.101960786, 0.101960786, 0.101960786, 1)
-boot_splash/fullsize=false
-boot_splash/image="uid://bt124msoa30ho"
+boot_splash/show_image=false
 config/icon="uid://bt124msoa30ho"
 
 [audio]
