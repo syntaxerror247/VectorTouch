@@ -1,5 +1,3 @@
-# VectorTouch
-
 <p align="center">
   <img src="godot_only/android_icons/splash.png" width="320" alt="VectorTouch logo">
 </p>
