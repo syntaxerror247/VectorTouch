@@ -13,6 +13,8 @@ while IFS= read -rd '' f; do
         continue
     elif [[ "$f" == *"build" ]]; then
         continue
+    elif [[ "$f" == *".patch" ]]; then
+        continue
     fi
     # Ensure that files are UTF-8 formatted.
     recode UTF-8 "$f" 2> /dev/null
