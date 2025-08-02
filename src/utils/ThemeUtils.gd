@@ -162,9 +162,10 @@ static func recalculate_colors() -> void:
 	editable_text_color = tinted_contrast_color
 
 	# Panels
-	basic_panel_inner_color = base_color.lerp(extreme_theme_color, 0.1).lerp(max_contrast_color, 0.04)
-	basic_panel_border_color = desaturated_color
-	subtle_panel_border_color = desaturated_color.lerp(basic_panel_inner_color, 0.64)
+	basic_panel_inner_color = softer_base_color
+	basic_panel_border_color = base_color.lerp(max_contrast_color, 0.24)
+	subtle_panel_border_color = basic_panel_border_color.lerp(basic_panel_inner_color, 0.4)
+	subtle_panel_border_color.s = minf(subtle_panel_border_color.s * 2.0, lerpf(subtle_panel_border_color.s, 1.0, 0.2))
 
 	overlay_panel_inner_color = base_color.lerp(extreme_theme_color, 0.15)
 	overlay_panel_subtler_inner_color = base_color.lerp(extreme_theme_color, 0.08)
@@ -243,13 +244,13 @@ static func _setup_panelcontainer(theme: Theme) -> void:
 	theme.add_type("PanelContainer")
 	var stylebox := StyleBoxFlat.new()
 	stylebox.set_corner_radius_all(12)
-	#stylebox.set_border_width_all(1)
+	stylebox.set_border_width_all(1)
 	stylebox.content_margin_left = 8.0
 	stylebox.content_margin_right = 8.0
 	stylebox.content_margin_top = 6.0
 	stylebox.content_margin_bottom = 6.0
 	stylebox.bg_color = basic_panel_inner_color # surfaceContainer
-	#stylebox.border_color = basic_panel_border_color # outline
+	stylebox.border_color = basic_panel_border_color # outline
 	theme.set_stylebox("panel", "PanelContainer", stylebox)
 	
 	theme.add_type("OutlinedPanel")

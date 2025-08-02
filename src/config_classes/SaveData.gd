@@ -14,7 +14,7 @@ func get_setting_default(setting: String) -> Variant:
 	match setting:
 		"base_color":
 			match theme_preset:
-				ThemePreset.DARK: return Color("121212")
+				ThemePreset.DARK: return Color("1a1a1a")
 				ThemePreset.LIGHT: return Color("e6e6ff")
 				ThemePreset.BLACK: return Color("000")
 		"accent_color":
@@ -223,7 +223,7 @@ const CURRENT_VERSION = 1
 			theme_preset = new_value
 			emit_changed()
 
-@export var base_color := Color("121212"):
+@export var base_color := Color("1a1a1a"):
 	set(new_value):
 		if base_color != new_value:
 			base_color = new_value
