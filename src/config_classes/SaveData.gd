@@ -795,7 +795,7 @@ func set_palettes(new_palettes: Array[Palette]) -> void:
 			emit_changed()
 			Configs.shortcut_panel_changed.emit()
 
-const SHORTCUT_PANEL_MAX_SLOTS = 6
+const SHORTCUT_PANEL_MAX_SLOTS = 7
 @export var _shortcut_panel_slots: Dictionary[int, String] = {}:
 	set(new_value):
 		# Validation

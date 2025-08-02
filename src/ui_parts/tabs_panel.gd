@@ -4,13 +4,18 @@ const tabItem = preload("res://src/ui_widgets/tab_item.tscn")
 
 @onready var tab_container: VBoxContainer = $VBoxContainer/ScrollContainer/VBoxContainer
 
+var should_refresh = false
+
 func _ready() -> void:
 	get_parent().gui_input.connect(_on_parent_gui_input)
 	Configs.tab_removed.connect(refresh_tabs)
 	Configs.tab_selected.connect(highlight_active_tab)
+	Configs.tabs_changed.connect(func(): should_refresh = true)
 	refresh_tabs()
 
 func animate_in() -> void:
+	if should_refresh:
+		refresh_tabs()
 	var tween := get_tree().create_tween()
 	tween.tween_property(self, "position:x", 0, 0.3).from(-200).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
@@ -19,8 +24,10 @@ func animate_out() -> void:
 	tween.tween_property(self, "position:x", -200, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tween.finished
 	get_parent().hide()
+	should_refresh = false
 
 func refresh_tabs() -> void:
+	should_refresh = false
 	for i in tab_container.get_children():
 		i.queue_free()
 	

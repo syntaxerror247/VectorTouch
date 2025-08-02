@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bvrncl7e6yn5b"]
+[gd_scene load_steps=18 format=3 uid="uid://bvrncl7e6yn5b"]
 
 [ext_resource type="Script" uid="uid://bxmb134e3sqpr" path="res://src/ui_parts/display.gd" id="1_oib5g"]
 [ext_resource type="Texture2D" uid="uid://iglrqrqyg4kn" path="res://assets/icons/Reference.svg" id="4_2hiq7"]
@@ -15,7 +15,6 @@
 [ext_resource type="Texture2D" uid="uid://c68og6bsqt0lb" path="res://assets/icons/backgrounds/Checkerboard.svg" id="11_1bm1s"]
 [ext_resource type="Script" uid="uid://dtplje5mhdmrj" path="res://src/ui_parts/display_texture.gd" id="12_qi23s"]
 [ext_resource type="Script" uid="uid://csqewpxr21ywy" path="res://src/ui_parts/handles_manager.gd" id="13_lwhwy"]
-[ext_resource type="Texture2D" uid="uid://8x628rb2bnep" path="res://assets/icons/TabSwitcher.svg" id="14_ryr8t"]
 [ext_resource type="Texture2D" uid="uid://d04w7h3k83w8u" path="res://assets/icons/element/svg.svg" id="15_kq8gf"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_kqplg"]
@@ -182,25 +181,6 @@ layout_mode = 2
 size_flags_vertical = 4
 alignment = 2
 
-[node name="Control" type="Control" parent="ViewportPanel/VBoxContainer/Toolbar"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="TabsPanel" type="Button" parent="ViewportPanel/VBoxContainer/Toolbar/Control"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -12.0
-offset_top = -55.0
-offset_right = 12.0
-offset_bottom = -16.0
-grow_horizontal = 2
-focus_mode = 0
-mouse_default_cursor_shape = 2
-icon = ExtResource("14_ryr8t")
-icon_alignment = 1
-
 [node name="DebugMargins" type="MarginContainer" parent="ViewportPanel"]
 visible = false
 layout_mode = 2
@@ -240,4 +220,3 @@ horizontal_alignment = 2
 [connection signal="value_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/Snapping/SnapNumberEdit" to="." method="_on_snap_number_edit_value_changed"]
 [connection signal="zoom_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/ZoomMenu" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="_on_zoom_changed"]
 [connection signal="zoom_reset_pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/ZoomMenu" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="center_frame"]
-[connection signal="pressed" from="ViewportPanel/VBoxContainer/Toolbar/Control/TabsPanel" to="." method="show_tabs_panel"]
