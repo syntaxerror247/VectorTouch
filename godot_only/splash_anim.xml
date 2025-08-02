@@ -3,22 +3,21 @@
 
     <aapt:attr name="android:drawable">
         <vector
-            android:width="320dp"
-            android:height="320dp"
+            android:width="288dp"
+            android:height="288dp"
             android:viewportWidth="288"
             android:viewportHeight="288">
 
             <path
-                android:name="ring_path"
-                android:pathData="M144,144m-110,0a110,110 0,1 1,220 0a110,110 0,1 1,-220 0"
-                android:strokeWidth="18"
-                android:fillColor="#00000000">
+                android:pathData="M144.02,144.02m-75,0a75,75 0,1 1,150 0a75,75 0,1 1,-150 0"
+                android:strokeWidth="12.27"
+                android:fillColor="#1a1a1a">
                 <aapt:attr name="android:strokeColor">
                     <gradient
-                        android:startX="34"
-                        android:startY="34"
-                        android:endX="254"
-                        android:endY="254"
+                        android:startX="69.02"
+                        android:startY="69.02"
+                        android:endX="219.02"
+                        android:endY="219.02"
                         android:type="linear">
                         <item android:offset="0" android:color="#FFFF5F6D"/>
                         <item android:offset="0.25" android:color="#FFFFC371"/>
@@ -30,24 +29,19 @@
             </path>
 
             <group android:name="v_group" android:pivotX="144" android:pivotY="144">
-                <path android:pathData="M72,106 L124,202 144,166 112,106Z" android:fillColor="#0af"/>
-                <path android:pathData="M144,166 L164,202 216,106H184Z" android:fillColor="#07c"/>
-                <path android:pathData="M124,202 L144,166 164,202Z" android:fillColor="#057"/>
+                <path
+                    android:pathData="M94.93,118.11 L130.38,183.56 144.02,159.02 122.2,118.11Z"
+                    android:fillColor="#0af"/>
+                <path
+                    android:pathData="M144.02,159.02 L157.66,183.56 193.11,118.11L171.29,118.11Z"
+                    android:fillColor="#07c"/>
+                <path
+                    android:pathData="M130.38,183.56 L144.02,159.02 157.66,183.56Z"
+                    android:fillColor="#057"/>
             </group>
 
         </vector>
     </aapt:attr>
-
-    <target android:name="ring_path">
-        <aapt:attr name="android:animation">
-            <objectAnimator
-                android:propertyName="strokeAlpha"
-                android:duration="300"
-                android:valueFrom="0"
-                android:valueTo="1"
-                android:interpolator="@android:interpolator/fast_out_slow_in"/>
-        </aapt:attr>
-    </target>
 
     <target android:name="v_group">
         <aapt:attr name="android:animation">
@@ -56,7 +50,7 @@
                     android:propertyName="scaleX"
                     android:duration="750"
                     android:valueFrom="1"
-                    android:valueTo="1.07"
+                    android:valueTo="1.2"
                     android:repeatCount="infinite"
                     android:repeatMode="reverse"
                     android:interpolator="@android:interpolator/accelerate_decelerate" />
@@ -64,7 +58,7 @@
                     android:propertyName="scaleY"
                     android:duration="750"
                     android:valueFrom="1"
-                    android:valueTo="1.07"
+                    android:valueTo="1.2"
                     android:repeatCount="infinite"
                     android:repeatMode="reverse"
                     android:interpolator="@android:interpolator/accelerate_decelerate" />
