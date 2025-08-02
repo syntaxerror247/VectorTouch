@@ -1,6 +1,6 @@
 extends PanelContainer
 
-@onready var close_button: Button = $VBoxContainer/CloseButton
+@onready var back_button: Button = $VBoxContainer/PanelContainer/BackButton
 @onready var translators_vbox: VBoxContainer = %TranslatorsVBox
 @onready var developers_list: PanelGrid = %DevelopersList
 
@@ -17,15 +17,15 @@ func _ready() -> void:
 	stylebox.content_margin_top += 2.0
 	add_theme_stylebox_override("panel", stylebox)
 	
-	%VersionLabel.text = "VectorTouch Mobile v" + ProjectSettings.get_setting("application/config/version")
+	%VersionLabel.text = "VectorTouch v" + ProjectSettings.get_setting("application/config/version")
 	
-	close_button.pressed.connect(queue_free)
-	close_button.text = Translator.translate("Close")
+	back_button.pressed.connect(queue_free)
 	
 	tab_container.set_tab_title(0, Translator.translate("Authors"))
 	tab_container.set_tab_title(1, Translator.translate("Donors"))
 	tab_container.set_tab_title(2, Translator.translate("License"))
 	tab_container.set_tab_title(3, Translator.translate("Third-party licenses"))
+	tab_container.set_tab_hidden(1, true)
 	tab_container.tab_changed.connect(_on_tab_changed)
 	_on_tab_changed(0)
 
@@ -118,7 +118,7 @@ func _on_tab_changed(idx: int) -> void:
 		2:
 			# This part doesn't need to be translated.
 			%LicenseLabel.text = "MIT License\n\nCopyright (c) 2025 Anish Mishra\n" +\
-					"Copyright (c) 2023-present VectorTouch contributors\n\n" +\
+					"Copyright (c) 2023-present GodSVG contributors\n\n" +\
 					Engine.get_license_info()["Expat"]
 		3:
 			for child in %VectorTouchParts.get_children():
