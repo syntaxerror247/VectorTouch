@@ -14,7 +14,6 @@ const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
 @onready var toolbar: PanelContainer = $ViewportPanel/VBoxContainer/Toolbar
 
 var tabs_panel: PanelContainer
-var should_refresh_tabs := false
 
 var reference_overlay := false
 
@@ -141,11 +140,3 @@ func _update_input_debug(event: InputEvent) -> void:
 			new_text = new_text.right(-new_text.find("\n") - 1)
 		new_text += event_text + "\n"
 		input_debug_label.text = new_text
-
-
-func show_tabs_panel() -> void:
-	if should_refresh_tabs:
-		HandlerGUI.tabs_panel.refresh_tabs()
-		should_refresh_tabs = false
-	HandlerGUI.tabs_panel.get_parent().show()
-	HandlerGUI.tabs_panel.animate_in()

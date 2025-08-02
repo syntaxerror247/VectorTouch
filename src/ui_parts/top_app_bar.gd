@@ -4,9 +4,9 @@ const LayoutPopup = preload("res://src/ui_parts/layout_popup.gd")
 
 const LayoutPopupScene = preload("res://src/ui_parts/layout_popup.tscn")
 
-@onready var more_options: Button = $RightSide/MoreOptions
+@onready var more_options: Button = $MoreOptions
 @onready var size_button: Button = $SizeButton
-@onready var layout_button: Button = $LeftSide/LayoutButton
+@onready var layout_button: Button = $LayoutButton
 
 func sync_localization() -> void:
 	layout_button.tooltip_text = Translator.translate("Layout")
@@ -99,3 +99,12 @@ func _on_layout_button_pressed() -> void:
 	var layout_popup := LayoutPopupScene.instantiate()
 	HandlerGUI.popup_under_rect_center(layout_popup, layout_button.get_global_rect(),
 			get_viewport())
+
+
+func _on_new_tab_button_pressed() -> void:
+	Configs.savedata.add_empty_tab()
+
+
+func _on_tabs_panel_button_pressed() -> void:
+	HandlerGUI.tabs_panel.get_parent().show()
+	HandlerGUI.tabs_panel.animate_in()
