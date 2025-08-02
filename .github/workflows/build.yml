@@ -123,11 +123,12 @@ jobs:
           touch android/build/.gdignore
           echo "${GODOT_VERSION}.${GODOT_RELEASE}" > android/.build_version
 
-      - name: Add splash animation file
+      - name: Add splash_anim.xml and modified GodotApp.java file
         run: |
           cd vectortouch
           mkdir -p android/build/res/drawable
           cp godot_only/splash_anim.xml android/build/res/drawable/splash_anim.xml
+          cp godot_only/GodotApp.java android/build/src/com/godot/game/GodotApp.java
 
       - name: Export debug project
         env:
