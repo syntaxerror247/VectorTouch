@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="godot_only/android_icons/splash.png" width="320" alt="VectorTouch logo">
+  <img src="godot_only/android_icons/splash.png" width="420" alt="VectorTouch logo">
 </p>
 
 **VectorTouch** brings the power of the **GodSVG** to your Android device, allowing you to edit Scalable Vector Graphics (SVG) files directly on mobile. This version is optimized for touch-based interaction, providing an intuitive and mobile-friendly interface for editing SVG files.
@@ -18,4 +18,9 @@ To try the latest version, download the apk from the last [CI run](https://githu
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
 For the logo and icon usage terms, see the [LOGO_LICENSE](LOGO_LICENSE) file.
+
+## Privacy Policy
+
+This application does not collect or store any personal information when you download or use it. See [PRIVACY_POLICY.md](PRIVACY_POLICY.md) for details.
