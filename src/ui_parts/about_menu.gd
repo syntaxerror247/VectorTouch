@@ -13,6 +13,11 @@ extends PanelContainer
 @onready var tab_container: TabContainer = $VBoxContainer/TabContainer
 
 func _ready() -> void:
+	var shortcuts := ShortcutsRegistration.new()
+	shortcuts.add_shortcut("select_next_tab", select_next_tab)
+	shortcuts.add_shortcut("select_previous_tab", select_previous_tab)
+	HandlerGUI.register_shortcuts(self, shortcuts)
+	
 	var stylebox := get_theme_stylebox("panel").duplicate()
 	stylebox.content_margin_top += 2.0
 	add_theme_stylebox_override("panel", stylebox)
@@ -29,20 +34,20 @@ func _ready() -> void:
 	tab_container.tab_changed.connect(_on_tab_changed)
 	_on_tab_changed(0)
 
-func _unhandled_input(event: InputEvent) -> void:
+
+func select_next_tab() -> void:
+	tab_container.current_tab = (tab_container.current_tab + 1) % tab_container.get_tab_count()
+
+func select_previous_tab() -> void:
 	var tab_count := tab_container.get_tab_count()
-	if ShortcutUtils.is_action_pressed(event, "select_next_tab"):
-		tab_container.current_tab = (tab_container.current_tab + 1) % tab_count
-	elif ShortcutUtils.is_action_pressed(event, "select_previous_tab"):
-		tab_container.current_tab = (tab_container.current_tab + tab_count - 1) % tab_count
+	tab_container.current_tab = (tab_container.current_tab + tab_count - 1) % tab_count
 
 func _on_tab_changed(idx: int) -> void:
 	match idx:
 		0:
 			var app_info := get_app_info()
 			
-			%ProjectFounderLabel.text = Translator.translate("Project Founder and Manager") +\
-					": " + app_info.project_founder_and_manager
+			%ProjectFounderLabel.text = Translator.translate("Project Founder and Manager") + ": " + app_info.project_founder_and_manager
 			%DevelopersLabel.text = Translator.translate("Developers")
 			%TranslatorsLabel.text = Translator.translate("Translators")
 			
@@ -53,8 +58,7 @@ func _on_tab_changed(idx: int) -> void:
 			
 			# There can be multiple translators for a single locale.
 			for locale in TranslationServer.get_loaded_locales():
-				var credits := TranslationServer.get_translation_object(locale).get_message(
-						"translation-credits").split(",", false)
+				var credits := TranslationServer.get_translation_object(locale).get_message("translation-credits").split(",", false)
 				if credits.is_empty():
 					continue
 				
@@ -294,8 +298,7 @@ func get_app_info() -> Dictionary[String, Variant]:
 			var arr := []
 			for elem in elements:
 				var v := elem.strip_edges()
-				if (v.begins_with('"') and v.ends_with('"')) or\
-				(v.begins_with("'") and v.ends_with("'")):
+				if (v.begins_with('"') and v.ends_with('"')) or (v.begins_with("'") and v.ends_with("'")):
 					arr.append(v.substr(1, v.length() - 2))
 				elif v.is_valid_int():
 					arr.append(v.to_int())
@@ -304,8 +307,7 @@ func get_app_info() -> Dictionary[String, Variant]:
 			result[key] = arr
 		
 		else:
-			if (raw_value.begins_with('"') and raw_value.ends_with('"')) or\
-			(raw_value.begins_with("'") and raw_value.ends_with("'")):
+			if (raw_value.begins_with('"') and raw_value.ends_with('"')) or (raw_value.begins_with("'") and raw_value.ends_with("'")):
 				result[key] = raw_value.substr(1, raw_value.length() - 2)
 			elif raw_value.is_valid_int():
 				result[key] = raw_value.to_int()

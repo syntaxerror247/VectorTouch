@@ -45,8 +45,7 @@ var swatches_list: Array[ColorSwatch] = []  # Updated manually.
 
 func _ready() -> void:
 	color_picker.is_none_keyword_available = is_none_keyword_available
-	color_picker.is_current_color_keyword_available =\
-			(current_color_availability != CurrentColorAvailability.UNAVAILABLE)
+	color_picker.is_current_color_keyword_available = (current_color_availability != CurrentColorAvailability.UNAVAILABLE)
 	color_picker.update_keyword_button()
 	# Setup the switch mode button.
 	switch_mode_button.pressed.connect(_on_switch_mode_button_pressed)
@@ -101,8 +100,7 @@ func update_palettes(search_text := "") -> void:
 	for palette in displayed_palettes:
 		var indices_to_show := PackedInt32Array()
 		for i in palette.colors.size():
-			if search_text.is_empty() or\
-			search_text.is_subsequence_ofn(palette.color_names[i]):
+			if search_text.is_empty() or search_text.is_subsequence_ofn(palette.color_names[i]):
 				indices_to_show.append(i)
 		
 		if indices_to_show.is_empty():
@@ -154,8 +152,7 @@ func _on_switch_mode_button_pressed() -> void:
 	setup_content()
 
 func setup_content() -> void:
-	switch_mode_button.text = Translator.translate("Palettes") if palette_mode\
-			else Translator.translate("Color Picker")
+	switch_mode_button.text = Translator.translate("Palettes") if palette_mode else Translator.translate("Color Picker")
 	color_picker_content.visible = not palette_mode
 	palettes_content.visible = palette_mode
 	if palette_mode and _palettes_pending_update:

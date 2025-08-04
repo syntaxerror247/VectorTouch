@@ -27,6 +27,11 @@ func get_tab_localized_name(tab_index: TabIndex) -> String:
 var focused_tab_index := -1 as TabIndex
 
 func _ready() -> void:
+	var shortcuts := ShortcutsRegistration.new()
+	shortcuts.add_shortcut("select_next_tab", select_next_tab)
+	shortcuts.add_shortcut("select_previous_tab", select_previous_tab)
+	HandlerGUI.register_shortcuts(self, shortcuts)
+	
 	back_button.pressed.connect(queue_free)
 	change_orientation()
 	Configs.orientation_changed.connect(change_orientation)
@@ -48,19 +53,18 @@ func change_orientation():
 		tabs.vertical = true
 		$VBoxContainer/BoxContainer/PanelContainer.size_flags_horizontal = SIZE_EXPAND_FILL
 
-func _unhandled_input(event: InputEvent) -> void:
+func select_next_tab() -> void:
+	press_tab((focused_tab_index + 1) % TabIndex.size())
+
+func select_previous_tab() -> void:
 	var tab_count := TabIndex.size()
-	if ShortcutUtils.is_action_pressed(event, "select_next_tab"):
-		press_tab((focused_tab_index + 1) % tab_count)
-	elif ShortcutUtils.is_action_pressed(event, "select_previous_tab"):
-		press_tab((focused_tab_index + tab_count - 1) % tab_count)
+	press_tab((focused_tab_index + tab_count - 1) % tab_count)
 
 func press_tab(index: int) -> void:
 	tabs.get_child(index).button_pressed = true
 
 func sync_localization() -> void:
-	lang_button.text = Translator.translate("Language") + ": " +\
-			TranslationUtils.get_locale_string(TranslationServer.get_locale())
+	lang_button.text = Translator.translate("Language") + ": " + TranslationUtils.get_locale_string(TranslationServer.get_locale())
 	setup_tabs()
 
 func adjust_right_margin() -> void:
@@ -140,8 +144,7 @@ func _on_language_pressed() -> void:
 		# Translation percentages.
 		if locale != "en":
 			var translation_obj := TranslationServer.get_translation_object(locale)
-			var translated_count := translation_obj.get_message_count() -\
-					translation_obj.get_translated_message_list().count("")
+			var translated_count := translation_obj.get_message_count() - translation_obj.get_translated_message_list().count("")
 			
 			btn_arr.append(ContextPopup.create_button(
 					TranslationUtils.get_locale_display(locale),
@@ -154,8 +157,7 @@ func _on_language_pressed() -> void:
 	
 	var lang_popup := ContextPopup.new()
 	lang_popup.setup(btn_arr, true)
-	HandlerGUI.popup_under_rect_center(lang_popup, lang_button.get_global_rect(),
-			get_viewport())
+	HandlerGUI.popup_under_rect_center(lang_popup, lang_button.get_global_rect(), get_viewport())
 
 func _on_language_chosen(locale: String) -> void:
 	Configs.savedata.language = locale

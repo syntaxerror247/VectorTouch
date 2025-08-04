@@ -68,9 +68,7 @@ func _ready() -> void:
 			btn.pressed.connect(_set_current_setup_resource_index.bind(idx))
 			btn.pressed.connect(setup_content)
 			var update_category_button_text := func() -> void:
-					btn.text = Translator.translate("Editor formatter") if\
-							current_setup_resource_index == 0 else\
-							Translator.translate("Export formatter")
+					btn.text = Translator.translate("Editor formatter") if current_setup_resource_index == 0 else Translator.translate("Export formatter")
 			Configs.language_changed.connect(update_category_button_text)
 			update_category_button_text.call()
 			btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
@@ -223,10 +221,8 @@ func setup_formatting_content() -> void:
 	current_setup_setting = "xml_indentation_spaces"
 	add_number_dropdown(Translator.translate("Number of indentation spaces"),
 			[2, 3, 4, 6, 8], true, false, Formatter.INDENTS_MIN, Formatter.INDENTS_MAX,
-			not (current_setup_resource.xml_pretty_formatting and\
-			current_setup_resource.xml_indentation_use_spaces))
-	if current_setup_resource.xml_pretty_formatting and\
-	current_setup_resource.xml_indentation_use_spaces:
+			not (current_setup_resource.xml_pretty_formatting and current_setup_resource.xml_indentation_use_spaces))
+	if current_setup_resource.xml_pretty_formatting and current_setup_resource.xml_indentation_use_spaces:
 		var xml_indentation_spaces_root_element := ElementRoot.new()
 		var xml_indentation_spaces_circle_element := ElementCircle.new()
 		xml_indentation_spaces_circle_element.set_attribute("cx", 6)
@@ -581,20 +577,22 @@ func setup_other_content() -> void:
 			Translator.translate("Determines the maximum number of frames per second.")))
 	
 	current_setup_setting = "keep_screen_on"
-	add_checkbox(Translator.translate("Keep Screen On"))
-	add_preview(SettingTextPreview.new(
-			Translator.translate("Keeps the screen on even after inactivity, so the screensaver does not take over.")))
+	var keep_screen_on := add_checkbox(Translator.translate("Keep Screen On"))
+	var keep_screen_on_forced_off := OS.has_feature("web")
+	add_preview(SettingTextPreview.new(Translator.translate(
+			"Keeps the screen on even after inactivity, so the screensaver does not take over."),
+			SettingTextPreview.get_platform_availability_warning(keep_screen_on_forced_off)))
+	if keep_screen_on_forced_off:
+		keep_screen_on.permanent_disable_checkbox(false)
 	
 	add_section(Translator.translate("Miscellaneous"))
 	current_setup_setting = "use_native_file_dialog"
 	var use_native_file_dialog := add_checkbox(Translator.translate("Use native file dialog"))
 	var use_native_file_dialog_forced_on := OS.has_feature("web")
-	var use_native_file_dialog_forced_off :=\
-			(not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE))
+	var use_native_file_dialog_forced_off := (not DisplayServer.has_feature(DisplayServer.FEATURE_NATIVE_DIALOG_FILE))
 	add_preview(SettingTextPreview.new(Translator.translate(
 			"When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."),
-			SettingTextPreview.get_platform_availability_warning(
-			use_native_file_dialog_forced_on or use_native_file_dialog_forced_off)))
+			SettingTextPreview.get_platform_availability_warning(use_native_file_dialog_forced_on or use_native_file_dialog_forced_off)))
 	# Disable fallback file dialog on web, and native file dialog if not available.
 	if use_native_file_dialog_forced_on:
 		use_native_file_dialog.permanent_disable_checkbox(true)
@@ -730,11 +728,9 @@ func emit_preview_changed() -> void:
 		var label := Label.new()
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		var update_label_font_color := func() -> void:
-				label.add_theme_color_override("font_color",
-						Configs.savedata.get(preview.setting_bind))
+				label.add_theme_color_override("font_color", Configs.savedata.get(preview.setting_bind))
 		Configs.basic_colors_changed.connect(update_label_font_color)
-		label.tree_exiting.connect(Configs.basic_colors_changed.disconnect.bind(
-				update_label_font_color), CONNECT_ONE_SHOT)
+		label.tree_exiting.connect(Configs.basic_colors_changed.disconnect.bind(update_label_font_color), CONNECT_ONE_SHOT)
 		update_label_font_color.call()
 		label.text = preview.text
 		preview_changed.emit(label)
@@ -761,8 +757,7 @@ func emit_preview_changed() -> void:
 			no_effect_warning_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			no_effect_warning_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
 			no_effect_warning_label.add_theme_constant_override("line_spacing", 2)
-			no_effect_warning_label.add_theme_color_override("font_color",
-					Configs.savedata.basic_color_warning)
+			no_effect_warning_label.add_theme_color_override("font_color", Configs.savedata.basic_color_warning)
 			match preview.warning:
 				preview.WarningType.NO_EFFECT_IN_CURRENT_CONFIGURATION:
 					no_effect_warning_label.text = Translator.translate(
@@ -774,8 +769,7 @@ func emit_preview_changed() -> void:
 					no_effect_warning_label.text = ""
 			while no_effect_warning_label.get_line_count() >= 2:
 				preview_font_size -= 1
-				no_effect_warning_label.add_theme_font_size_override("font_size",
-						preview_font_size)
+				no_effect_warning_label.add_theme_font_size_override("font_size", preview_font_size)
 				label.add_theme_font_size_override("font_size", preview_font_size)
 			if not preview.text.is_empty():
 				vbox.add_child(label)
@@ -802,8 +796,7 @@ func emit_preview_changed() -> void:
 		code_preview.add_theme_stylebox_override("read_only", empty_stylebox)
 		code_preview.text = preview.text
 		Configs.highlighting_colors_changed.connect(update_highlighter)
-		code_preview.tree_exiting.connect(Configs.highlighting_colors_changed.disconnect.bind(
-				update_highlighter), CONNECT_ONE_SHOT)
+		code_preview.tree_exiting.connect(Configs.highlighting_colors_changed.disconnect.bind(update_highlighter), CONNECT_ONE_SHOT)
 		update_highlighter.call()
 		preview_changed.emit(code_preview)
 	elif preview is SettingFormatterPreview:
@@ -816,11 +809,9 @@ func emit_preview_changed() -> void:
 		
 		var update_text := func() -> void:
 				if preview.show_only_children:
-					code_preview.text = SVGParser.root_children_to_text(
-							preview.root_element, preview.resource_bind)
+					code_preview.text = SVGParser.root_children_to_text(preview.root_element, preview.resource_bind)
 				else:
-					code_preview.text = SVGParser.root_to_text(
-							preview.root_element, preview.resource_bind)
+					code_preview.text = SVGParser.root_to_text(preview.root_element, preview.resource_bind)
 		
 		code_preview.add_theme_color_override("font_readonly_color", Color.WHITE)
 		var text_edit_default_stylebox := code_preview.get_theme_stylebox("normal")

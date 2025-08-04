@@ -5,9 +5,8 @@ enum PercentageHandling {FRACTION, HORIZONTAL, VERTICAL, NORMALIZED}
 enum NumberRange {ARBITRARY, POSITIVE, UNIT}
 
 
-const recognized_elements: Array[String] = ["svg", "g", "circle", "ellipse", "rect",
-		"path", "line", "polyline", "polygon", "stop", "linearGradient", "radialGradient",
-		"use"]
+const recognized_elements: Array[String] = ["svg", "g", "circle", "ellipse", "rect", "path", "line", "polyline", "polygon",
+		"stop", "linearGradient", "radialGradient", "use"]
 
 const _element_icons: Dictionary[String, Texture2D] = {
 	"circle": preload("res://assets/icons/element/circle.svg"),
@@ -36,8 +35,7 @@ const recognized_attributes: Dictionary[String, Array] = {
 	# TODO this is just propagated_attributes, but it ruins the const because of Godot bug.
 	# TODO Add "color" to "g" when we're ready.
 	"svg": ["xmlns", "x", "y", "width", "height", "viewBox", "fill", "fill-opacity",
-			"stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin",
-			"color"],
+			"stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin", "color"],
 	"g": ["transform", "opacity", "fill", "fill-opacity", "stroke", "stroke-opacity",
 			"stroke-width", "stroke-linecap", "stroke-linejoin"],
 	"linearGradient": ["id", "gradientTransform", "gradientUnits", "spreadMethod",
@@ -63,10 +61,8 @@ const recognized_attributes: Dictionary[String, Array] = {
 }
 
 const _valid_children: Dictionary[String, Array] = {
-	"svg": ["svg", "path", "circle", "ellipse", "rect", "line", "polygon", "polyline",
-			"g", "linearGradient", "radialGradient", "use"],
-	"g": ["svg", "path", "circle", "ellipse", "rect", "line", "polygon", "polyline",
-			"g", "linearGradient", "radialGradient", "use"],
+	"svg": ["svg", "path", "circle", "ellipse", "rect", "line", "polygon", "polyline", "g", "linearGradient", "radialGradient", "use"],
+	"g": ["svg", "path", "circle", "ellipse", "rect", "line", "polygon", "polyline", "g", "linearGradient", "radialGradient", "use"],
 	"linearGradient": ["stop"],
 	"radialGradient": ["stop"],
 	"circle": [],
@@ -80,8 +76,7 @@ const _valid_children: Dictionary[String, Array] = {
 	"use": [],
 }
 
-const propagated_attributes: Array[String] = ["fill", "fill-opacity", "stroke",
-		"stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin", "color"]
+const propagated_attributes: Array[String] = ["fill", "fill-opacity", "stroke", "stroke-opacity", "stroke-width", "stroke-linecap", "stroke-linejoin", "color"]
 
 const _attribute_types: Dictionary[String, AttributeType] = {
 	"viewBox": AttributeType.LIST,
@@ -155,16 +150,14 @@ const attribute_number_range: Dictionary[String, NumberRange] = {
 
 const attribute_color_url_allowed: Array[String] = ["fill", "stroke"]
 const attribute_color_none_allowed: Array[String] = ["fill", "stroke"]
-const attribute_color_current_color_allowed: Array[String] = ["fill", "stroke",
-		"stop-color"]
+const attribute_color_current_color_allowed: Array[String] = ["fill", "stroke", "stop-color"]
 
 
 static func get_recognized_attributes(element_name: String) -> Array:
 	return recognized_attributes.get(element_name, [])
 
 static func is_attribute_recognized(element_name: String, attribute_name: String) -> bool:
-	return recognized_attributes.has(element_name) and\
-			attribute_name in recognized_attributes[element_name]
+	return recognized_attributes.has(element_name) and attribute_name in recognized_attributes[element_name]
 
 static func is_child_element_valid(parent_name: String, child_name: String) -> bool:
 	if not parent_name in recognized_elements or not child_name in recognized_elements:

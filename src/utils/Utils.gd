@@ -46,12 +46,9 @@ static func simplify_file_path(file_path: String) -> String:
 # Resize the control to be resized automatically to its text width, up to a maximum.
 # The property name defaults account for most controls that may need to use this.
 static func set_max_text_width(control: Control, max_width: float, buffer: float,
-text_property := "text", font_property := "font",
-font_size_property := "font_size") -> void:
-	control.custom_minimum_size.x = minf(control.get_theme_font(
-			font_property).get_string_size(control.get(text_property),
-			HORIZONTAL_ALIGNMENT_FILL, -1,
-			control.get_theme_font_size(font_size_property)).x + buffer, max_width)
+text_property := "text", font_property := "font", font_size_property := "font_size") -> void:
+	control.custom_minimum_size.x = minf(control.get_theme_font(font_property).get_string_size(control.get(text_property),
+			HORIZONTAL_ALIGNMENT_FILL, -1, control.get_theme_font_size(font_size_property)).x + buffer, max_width)
 
 # TODO This is a necessary workaround for a few situations,
 # because Godot declines position changes if they are too small.
@@ -60,15 +57,13 @@ static func set_control_position_fixed(control: Control, new_position: Vector2) 
 	control.position = new_position
 
 
-static func get_cubic_bezier_points(cp1: Vector2, cp2: Vector2, cp3: Vector2,
-cp4: Vector2) -> PackedVector2Array:
+static func get_cubic_bezier_points(cp1: Vector2, cp2: Vector2, cp3: Vector2, cp4: Vector2) -> PackedVector2Array:
 	var curve := Curve2D.new()
 	curve.add_point(cp1, Vector2(), cp2)
 	curve.add_point(cp4, cp3)
 	return curve.tessellate(6, 1)
 
-static func get_quadratic_bezier_points(cp1: Vector2, cp2: Vector2,
-cp3: Vector2) -> PackedVector2Array:
+static func get_quadratic_bezier_points(cp1: Vector2, cp2: Vector2, cp3: Vector2) -> PackedVector2Array:
 	return Utils.get_cubic_bezier_points(
 			cp1, 2/3.0 * (cp2 - cp1), 2/3.0 * (cp2 - cp3), cp3)
 
@@ -99,22 +94,18 @@ static func is_event_drag(event: InputEvent) -> bool:
 	return event is InputEventMouseMotion and event.button_mask == MOUSE_BUTTON_LEFT
 
 static func is_event_drag_start(event: InputEvent) -> bool:
-	return event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and\
-			event.is_pressed()
+	return event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed()
 
 static func is_event_drag_end(event: InputEvent) -> bool:
-	return event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and\
-			event.is_released()
+	return event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_released()
 
 static func is_event_drag_cancel(event: InputEvent) -> bool:
-	return event.is_action_pressed("ui_cancel") or\
-			event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT
+	return event.is_action_pressed("ui_cancel") or event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT
 
 
 # Used to somewhat prevent unwanted inputs from triggering XNode drag & drop.
 static func mouse_filter_pass_non_drag_events(event: InputEvent) -> Control.MouseFilter:
-	return Control.MOUSE_FILTER_STOP if event is InputEventMouseMotion and\
-			event.button_mask == MOUSE_BUTTON_MASK_LEFT else Control.MOUSE_FILTER_PASS
+	return Control.MOUSE_FILTER_STOP if event is InputEventMouseMotion and event.button_mask == MOUSE_BUTTON_MASK_LEFT else Control.MOUSE_FILTER_PASS
 
 
 static func has_clipboard_web_safe() -> bool:

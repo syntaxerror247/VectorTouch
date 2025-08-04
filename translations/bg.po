@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: VectorTouch\n"
+"Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -12,16 +12,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.4.2\n"
 
+#. Translators (comma-separated): Name or alias, optionally followed by an email in angle brackets <email@example.com>.
+#. Used for credits. Adding yourself is optional. New entries go at the end. Don't remove or rearrange existing entries.
 msgid "translation-credits"
 msgstr "MewPurPur <mew.pur.pur@gmail.com>"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit VectorTouch"
-msgstr "Затвори VectorTouch"
+msgid "Quit GodSVG"
+msgstr "Затвори GodSVG"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit VectorTouch?"
-msgstr "Наистина ли искаш да затвориш VectorTouch?"
+msgid "Do you want to quit GodSVG?"
+msgstr "Наистина ли искаш да затвориш GodSVG?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -317,7 +319,8 @@ msgstr "Копирай"
 msgid "Preview image size is limited to {dimensions}"
 msgstr "Размерът на визуализацията е ограничен до {dimensions}"
 
-#: src/ui_parts/global_actions.gd: src/ui_parts/shortcut_panel_config.gd:
+#: src/ui_parts/global_actions.gd: src/ui_parts/layout_configuration.gd:
+#: src/ui_parts/shortcut_panel_config.gd:
 msgid "Layout"
 msgstr "Оформление"
 
@@ -414,11 +417,11 @@ msgid "Add element"
 msgstr "Добави елемент"
 
 #. Refers to the zero, one, or multiple UI parts to not be shown in the final layout. It's of plural cardinality.
-#: src/ui_parts/layout_popup.gd:
+#: src/ui_parts/layout_configuration.gd:
 msgid "Excluded"
 msgstr "Изключени"
 
-#: src/ui_parts/layout_popup.gd:
+#: src/ui_parts/layout_configuration.gd:
 msgid "Drag and drop to change the layout"
 msgstr "Влачи и пусни за да промениш оформлението на интерфейса"
 
@@ -528,16 +531,33 @@ msgid "View all releases"
 msgstr "Разгледай всички издания"
 
 #: src/ui_parts/update_menu.gd:
-msgid "VectorTouch is up-to-date."
-msgstr "VectorTouch е актуален."
+msgid "GodSVG is up-to-date."
+msgstr "GodSVG е актуален."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
 msgstr "Налични са нови версии!"
 
+#: src/ui_widgets/PanelGrid.gd:
+msgid "Copy email"
+msgstr "Копирай имейла"
+
 #: src/ui_widgets/choose_name_dialog.gd:
 msgid "Create"
 msgstr "Създай"
+
+#: src/ui_widgets/color_configuration_popup.gd:
+msgid "Edit color name"
+msgstr "Промени името на цвета"
+
+#: src/ui_widgets/color_configuration_popup.gd:
+msgid "Delete color"
+msgstr "Изтрий цвета"
+
+#: src/ui_widgets/color_configuration_popup.gd:
+#: src/ui_widgets/palette_config.gd:
+msgid "Unnamed"
+msgstr "Неименуван"
 
 #: src/ui_widgets/color_field_popup.gd:
 msgid "Search color"
@@ -546,18 +566,6 @@ msgstr "Търсене на цвят"
 #: src/ui_widgets/color_field_popup.gd:
 msgid "Color Picker"
 msgstr "Цветно колело"
-
-#: src/ui_widgets/configure_color_popup.gd:
-msgid "Edit color name"
-msgstr "Промени името на цвета"
-
-#: src/ui_widgets/configure_color_popup.gd:
-msgid "Delete color"
-msgstr "Изтрий цвета"
-
-#: src/ui_widgets/configure_color_popup.gd: src/ui_widgets/palette_config.gd:
-msgid "Unnamed"
-msgstr "Неименуван"
 
 #: src/ui_widgets/fps_limit_dropdown.gd: src/ui_widgets/setting_frame.gd:
 msgid "Unlimited"
@@ -652,7 +660,7 @@ msgstr "Добави бърз клавиш"
 msgid "Press keys…"
 msgstr "Натисни клавиши…"
 
-#. Refers to the formatter used for VectorTouch's code editor.
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Форматировач за приложението"
@@ -947,10 +955,6 @@ msgid "Keep Screen On"
 msgstr "Задръж екрана включен"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Keeps the screen on even after inactivity, so the screensaver does not take over."
-msgstr "Поддържа екрана включен дори при неактивност, така че скрийнсейвърът да не се включва."
-
-#: src/ui_widgets/settings_content_generic.gd:
 msgid "Miscellaneous"
 msgstr "Разни"
 
@@ -963,8 +967,8 @@ msgid "Sync window title to file name"
 msgstr "Синхронизирай името на прозореца с файла"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
-msgstr "Когато е включено, добавя името на настоящия файл пред заглавието на прозореца \"VectorTouch\"."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgstr "Когато е включено, добавя името на настоящия файл пред заглавието на прозореца \"GodSVG\"."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "When enabled, uses spaces instead of a single tab for indentation."
@@ -975,8 +979,12 @@ msgid "Warps the cursor to the opposite side whenever it reaches a viewport boun
 msgstr "Превърта курсора когато той достигне краищата на екрана докато влачи гледката."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
-msgstr "Когато е активирано, ще бъде използван файловият мениджър на твоята операционна система вместо вградения файлов мениджър на VectorTouch."
+msgid "Keeps the screen on even after inactivity, so the screensaver does not take over."
+msgstr "Поддържа екрана включен дори при неактивност, така че скрийнсейвърът да не се включва."
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Когато е активирано, ще бъде използван файловият мениджър на твоята операционна система вместо вградения файлов мениджър на GodSVG."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1023,8 +1031,8 @@ msgid "New transform"
 msgstr "Нова трансформация"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "VectorTouch doesn’t recognize this attribute"
-msgstr "VectorTouch не разпознава този атрибут"
+msgid "GodSVG doesn’t recognize this attribute"
+msgstr "GodSVG не разпознава този атрибут"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1079,8 +1087,8 @@ msgid "Don't save"
 msgstr "Не записвай"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside VectorTouch."
-msgstr "{file_path} вече се редактира в VectorTouch."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "{file_path} вече се редактира в GodSVG."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1287,20 +1295,20 @@ msgid "Open Donate menu"
 msgstr "Отвори менюто за дарения"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch repository"
-msgstr "Репозиторията на VectorTouch"
+msgid "GodSVG repository"
+msgstr "Репозиторията на GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch repository"
-msgstr "Отвори репозиторията на VectorTouch"
+msgid "Open GodSVG repository"
+msgstr "Отвори репозиторията на GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch website"
-msgstr "Уебсайта на VectorTouch"
+msgid "GodSVG website"
+msgstr "Уебсайта на GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch website"
-msgstr "Отвори уебсайта на VectorTouch"
+msgid "Open GodSVG website"
+msgstr "Отвори уебсайта на GodSVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"

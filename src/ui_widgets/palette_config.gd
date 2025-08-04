@@ -3,7 +3,7 @@ extends PanelContainer
 const ColorSwatch = preload("res://src/ui_widgets/color_swatch_config.gd")
 
 const ColorSwatchScene = preload("res://src/ui_widgets/color_swatch_config.tscn")
-const ConfigurePopupScene = preload("res://src/ui_widgets/configure_color_popup.tscn")
+const ColorConfigurationPopupScene = preload("res://src/ui_widgets/color_configuration_popup.tscn")
 const plus_icon = preload("res://assets/icons/Plus.svg")
 
 signal layout_changed
@@ -96,12 +96,11 @@ func display_warnings() -> void:
 
 
 func popup_configure_color(swatch: Button) -> void:
-	var configure_popup := ConfigurePopupScene.instantiate()
+	var configure_popup := ColorConfigurationPopupScene.instantiate()
 	configure_popup.palette = swatch.palette
 	configure_popup.idx = swatch.idx
 	configure_popup.color_deletion_requested.connect(remove_color.bind(swatch.idx))
-	HandlerGUI.popup_under_rect_center(configure_popup, swatch.get_global_rect(),
-			get_viewport())
+	HandlerGUI.popup_under_rect_center(configure_popup, swatch.get_global_rect(), get_viewport())
 	configure_popup.color_edit.value_changed.connect(swatch.change_color)
 	configure_popup.color_edit.value_changed.connect(display_warnings.unbind(1))
 	configure_popup.color_name_edit.text_submitted.connect(swatch.change_color_name)
@@ -127,8 +126,7 @@ func _on_name_edit_text_changed(new_text: String) -> void:
 		# if the palette is currently invalid. If the new text is different,
 		# check if it's unused, i.e., would be a valid title.
 		name_edit.add_theme_color_override(theme_type,
-				Configs.savedata.get_validity_color(false, (new_text != palette.title and\
-				not Configs.savedata.is_palette_title_unused(new_text)) or\
+				Configs.savedata.get_validity_color(false, (new_text != palette.title and not Configs.savedata.is_palette_title_unused(new_text)) or\
 				(new_text == palette.title and Configs.savedata.is_palette_valid(palette))))
 	name_edit.end_bulk_theme_override()
 
@@ -210,8 +208,7 @@ func open_palette_options() -> void:
 	
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_arr, true)
-	HandlerGUI.popup_under_rect_center(context_popup, palette_button.get_global_rect(),
-			get_viewport())
+	HandlerGUI.popup_under_rect_center(context_popup, palette_button.get_global_rect(), get_viewport())
 
 func apply_preset(preset: Palette.Preset) -> void:
 	Configs.savedata.get_palette(find_palette_index()).apply_preset(preset)
@@ -248,8 +245,7 @@ func _on_palette_button_pressed() -> void:
 	
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_arr, true, -1, -1, PackedInt32Array([separator_idx]))
-	HandlerGUI.popup_under_rect_center(context_popup, palette_button.get_global_rect(),
-			get_viewport())
+	HandlerGUI.popup_under_rect_center(context_popup, palette_button.get_global_rect(), get_viewport())
 
 
 # Drag and drop logic.
@@ -266,8 +262,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	var buffer := 6
 	var pos := colors_container.get_local_mouse_position()
 	
-	if not (data is ColorSwatch.DragData and\
-	Rect2(Vector2.ZERO, colors_container.size).grow(buffer).has_point(pos)):
+	if not (data is ColorSwatch.DragData and Rect2(Vector2.ZERO, colors_container.size).grow(buffer).has_point(pos)):
 		clear_proposed_drop()
 		return false
 	else:
@@ -288,8 +283,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 	for swatch in get_swatches():
 		swatch.proposed_drop_data = ColorSwatch.DragData.new(palette, new_idx)
 		swatch.queue_redraw()
-	return data.palette != palette or (data.palette == palette and\
-			data.index != new_idx and data.index != new_idx - 1)
+	return data.palette != palette or (data.palette == palette and data.index != new_idx and data.index != new_idx - 1)
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	if proposed_drop_idx == -1:

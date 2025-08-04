@@ -42,20 +42,17 @@ func render_handle_textures() -> void:
 	var normal_str := "#" + Configs.savedata.handle_color.to_html(false)
 	var hovered_str := "#" + Configs.savedata.handle_hovered_color.to_html(false)
 	var selected_str := "#" + Configs.savedata.handle_selected_color.to_html(false)
-	var hovered_selected_str := "#" +\
-			Configs.savedata.handle_hovered_selected_color.to_html(false)
+	var hovered_selected_str := "#" + Configs.savedata.handle_hovered_selected_color.to_html(false)
 	var s := Configs.savedata.handle_size  # Shorthand
 	var img := Image.new()
 	
 	var handles_dict: Dictionary[Handle.Display, String] = {
 		Handle.Display.BIG: """<svg width="%s" height="%s"
 				xmlns="http://www.w3.org/2000/svg"><circle cx="%s" cy="%s" r="%s"
-				fill="%s" stroke="%s" stroke-width="%s"/></svg>""" % [s * 10, s * 10,
-				s * 5, s * 5, s * 3.25, "%s", "%s", s * 1.5],
+				fill="%s" stroke="%s" stroke-width="%s"/></svg>""" % [s * 10, s * 10, s * 5, s * 5, s * 3.25, "%s", "%s", s * 1.5],
 		Handle.Display.SMALL: """<svg width="%s" height="%s"
 			xmlns="http://www.w3.org/2000/svg"><circle cx="%s" cy="%s" r="%s"
-			fill="%s" stroke="%s" stroke-width="%s"/></svg>""" % [s * 8, s * 8,
-			s * 4, s * 4, s * 2.4, "%s", "%s", s * 1.2],
+			fill="%s" stroke="%s" stroke-width="%s"/></svg>""" % [s * 8, s * 8, s * 4, s * 4, s * 2.4, "%s", "%s", s * 1.2],
 	}
 	
 	const CONST_ARR: Array[Handle.Display] = [Handle.Display.BIG, Handle.Display.SMALL]
@@ -81,17 +78,12 @@ func sync_selection_rectangle_shader() -> void:
 		stroke_material.shader = stroke_shader_static
 	else:
 		stroke_material.shader = stroke_shader
-		stroke_material.set_shader_parameter("ant_speed",
-				Configs.savedata.selection_rectangle_speed)
+		stroke_material.set_shader_parameter("ant_speed", Configs.savedata.selection_rectangle_speed)
 	
-	stroke_material.set_shader_parameter("ant_color_1",
-			Configs.savedata.selection_rectangle_color1)
-	stroke_material.set_shader_parameter("ant_color_2",
-			Configs.savedata.selection_rectangle_color2)
-	stroke_material.set_shader_parameter("ant_width",
-			Configs.savedata.selection_rectangle_width)
-	stroke_material.set_shader_parameter("ant_length",
-			Configs.savedata.selection_rectangle_dash_length)
+	stroke_material.set_shader_parameter("ant_color_1", Configs.savedata.selection_rectangle_color1)
+	stroke_material.set_shader_parameter("ant_color_2", Configs.savedata.selection_rectangle_color2)
+	stroke_material.set_shader_parameter("ant_width", Configs.savedata.selection_rectangle_width)
+	stroke_material.set_shader_parameter("ant_length", Configs.savedata.selection_rectangle_dash_length)
 	RenderingServer.canvas_item_set_material(selections_surface, stroke_material.get_rid())
 	animated_stroke_hacky_fix_node.material = stroke_material
 	# If the ant width was changed, the buffer must be updated.
@@ -227,8 +219,7 @@ func _draw() -> void:
 		
 		match element.name:
 			"circle":
-				var c := Vector2(element.get_attribute_num("cx"),
-						element.get_attribute_num("cy"))
+				var c := Vector2(element.get_attribute_num("cx"), element.get_attribute_num("cy"))
 				var r := element.get_attribute_num("r")
 				
 				var points := PackedVector2Array()
@@ -262,17 +253,14 @@ func _draw() -> void:
 						var canvas_transform := State.root_element.canvas_transform
 						var canvas_scale := canvas_transform.get_scale().x
 						var element_scale := element_transform.get_scale()
-						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) /\
-								State.zoom / canvas_scale
+						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) / State.zoom / canvas_scale
 						var grow_amount_x := grow_amount_unscaled / element_scale.x
 						var grow_amount_y := grow_amount_unscaled / element_scale.y
 						selection_transforms.append(canvas_transform * element_transform)
-						selection_rects.append(bounding_box.grow_individual(grow_amount_x,
-								grow_amount_y, grow_amount_x, grow_amount_y))
+						selection_rects.append(bounding_box.grow_individual(grow_amount_x, grow_amount_y, grow_amount_x, grow_amount_y))
 			
 			"ellipse":
-				var c := Vector2(element.get_attribute_num("cx"),
-						element.get_attribute_num("cy"))
+				var c := Vector2(element.get_attribute_num("cx"), element.get_attribute_num("cy"))
 				# Squished circle.
 				var points := PackedVector2Array()
 				points.resize(181)
@@ -280,8 +268,7 @@ func _draw() -> void:
 					var d := i * TAU/180
 					points[i] = c + Vector2(cos(d) * element.get_rx(), sin(d) * element.get_ry())
 				points[180] = points[0]
-				var extras := PackedVector2Array([
-						c, c + Vector2(element.get_rx(), 0), c, c + Vector2(0, element.get_ry())])
+				var extras := PackedVector2Array([c, c + Vector2(element.get_rx(), 0), c, c + Vector2(0, element.get_ry())])
 				var final_transform := element.get_transform()
 				points = final_transform * points
 				extras = final_transform * extras
@@ -306,13 +293,11 @@ func _draw() -> void:
 						var canvas_transform := State.root_element.canvas_transform
 						var canvas_scale := canvas_transform.get_scale().x
 						var element_scale := element_transform.get_scale()
-						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) /\
-								State.zoom / canvas_scale
+						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) / State.zoom / canvas_scale
 						var grow_amount_x := grow_amount_unscaled / element_scale.x
 						var grow_amount_y := grow_amount_unscaled / element_scale.y
 						selection_transforms.append(canvas_transform * element_transform)
-						selection_rects.append(bounding_box.grow_individual(grow_amount_x,
-								grow_amount_y, grow_amount_x, grow_amount_y))
+						selection_rects.append(bounding_box.grow_individual(grow_amount_x, grow_amount_y, grow_amount_x, grow_amount_y))
 			
 			"rect":
 				var x := element.get_attribute_num("x")
@@ -324,9 +309,7 @@ func _draw() -> void:
 				var points := PackedVector2Array()
 				if rx == 0 or ry == 0:
 					# Basic rectangle.
-					points = [Vector2(x, y), Vector2(x + rect_width, y),
-							Vector2(x + rect_width, y + rect_height),
-							Vector2(x, y + rect_height), Vector2(x, y)]
+					points = [Vector2(x, y), Vector2(x + rect_width, y), Vector2(x + rect_width, y + rect_height), Vector2(x, y + rect_height), Vector2(x, y)]
 				else:
 					if rx == 0:
 						rx = ry
@@ -340,26 +323,21 @@ func _draw() -> void:
 					points[1] = Vector2(x + rect_width - rx, y)
 					for i in range(135, 180):
 						var d := i * TAU/180
-						points[i - 133] = Vector2(x + rect_width - rx, y + ry) +\
-								Vector2(cos(d) * rx, sin(d) * ry)
+						points[i - 133] = Vector2(x + rect_width - rx, y + ry) + Vector2(cos(d) * rx, sin(d) * ry)
 					points[47] =  Vector2(x + rect_width, y + rect_height - ry)
 					for i in range(0, 45):
 						var d := i * TAU/180
-						points[i + 48] = Vector2(x + rect_width - rx, y + rect_height - ry) +\
-								Vector2(cos(d) * rx, sin(d) * ry)
+						points[i + 48] = Vector2(x + rect_width - rx, y + rect_height - ry) + Vector2(cos(d) * rx, sin(d) * ry)
 					points[93] = Vector2(x + rx, y + rect_height)
 					for i in range(45, 90):
 						var d := i * TAU/180
-						points[i + 49] = Vector2(x + rx, y + rect_height - ry) +\
-								Vector2(cos(d) * rx, sin(d) * ry)
+						points[i + 49] = Vector2(x + rx, y + rect_height - ry) + Vector2(cos(d) * rx, sin(d) * ry)
 					points[139] = Vector2(x, y + ry)
 					for i in range(90, 135):
 						var d := i * TAU/180
-						points[i + 50] = Vector2(x + rx, y + ry) +\
-								Vector2(cos(d) * rx, sin(d) * ry)
+						points[i + 50] = Vector2(x + rx, y + ry) + Vector2(cos(d) * rx, sin(d) * ry)
 					points[185] = points[0]
-				var extras := PackedVector2Array([Vector2(x, y), Vector2(x + rect_width, y),
-						Vector2(x, y), Vector2(x, y + rect_height)])
+				var extras := PackedVector2Array([Vector2(x, y), Vector2(x + rect_width, y), Vector2(x, y), Vector2(x, y + rect_height)])
 				var final_transform := element.get_transform()
 				points = final_transform * points
 				extras = final_transform * extras
@@ -384,13 +362,11 @@ func _draw() -> void:
 						var canvas_transform := State.root_element.canvas_transform
 						var canvas_scale := canvas_transform.get_scale().x
 						var element_scale := element_transform.get_scale()
-						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) /\
-								State.zoom / canvas_scale
+						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) / State.zoom / canvas_scale
 						var grow_amount_x := grow_amount_unscaled / element_scale.x
 						var grow_amount_y := grow_amount_unscaled / element_scale.y
 						selection_transforms.append(canvas_transform * element_transform)
-						selection_rects.append(bounding_box.grow_individual(grow_amount_x,
-								grow_amount_y, grow_amount_x, grow_amount_y))
+						selection_rects.append(bounding_box.grow_individual(grow_amount_x, grow_amount_y, grow_amount_x, grow_amount_y))
 			
 			"line":
 				var x1 := element.get_attribute_num("x1")
@@ -417,13 +393,11 @@ func _draw() -> void:
 						var canvas_transform := State.root_element.canvas_transform
 						var canvas_scale := canvas_transform.get_scale().x
 						var element_scale := element_transform.get_scale()
-						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) /\
-								State.zoom / canvas_scale
+						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) / State.zoom / canvas_scale
 						var grow_amount_x := grow_amount_unscaled / element_scale.x
 						var grow_amount_y := grow_amount_unscaled / element_scale.y
 						selection_transforms.append(canvas_transform * element_transform)
-						selection_rects.append(bounding_box.grow_individual(grow_amount_x,
-								grow_amount_y, grow_amount_x, grow_amount_y))
+						selection_rects.append(bounding_box.grow_individual(grow_amount_x, grow_amount_y, grow_amount_x, grow_amount_y))
 			
 			"polygon", "polyline":
 				var point_list := ListParser.list_to_points(element.get_attribute_list("points"))
@@ -478,18 +452,15 @@ func _draw() -> void:
 						var canvas_transform := State.root_element.canvas_transform
 						var canvas_scale := canvas_transform.get_scale().x
 						var element_scale := element_transform.get_scale()
-						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) /\
-								State.zoom / canvas_scale
+						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) / State.zoom / canvas_scale
 						var grow_amount_x := grow_amount_unscaled / element_scale.x
 						var grow_amount_y := grow_amount_unscaled / element_scale.y
 						selection_transforms.append(canvas_transform * element_transform)
-						selection_rects.append(bounding_box.grow_individual(grow_amount_x,
-								grow_amount_y, grow_amount_x, grow_amount_y))
+						selection_rects.append(bounding_box.grow_individual(grow_amount_x, grow_amount_y, grow_amount_x, grow_amount_y))
 			
 			"path":
 				var pathdata: AttributePathdata = element.get_attribute("d")
-				if pathdata.get_command_count() == 0 or\
-				not pathdata.get_command(0).command_char in "Mm":
+				if pathdata.get_command_count() == 0 or not pathdata.get_command(0).command_char in "Mm":
 					continue  # Nothing to draw.
 				
 				var current_mode := Utils.InteractionType.NONE
@@ -518,14 +489,12 @@ func _draw() -> void:
 						"H":
 							# Horizontal line contour.
 							var v := Vector2(cmd.x, 0)
-							var end := cmd.get_start_coords() + v if\
-									relative else Vector2(v.x, cmd.start_y)
+							var end := cmd.get_start_coords() + v if relative else Vector2(v.x, cmd.start_y)
 							points = PackedVector2Array([cmd.get_start_coords(), end])
 						"V":
 							# Vertical line contour.
 							var v := Vector2(0, cmd.y)
-							var end := cmd.get_start_coords() + v if\
-									relative else Vector2(cmd.start_x, v.y)
+							var end := cmd.get_start_coords() + v if relative else Vector2(cmd.start_x, v.y)
 							points = PackedVector2Array([cmd.get_start_coords(), end])
 						"C":
 							# Cubic Bezier curve contour.
@@ -538,8 +507,7 @@ func _draw() -> void:
 							var cp3 := v2 - v
 							
 							points = Utils.get_cubic_bezier_points(cp1, cp2, cp3, cp4)
-							tangent_points.append_array(PackedVector2Array([cp1,
-									cp1 + cp2, cp1 + v2 if relative else v2, cp4]))
+							tangent_points.append_array(PackedVector2Array([cp1, cp1 + cp2, cp1 + v2 if relative else v2, cp4]))
 						"S":
 							# Shorthand cubic Bezier curve contour.
 							if cmd_idx == 0:
@@ -555,8 +523,7 @@ func _draw() -> void:
 							var cp3 := v2 - v
 							
 							points = Utils.get_cubic_bezier_points(cp1, cp2, cp3, cp4)
-							tangent_points.append_array(PackedVector2Array([cp1,
-									cp1 + cp2, cp1 + v2 if relative else v2, cp4]))
+							tangent_points.append_array(PackedVector2Array([cp1, cp1 + cp2, cp1 + v2 if relative else v2, cp4]))
 						"Q":
 							# Quadratic Bezier curve contour.
 							var v := Vector2(cmd.x, cmd.y)
@@ -580,8 +547,7 @@ func _draw() -> void:
 								points = PackedVector2Array([cp1, cp3])
 							else:
 								points = Utils.get_quadratic_bezier_points(cp1, cp2, cp3)
-								tangent_points.append_array(
-										PackedVector2Array([cp1, cp2, cp2, cp3]))
+								tangent_points.append_array(PackedVector2Array([cp1, cp2, cp2, cp3]))
 						"A":
 							# Elliptical arc contour.
 							var start := cmd.get_start_coords()
@@ -617,12 +583,10 @@ func _draw() -> void:
 								sc = -sc
 							
 							var ct := Vector2(r.x * sc * y1 / r.y, -r.y * sc * x1 / r.x)
-							var c := Vector2(ct.x * cosine - ct.y * sine,
-									ct.x * sine + ct.y * cosine) + start.lerp(end, 0.5)
+							var c := Vector2(ct.x * cosine - ct.y * sine, ct.x * sine + ct.y * cosine) + start.lerp(end, 0.5)
 							var tv := Vector2(x1 - ct.x, y1 - ct.y) / r
 							var theta1 := tv.angle()
-							var delta_theta := fposmod(tv.angle_to(
-									Vector2(-x1 - ct.x, -y1 - ct.y) / r), TAU)
+							var delta_theta := fposmod(tv.angle_to(Vector2(-x1 - ct.x, -y1 - ct.y) / r), TAU)
 							if cmd.sweep_flag == 0:
 								theta1 += delta_theta
 								delta_theta = TAU - delta_theta
@@ -699,17 +663,14 @@ func _draw() -> void:
 						var canvas_transform := State.root_element.canvas_transform
 						var canvas_scale := canvas_transform.get_scale().x
 						var element_scale := element_transform.get_scale()
-						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) /\
-								State.zoom / canvas_scale
+						var grow_amount_unscaled := (2.0 + Configs.savedata.selection_rectangle_width) / State.zoom / canvas_scale
 						var grow_amount_x := grow_amount_unscaled / element_scale.x
 						var grow_amount_y := grow_amount_unscaled / element_scale.y
 						selection_transforms.append(canvas_transform * element_transform)
-						selection_rects.append(bounding_box.grow_individual(grow_amount_x,
-								grow_amount_y, grow_amount_x, grow_amount_y))
+						selection_rects.append(bounding_box.grow_individual(grow_amount_x, grow_amount_y, grow_amount_x, grow_amount_y))
 	
 	draw_set_transform_matrix(State.root_element.canvas_transform)
-	RenderingServer.canvas_item_set_transform(surface, Transform2D(0.0,
-			Vector2(1, 1) / State.zoom, 0.0, Vector2.ZERO))
+	RenderingServer.canvas_item_set_transform(surface, Transform2D(0.0, Vector2(1, 1) / State.zoom, 0.0, Vector2.ZERO))
 	
 	# First gather all handles in 4 categories, to then draw them in the right order.
 	var normal_handles: Array[Handle] = []
@@ -737,23 +698,17 @@ func _draw() -> void:
 	RenderingServer.canvas_item_clear(surface)
 	RenderingServer.canvas_item_clear(selections_surface)
 	
-	draw_objects_of_type(normal_color, normal_polylines,
-			normal_multiline, normal_handles, normal_handle_textures)
-	draw_objects_of_type(hovered_color, hovered_polylines,
-			hovered_multiline, hovered_handles, hovered_handle_textures)
-	draw_objects_of_type(selected_color, selected_polylines,
-			selected_multiline, selected_handles, selected_handle_textures)
-	draw_objects_of_type(hovered_selected_color, hovered_selected_polylines,
-			hovered_selected_multiline, hovered_selected_handles,
+	draw_objects_of_interaction_type(normal_color, normal_polylines, normal_multiline, normal_handles, normal_handle_textures)
+	draw_objects_of_interaction_type(hovered_color, hovered_polylines, hovered_multiline, hovered_handles, hovered_handle_textures)
+	draw_objects_of_interaction_type(selected_color, selected_polylines, selected_multiline, selected_handles, selected_handle_textures)
+	draw_objects_of_interaction_type(hovered_selected_color, hovered_selected_polylines, hovered_selected_multiline, hovered_selected_handles,
 			hovered_selected_handle_textures)
 	
 	for idx in selection_rects.size():
-		RenderingServer.canvas_item_add_set_transform(selections_surface,
-				selection_transforms[idx])
-		RenderingServer.canvas_item_add_rect(selections_surface, selection_rects[idx],
-				Color.WHITE)
+		RenderingServer.canvas_item_add_set_transform(selections_surface, selection_transforms[idx])
+		RenderingServer.canvas_item_add_rect(selections_surface, selection_rects[idx], Color.WHITE)
 
-func draw_objects_of_type(color: Color, polylines: Array[PackedVector2Array],
+func draw_objects_of_interaction_type(color: Color, polylines: Array[PackedVector2Array],
 multiline: PackedVector2Array, handles_array: Array[Handle],
 handle_texture_dictionary: Dictionary[Handle.Display, Texture2D]) -> void:
 	for polyline in polylines:
@@ -762,20 +717,17 @@ handle_texture_dictionary: Dictionary[Handle.Display, Texture2D]) -> void:
 		color_array.fill(color)
 		for idx in polyline.size():
 			polyline[idx] = State.root_element.canvas_to_world(polyline[idx]) * State.zoom
-		RenderingServer.canvas_item_add_polyline(surface, polyline,
-				color_array, CONTOUR_WIDTH, true)
+		RenderingServer.canvas_item_add_polyline(surface, polyline, color_array, CONTOUR_WIDTH, true)
 	if not multiline.is_empty():
 		for idx in multiline.size():
 			multiline[idx] = State.root_element.canvas_to_world(multiline[idx]) * State.zoom
 		var color_array := PackedColorArray()
 		color_array.resize(int(multiline.size() / 2.0))
 		color_array.fill(Color(color, TANGENT_ALPHA))
-		RenderingServer.canvas_item_add_multiline(surface, multiline,
-				color_array, TANGENT_WIDTH, true)
+		RenderingServer.canvas_item_add_multiline(surface, multiline, color_array, TANGENT_WIDTH, true)
 	for handle in handles_array:
 		var texture := handle_texture_dictionary[handle.display_mode]
-		texture.draw(surface, State.root_element.canvas_to_world(
-				handle.transform * handle.pos) * State.zoom - texture.get_size() / 2)
+		texture.draw(surface, State.root_element.canvas_to_world(handle.transform * handle.pos) * State.zoom - texture.get_size() / 2)
 
 
 var dragged_handle: Handle = null
@@ -789,16 +741,13 @@ func _unhandled_input(event: InputEvent) -> void:
 		hovered_handle = null
 		# Mouse events on the viewport clear hovered, but other events don't.
 		if ((event is InputEventMouseMotion and event.button_mask == 0) or\
-		(event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT,
-		MOUSE_BUTTON_RIGHT]))):
+		(event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]))):
 			State.clear_all_hovered()
 	
 	# Set the nearest handle as hovered, if any handles are within range.
-	if visible and ((event is InputEventMouseMotion and !is_instance_valid(dragged_handle) and\
-	event.button_mask == 0) or (event is InputEventMouseButton and\
-	(event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]))):
-		var nearest_handle := find_nearest_handle(event.position / State.zoom +\
-				get_parent().get_parent().camera_position)
+	if visible and ((event is InputEventMouseMotion and !is_instance_valid(dragged_handle) and event.button_mask == 0) or\
+	(event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT]))):
+		var nearest_handle := find_nearest_handle(event.position / State.zoom + get_parent().get_parent().camera_position)
 		if is_instance_valid(nearest_handle):
 			hovered_handle = nearest_handle
 			if hovered_handle is PathHandle:
@@ -843,14 +792,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				if event.double_click and inner_idx != -1:
 					# Unselect the element, so then it's selected again in the subpath.
 					if dragged_handle is PathHandle:
-						var subpath_range: Vector2i =\
-								dragged_handle.element.get_attribute("d").get_subpath(inner_idx)
+						var subpath_range: Vector2i = dragged_handle.element.get_attribute("d").get_subpath(inner_idx)
 						State.normal_select(dragged_xid, subpath_range.x)
 						State.shift_select(dragged_xid, subpath_range.y)
 					elif dragged_handle is PolyHandle:
 						State.normal_select(dragged_xid, 0)
-						State.shift_select(dragged_xid,
-								dragged_handle.element.get_attribute("points").get_list_size() / 2 - 1)
+						State.shift_select(dragged_xid, dragged_handle.element.get_attribute("points").get_list_size() / 2 - 1)
 				elif event.is_command_or_control_pressed():
 					State.ctrl_select(dragged_xid, inner_idx)
 				elif event.shift_pressed:
@@ -886,23 +833,17 @@ func _unhandled_input(event: InputEvent) -> void:
 				if hovered_handle is PolyHandle:
 					inner_idx = hovered_handle.point_index
 				
-				if not (State.semi_selected_xid == hovered_xid and\
-				inner_idx in State.inner_selections) and\
+				if not (State.semi_selected_xid == hovered_xid and inner_idx in State.inner_selections) and\
 				not (inner_idx == -1 and hovered_xid in State.selected_xids):
 					State.normal_select(hovered_xid, inner_idx)
 				
-				HandlerGUI.popup_under_pos(State.get_selection_context(
-						HandlerGUI.popup_under_pos.bind(popup_pos, vp),
-						Utils.LayoutPart.VIEWPORT), popup_pos, vp)
+				HandlerGUI.popup_under_pos(State.get_selection_context(HandlerGUI.popup_under_pos.bind(popup_pos, vp), Utils.LayoutPart.VIEWPORT), popup_pos, vp)
 
 func find_nearest_handle(event_pos: Vector2) -> Handle:
 	var nearest_handle: Handle = null
-	var nearest_dist_squared := DEFAULT_GRAB_DISTANCE_SQUARED *\
-			(Configs.savedata.handle_size * Configs.savedata.handle_size) /\
-			(State.zoom * State.zoom)
+	var nearest_dist_squared := DEFAULT_GRAB_DISTANCE_SQUARED * (Configs.savedata.handle_size * Configs.savedata.handle_size) / (State.zoom * State.zoom)
 	for handle in handles:
-		var dist_to_handle_squared := event_pos.distance_squared_to(
-					State.root_element.canvas_to_world(handle.transform * handle.pos))
+		var dist_to_handle_squared := event_pos.distance_squared_to(State.root_element.canvas_to_world(handle.transform * handle.pos))
 		if dist_to_handle_squared < nearest_dist_squared:
 			nearest_dist_squared = dist_to_handle_squared
 			nearest_handle = handle
@@ -919,8 +860,7 @@ func apply_snap(pos: Vector2) -> PackedFloat64Array:
 	
 	# If the snap is disabled, or the precision snap is bigger than the configured snap
 	# and a multiple of it, use the precision snap. Otherwise use the user-configured snap.
-	if Configs.savedata.snap < 0.0 or (precision_snap > configured_snap and\
-	is_zero_approx(fmod(precision_snap, configured_snap))):
+	if Configs.savedata.snap < 0.0 or (precision_snap > configured_snap and is_zero_approx(fmod(precision_snap, configured_snap))):
 		snap_size = precision_snap
 	else:
 		snap_size = configured_snap
@@ -934,28 +874,24 @@ func _on_view_changed() -> void:
 func _on_handle_added() -> void:
 	if not get_viewport_rect().has_point(get_viewport().get_mouse_position()):
 		if not State.semi_selected_xid.is_empty():
-			State.root_element.get_xnode(State.semi_selected_xid).get_attribute("d").\
-					sync_after_commands_change()
+			State.root_element.get_xnode(State.semi_selected_xid).get_attribute("d").sync_after_commands_change()
 			State.queue_svg_save()
 		return
 	
 	update_handles()
 	var first_inner_selection := State.inner_selections[0]
-	if State.root_element.get_xnode(State.semi_selected_xid).get_attribute("d").\
-	get_commands()[first_inner_selection].command_char in "Zz":
+	if State.root_element.get_xnode(State.semi_selected_xid).get_attribute("d").get_commands()[first_inner_selection].command_char in "Zz":
 		dragged_handle = null
 		State.queue_svg_save()
 		return
 	
 	for handle in handles:
-		if handle is PathHandle and handle.element.xid == State.semi_selected_xid and\
-		handle.command_index == first_inner_selection:
+		if handle is PathHandle and handle.element.xid == State.semi_selected_xid and handle.command_index == first_inner_selection:
 			State.set_hovered(handle.element.xid, handle.command_index)
 			dragged_handle = handle
 			# Move the handle that's being dragged.
 			var mouse_pos := apply_snap(get_global_mouse_position())
-			var new_pos := Utils64Bit.transform_vector_mult(
-					Utils64Bit.get_transform_affine_inverse(dragged_handle.precise_transform),
+			var new_pos := Utils64Bit.transform_vector_mult(Utils64Bit.get_transform_affine_inverse(dragged_handle.precise_transform),
 					State.root_element.world_to_canvas_64_bit(mouse_pos))
 			dragged_handle.set_pos(new_pos)
 			was_handle_moved = true
@@ -964,19 +900,15 @@ func _on_handle_added() -> void:
 # Creates a popup for adding a shape at a position.
 func create_element_context(precise_pos: PackedFloat64Array) -> ContextPopup:
 	var btn_array: Array[Button] = []
-	const CONST_ARR: PackedStringArray = ["path", "circle", "ellipse", "rect", "line",
-			"polygon", "polyline"]
+	const CONST_ARR: PackedStringArray = ["path", "circle", "ellipse", "rect", "line", "polygon", "polyline"]
 	for shape in CONST_ARR:
-		var btn := ContextPopup.create_button(shape,
-				add_shape_at_pos.bind(shape, precise_pos), false, DB.get_element_icon(shape))
+		var btn := ContextPopup.create_button(shape, add_shape_at_pos.bind(shape, precise_pos), false, DB.get_element_icon(shape))
 		btn.add_theme_font_override("font", ThemeUtils.mono_font)
 		btn_array.append(btn)
 	var element_context := ContextPopup.new()
-	element_context.setup_with_title(btn_array, Translator.translate("New shape"),
-			true, -1, -1, PackedInt32Array([1, 4]))
+	element_context.setup_with_title(btn_array, Translator.translate("New shape"), true, -1, -1, PackedInt32Array([1, 4]))
 	return element_context
 
 func add_shape_at_pos(element_name: String, precise_pos: PackedFloat64Array) -> void:
-	State.root_element.add_xnode(DB.element_with_setup(element_name, [precise_pos]),
-			PackedInt32Array([State.root_element.get_child_count()]))
+	State.root_element.add_xnode(DB.element_with_setup(element_name, [precise_pos]), PackedInt32Array([State.root_element.get_child_count()]))
 	State.queue_svg_save()

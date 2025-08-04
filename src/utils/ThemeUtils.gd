@@ -74,6 +74,7 @@ static var icon_pressed_color: Color
 
 static var translucent_button_color_disabled: Color
 static var flat_button_color_disabled: Color
+static var context_button_color_disabled: Color
 
 static var subtle_flat_panel_color: Color
 static var contrast_flat_panel_color: Color
@@ -164,6 +165,7 @@ static func recalculate_colors() -> void:
 	# Panels
 	basic_panel_inner_color = softer_base_color
 	basic_panel_border_color = base_color.lerp(max_contrast_color, 0.24)
+	basic_panel_border_color.s = minf(basic_panel_border_color.s * 2.0, lerpf(basic_panel_border_color.s, 1.0, 0.2))
 	subtle_panel_border_color = basic_panel_border_color.lerp(basic_panel_inner_color, 0.4)
 	subtle_panel_border_color.s = minf(subtle_panel_border_color.s * 2.0, lerpf(subtle_panel_border_color.s, 1.0, 0.2))
 
@@ -708,8 +710,7 @@ static func _setup_button(theme: Theme) -> void:
 	
 	var disabled_context_button_stylebox := context_button_stylebox.duplicate()
 	# Ensure enough contrast.
-	disabled_context_button_stylebox.bg_color = Color(Color.BLACK, maxf(0.16,
-		0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2))
+	disabled_context_button_stylebox.bg_color = context_button_color_disabled
 	theme.set_stylebox("disabled", "ContextButton", disabled_context_button_stylebox)
 	
 	theme.add_type("PathCommandAbsoluteButton")
@@ -721,63 +722,38 @@ static func _setup_button(theme: Theme) -> void:
 	path_command_absolute_button_stylebox_normal.content_margin_right = 5.0
 	path_command_absolute_button_stylebox_normal.content_margin_top = 0.0
 	path_command_absolute_button_stylebox_normal.content_margin_bottom = 0.0
-	path_command_absolute_button_stylebox_normal.bg_color = Color("cc7a29") if\
-		ThemeUtils.is_theme_dark else Color("f2cb91")
-	path_command_absolute_button_stylebox_normal.border_color = Color("e6ae5c") if\
-		ThemeUtils.is_theme_dark else Color("ffaa33")
-	theme.set_stylebox("normal", "PathCommandAbsoluteButton",
-		path_command_absolute_button_stylebox_normal)
-	theme.set_stylebox("disabled", "PathCommandAbsoluteButton",
-		path_command_absolute_button_stylebox_normal)
+	path_command_absolute_button_stylebox_normal.bg_color = Color("cc7a29") if ThemeUtils.is_theme_dark else Color("f2cb91")
+	path_command_absolute_button_stylebox_normal.border_color = Color("e6ae5c") if ThemeUtils.is_theme_dark else Color("ffaa33")
+	theme.set_stylebox("normal", "PathCommandAbsoluteButton", path_command_absolute_button_stylebox_normal)
+	theme.set_stylebox("disabled", "PathCommandAbsoluteButton", path_command_absolute_button_stylebox_normal)
 
-	var path_command_absolute_button_stylebox_hover :=\
-		path_command_absolute_button_stylebox_normal.duplicate()
-	path_command_absolute_button_stylebox_hover.bg_color = Color("d9822b") if\
-		ThemeUtils.is_theme_dark else Color("f2c279")
-	path_command_absolute_button_stylebox_hover.border_color = Color("f2cb91") if\
-		ThemeUtils.is_theme_dark else Color("f29718")
-	theme.set_stylebox("hover", "PathCommandAbsoluteButton",
-		path_command_absolute_button_stylebox_hover)
+	var path_command_absolute_button_stylebox_hover := path_command_absolute_button_stylebox_normal.duplicate()
+	path_command_absolute_button_stylebox_hover.bg_color = Color("d9822b") if ThemeUtils.is_theme_dark else Color("f2c279")
+	path_command_absolute_button_stylebox_hover.border_color = Color("f2cb91") if ThemeUtils.is_theme_dark else Color("f29718")
+	theme.set_stylebox("hover", "PathCommandAbsoluteButton", path_command_absolute_button_stylebox_hover)
 
-	var path_command_absolute_button_stylebox_pressed :=\
-		path_command_absolute_button_stylebox_normal.duplicate()
-	path_command_absolute_button_stylebox_pressed.bg_color = Color("ffbf40") if\
-		ThemeUtils.is_theme_dark else Color("f2ae49")
-	path_command_absolute_button_stylebox_pressed.border_color = Color("ffecb3") if\
-		ThemeUtils.is_theme_dark else Color("e68600")
-	theme.set_stylebox("pressed", "PathCommandAbsoluteButton",
-		path_command_absolute_button_stylebox_pressed)
+	var path_command_absolute_button_stylebox_pressed := path_command_absolute_button_stylebox_normal.duplicate()
+	path_command_absolute_button_stylebox_pressed.bg_color = Color("ffbf40") if ThemeUtils.is_theme_dark else Color("f2ae49")
+	path_command_absolute_button_stylebox_pressed.border_color = Color("ffecb3") if ThemeUtils.is_theme_dark else Color("e68600")
+	theme.set_stylebox("pressed", "PathCommandAbsoluteButton", path_command_absolute_button_stylebox_pressed)
 
 	theme.add_type("PathCommandRelativeButton")
 	theme.set_type_variation("PathCommandRelativeButton", "Button")
-	var path_command_relative_button_stylebox_normal :=\
-		path_command_absolute_button_stylebox_normal.duplicate()
-	path_command_relative_button_stylebox_normal.bg_color = Color("a329cc") if\
-		ThemeUtils.is_theme_dark else Color("d291f2")
-	path_command_relative_button_stylebox_normal.border_color = Color("bd73e6") if\
-		ThemeUtils.is_theme_dark else Color("bb33ff")
-	theme.set_stylebox("normal", "PathCommandRelativeButton",
-		path_command_relative_button_stylebox_normal)
-	theme.set_stylebox("disabled", "PathCommandRelativeButton",
-		path_command_relative_button_stylebox_normal)
+	var path_command_relative_button_stylebox_normal := path_command_absolute_button_stylebox_normal.duplicate()
+	path_command_relative_button_stylebox_normal.bg_color = Color("a329cc") if ThemeUtils.is_theme_dark else Color("d291f2")
+	path_command_relative_button_stylebox_normal.border_color = Color("bd73e6") if ThemeUtils.is_theme_dark else Color("bb33ff")
+	theme.set_stylebox("normal", "PathCommandRelativeButton", path_command_relative_button_stylebox_normal)
+	theme.set_stylebox("disabled", "PathCommandRelativeButton", path_command_relative_button_stylebox_normal)
 
-	var path_command_relative_button_stylebox_hover :=\
-		path_command_absolute_button_stylebox_normal.duplicate()
-	path_command_relative_button_stylebox_hover.bg_color = Color("ad2bd9") if\
-		ThemeUtils.is_theme_dark else Color("ca79f2")
-	path_command_relative_button_stylebox_hover.border_color = Color("d291f2") if\
-		ThemeUtils.is_theme_dark else Color("aa18f2")
-	theme.set_stylebox("hover", "PathCommandRelativeButton",
-		path_command_relative_button_stylebox_hover)
+	var path_command_relative_button_stylebox_hover := path_command_absolute_button_stylebox_normal.duplicate()
+	path_command_relative_button_stylebox_hover.bg_color = Color("ad2bd9") if ThemeUtils.is_theme_dark else Color("ca79f2")
+	path_command_relative_button_stylebox_hover.border_color = Color("d291f2") if ThemeUtils.is_theme_dark else Color("aa18f2")
+	theme.set_stylebox("hover", "PathCommandRelativeButton", path_command_relative_button_stylebox_hover)
 
-	var path_command_relative_button_stylebox_pressed :=\
-		path_command_absolute_button_stylebox_normal.duplicate()
-	path_command_relative_button_stylebox_pressed.bg_color = Color("bf40ff") if\
-		ThemeUtils.is_theme_dark else Color("ba49f2")
-	path_command_relative_button_stylebox_pressed.border_color = Color("dfb3ff") if\
-		ThemeUtils.is_theme_dark else Color("9900e6")
-	theme.set_stylebox("pressed", "PathCommandRelativeButton",
-		path_command_relative_button_stylebox_pressed)
+	var path_command_relative_button_stylebox_pressed := path_command_absolute_button_stylebox_normal.duplicate()
+	path_command_relative_button_stylebox_pressed.bg_color = Color("bf40ff") if ThemeUtils.is_theme_dark else Color("ba49f2")
+	path_command_relative_button_stylebox_pressed.border_color = Color("dfb3ff") if ThemeUtils.is_theme_dark else Color("9900e6")
+	theme.set_stylebox("pressed", "PathCommandRelativeButton", path_command_relative_button_stylebox_pressed)
 	
 	theme.add_type("TextButton")
 	theme.set_type_variation("TextButton", "Button")
@@ -843,31 +819,25 @@ static func _setup_checkbox(theme: Theme) -> void:
 	theme.set_color("font_hover_color", "CheckBox", highlighted_text_color)
 	theme.set_color("font_pressed_color", "CheckBox", text_color)
 	theme.set_color("font_hover_pressed_color", "CheckBox", highlighted_text_color)
-	theme.set_icon("checked", "CheckBox",
-		SVGTexture.create_from_string("""
-		<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("checked", "CheckBox", SVGTexture.create_from_string(
+		"""<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s"/>
 			<path d="M11.5 3.7 5.9 9.3 4.2 7.6 2.7 9.1l3.2 3.2L13 5.2z" fill="#%s"/>
-		</svg>""" %\
-		[soft_accent_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
+		</svg>""" % [soft_accent_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
-	theme.set_icon("checked_disabled", "CheckBox",
-		SVGTexture.create_from_string("""
-		<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("checked_disabled", "CheckBox", SVGTexture.create_from_string(
+		"""<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s" opacity=".4"/>
 			<path d="M11.5 3.7 5.9 9.3 4.2 7.6 2.7 9.1l3.2 3.2L13 5.2z" fill="#%s" opacity=".4"/>
-		</svg>""" %\
-		[soft_accent_color.lerp(gray_color, 0.2).to_html(false), black_or_white_counter_accent_color.to_html(false)])
+		</svg>""" % [soft_accent_color.lerp(gray_color, 0.2).to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
-	theme.set_icon("unchecked", "CheckBox",
-		SVGTexture.create_from_string("""
-		<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("unchecked", "CheckBox", SVGTexture.create_from_string(
+		"""<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s" opacity=".6"/>
 		</svg>""" % gray_color.to_html(false))
 	)
-	theme.set_icon("unchecked_disabled", "CheckBox",
-		SVGTexture.create_from_string("""
-		<svg height="16" width="16" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("unchecked_disabled", "CheckBox", SVGTexture.create_from_string(
+		"""<svg height="16" width="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" width="14" height="14" fill="#%s" opacity=".2"/>
 		</svg>""" % gray_color.to_html(false))
 	)
@@ -893,7 +863,7 @@ static func _setup_checkbox(theme: Theme) -> void:
 	theme.set_stylebox("hover_pressed", "CheckBox", hover_checkbox_stylebox)
 	
 	var disabled_checkbox_stylebox := checkbox_stylebox.duplicate()
-	disabled_checkbox_stylebox.bg_color = flat_button_color_disabled
+	disabled_checkbox_stylebox.bg_color = context_button_color_disabled
 	theme.set_stylebox("disabled", "CheckBox", disabled_checkbox_stylebox)
 
 
@@ -905,21 +875,17 @@ static func _setup_checkbutton(theme: Theme) -> void:
 	theme.set_color("font_hover_color", "CheckButton", highlighted_text_color)
 	theme.set_color("font_pressed_color", "CheckButton", text_color)
 	theme.set_color("font_hover_pressed_color", "CheckButton", highlighted_text_color)
-	theme.set_icon("checked", "CheckButton",
-		SVGTexture.create_from_string("""
-		<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("checked", "CheckButton", SVGTexture.create_from_string(
+		"""<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s"/>
 			<circle cx="24" cy="8" r="5.5" fill="#%s"/>
-		</svg>""" %\
-		[soft_accent_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
+		</svg>""" % [soft_accent_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
-	theme.set_icon("unchecked", "CheckButton",
-		SVGTexture.create_from_string("""
-		<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("unchecked", "CheckButton", SVGTexture.create_from_string(
+		"""<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s"/>
 			<circle cx="8" cy="8" r="5.5" fill="#%s"/>
-		</svg>""" %\
-		[gray_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
+		</svg>""" % [gray_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
 
 
@@ -988,8 +954,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	
 	var hover_stylebox := stylebox.duplicate()
 	hover_stylebox.draw_center = false
-	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-		stronger_hover_overlay_color
+	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
 	theme.set_stylebox("hover", "LineEdit", hover_stylebox)
 	
 	var focus_stylebox := stylebox.duplicate()
@@ -1027,8 +992,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	
 	var left_connected_hover_stylebox := left_connected_stylebox.duplicate()
 	left_connected_hover_stylebox.draw_center = false
-	left_connected_hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-		stronger_hover_overlay_color
+	left_connected_hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
 	theme.set_stylebox("hover", "LeftConnectedLineEdit", left_connected_hover_stylebox)
 	
 	var left_connected_focus_stylebox := left_connected_stylebox.duplicate()
@@ -1066,8 +1030,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	
 	var right_connected_hover_stylebox := right_connected_stylebox.duplicate()
 	right_connected_hover_stylebox.draw_center = false
-	right_connected_hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-		stronger_hover_overlay_color
+	right_connected_hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
 	theme.set_stylebox("hover", "RightConnectedLineEdit", right_connected_hover_stylebox)
 	
 	var right_connected_focus_stylebox := right_connected_stylebox.duplicate()
@@ -1100,8 +1063,7 @@ static func _setup_lineedit(theme: Theme) -> void:
 	
 	var mini_stylebox_hover := mini_stylebox.duplicate()
 	mini_stylebox_hover.draw_center = false
-	mini_stylebox_hover.border_color = strong_hover_overlay_color if is_theme_dark else\
-		stronger_hover_overlay_color
+	mini_stylebox_hover.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
 	theme.set_stylebox("hover", "MiniLineEdit", mini_stylebox_hover)
 	
 	var mini_stylebox_pressed := mini_stylebox.duplicate()
@@ -1305,8 +1267,7 @@ static func _setup_textedit(theme: Theme) -> void:
 	
 	var hover_stylebox := StyleBoxFlat.new()
 	hover_stylebox.draw_center = false
-	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else\
-		stronger_hover_overlay_color
+	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
 	hover_stylebox.set_border_width_all(2)
 	hover_stylebox.set_corner_radius_all(5)
 	theme.set_stylebox("hover", "TextEdit", hover_stylebox)
@@ -1333,15 +1294,13 @@ static func _setup_tooltip(theme: Theme) -> void:
 
 static func _setup_splitcontainer(theme: Theme) -> void:
 	theme.add_type("SplitContainer")
-	theme.set_icon("grabber", "VSplitContainer",
-		SVGTexture.create_from_string("""
-		<svg width="32" height="4" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("grabber", "VSplitContainer", SVGTexture.create_from_string(
+		"""<svg width="32" height="4" xmlns="http://www.w3.org/2000/svg">
 			<path d="M1 1h30v2H1z" fill="#%s" opacity=".6"/>
 		</svg>""" % desaturated_color.to_html(false))
 	)
-	theme.set_icon("grabber", "HSplitContainer",
-		SVGTexture.create_from_string("""
-		<svg width="4" height="48" xmlns="http://www.w3.org/2000/svg">
+	theme.set_icon("grabber", "HSplitContainer", SVGTexture.create_from_string(
+		"""<svg width="4" height="48" xmlns="http://www.w3.org/2000/svg">
 			<path d="M1 1v46h2V1z" fill="#%s" opacity=".6"/>
 		</svg>""" % desaturated_color.to_html(false))
 	)

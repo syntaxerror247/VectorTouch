@@ -1,10 +1,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: VectorTouch\n"
+"Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: \n"
+"Last-Translator: freeducks-debug <applesause454@gmail.com>\n"
 "Language-Team: \n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
@@ -12,16 +12,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.6\n"
 
+#. Translators (comma-separated): Name or alias, optionally followed by an email in angle brackets <email@example.com>.
+#. Used for credits. Adding yourself is optional. New entries go at the end. Don't remove or rearrange existing entries.
 msgid "translation-credits"
-msgstr "volkov"
+msgstr "volkov, freeducks-debug"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit VectorTouch"
-msgstr "Вийти із VectorTouch"
+msgid "Quit GodSVG"
+msgstr "Вийти із GodSVG"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit VectorTouch?"
-msgstr "Ви дійсно бажаєте вийти із VectorTouch?"
+msgid "Do you want to quit GodSVG?"
+msgstr "Ви дійсно бажаєте вийти із GodSVG?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -132,26 +134,25 @@ msgstr "6 значне шістнадцятирічне число"
 #. Refers to a theme preset.
 #: src/config_classes/SaveData.gd:
 msgid "Dark"
-msgstr ""
+msgstr "Темна"
 
 #. Refers to a theme preset.
 #: src/config_classes/SaveData.gd:
-#, fuzzy
 msgid "Light"
-msgstr "Висота"
+msgstr "Світла"
 
 #. Refers to a theme preset.
 #: src/config_classes/SaveData.gd:
 msgid "Black (OLED)"
-msgstr ""
+msgstr "Темна (OLED)"
 
 #: src/config_classes/SaveData.gd:
 msgid "Default Dark"
-msgstr ""
+msgstr "Стандартна темна"
 
 #: src/config_classes/SaveData.gd:
 msgid "Default Light"
-msgstr ""
+msgstr "Стандартна світла"
 
 #: src/config_classes/TabData.gd:
 msgid "Empty"
@@ -318,7 +319,8 @@ msgstr "Скопіювати"
 msgid "Preview image size is limited to {dimensions}"
 msgstr "Розмір попереднього перегляду зображення обмежено до {dimensions}"
 
-#: src/ui_parts/global_actions.gd: src/ui_parts/shortcut_panel_config.gd:
+#: src/ui_parts/global_actions.gd: src/ui_parts/layout_configuration.gd:
+#: src/ui_parts/shortcut_panel_config.gd:
 msgid "Layout"
 msgstr "Макет"
 
@@ -415,11 +417,11 @@ msgid "Add element"
 msgstr "Додати елемент"
 
 #. Refers to the zero, one, or multiple UI parts to not be shown in the final layout. It's of plural cardinality.
-#: src/ui_parts/layout_popup.gd:
+#: src/ui_parts/layout_configuration.gd:
 msgid "Excluded"
 msgstr "Виключені"
 
-#: src/ui_parts/layout_popup.gd:
+#: src/ui_parts/layout_configuration.gd:
 msgid "Drag and drop to change the layout"
 msgstr "Перетягніть і опустіть, щоб змінити макет"
 
@@ -529,16 +531,33 @@ msgid "View all releases"
 msgstr "Показати усі версії"
 
 #: src/ui_parts/update_menu.gd:
-msgid "VectorTouch is up-to-date."
-msgstr "VectorTouch оновлено до останньої версії."
+msgid "GodSVG is up-to-date."
+msgstr "GodSVG оновлено до останньої версії."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
 msgstr "Доступна нова версія!"
 
+#: src/ui_widgets/PanelGrid.gd:
+msgid "Copy email"
+msgstr "Скопіювати електрону пошту"
+
 #: src/ui_widgets/choose_name_dialog.gd:
 msgid "Create"
 msgstr "Створити"
+
+#: src/ui_widgets/color_configuration_popup.gd:
+msgid "Edit color name"
+msgstr "Редагувати назву кольору"
+
+#: src/ui_widgets/color_configuration_popup.gd:
+msgid "Delete color"
+msgstr "Видалити колір"
+
+#: src/ui_widgets/color_configuration_popup.gd:
+#: src/ui_widgets/palette_config.gd:
+msgid "Unnamed"
+msgstr "Без назви"
 
 #: src/ui_widgets/color_field_popup.gd:
 msgid "Search color"
@@ -548,21 +567,9 @@ msgstr "Шукати колір"
 msgid "Color Picker"
 msgstr "Кольорова піпетка"
 
-#: src/ui_widgets/configure_color_popup.gd:
-msgid "Edit color name"
-msgstr "Редагувати назву кольору"
-
-#: src/ui_widgets/configure_color_popup.gd:
-msgid "Delete color"
-msgstr "Видалити колір"
-
-#: src/ui_widgets/configure_color_popup.gd: src/ui_widgets/palette_config.gd:
-msgid "Unnamed"
-msgstr "Без назви"
-
 #: src/ui_widgets/fps_limit_dropdown.gd: src/ui_widgets/setting_frame.gd:
 msgid "Unlimited"
-msgstr ""
+msgstr "Без обмежень"
 
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Color keywords"
@@ -631,11 +638,11 @@ msgstr "Також використовується"
 
 #: src/ui_widgets/profile_frame.gd:
 msgid "Apply"
-msgstr ""
+msgstr "Застосувати"
 
 #: src/ui_widgets/profile_frame.gd:
 msgid "Apply all of this preset's defaults"
-msgstr ""
+msgstr "Застосувати стандартні значення цього пресету"
 
 #: src/ui_widgets/setting_frame.gd: src/ui_widgets/setting_shortcut.gd:
 msgid "Reset to default"
@@ -653,7 +660,7 @@ msgstr "Додати клавіатурне скорочення"
 msgid "Press keys…"
 msgstr "Натисніть кнопки…"
 
-#. Refers to the formatter used for VectorTouch's code editor.
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Форматер редактору"
@@ -669,9 +676,8 @@ msgid "Preset"
 msgstr "Пресет"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Determines the default values of the formatter configs."
-msgstr "Змінити масштаб інтерфейсу користувача."
+msgstr "Визначає стандартні значення конфігурації форматера."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Keep comments"
@@ -761,27 +767,24 @@ msgid "Remove unnecessary parameters"
 msgstr "Видалити необов'язкові параметри"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Theme preset"
-msgstr "Скинути масштаб"
+msgstr "Тема додатку"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Determines the default values of theming-related settings, including the highlighter preset."
-msgstr ""
+msgstr "Визначає стандартні значення для налаштувань теми, включаючи налаштування підсвітки."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Primary theme colors"
-msgstr ""
+msgstr "Головні кольори теми"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Base color"
 msgstr "Базовий колір"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Accent color"
-msgstr "Колір тексту"
+msgstr "Колір акценту"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "SVG Text colors"
@@ -789,11 +792,11 @@ msgstr "Колір SVG тексту"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Highlighter preset"
-msgstr ""
+msgstr "Тема підсвітки"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Determines the default values of SVG highlighter settings."
-msgstr ""
+msgstr "Визначає стандартні значення підсвітки SVG."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Symbol color"
@@ -830,9 +833,8 @@ msgstr "Колір помилки"
 
 #. Refers to the draggable gizmos.
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Handles"
-msgstr "Розмір ручок редагування"
+msgstr "Ручки редагування"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Inside color"
@@ -855,32 +857,29 @@ msgid "Hovered selected color"
 msgstr "Колір наведено-виділеного"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Selection rectangle"
-msgstr "Обрати зображення"
+msgstr "Прямокутник вибору"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Speed"
-msgstr ""
+msgstr "Швидкість"
 
 #. Refers to the selection rectangle's animated dashed stroke.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Dash length"
-msgstr ""
+msgstr "Довжина лінії"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Color {index}"
-msgstr "Кольорова піпетка"
+msgstr "Колір {index}"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Basic colors"
 msgstr "Базовий колір"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Canvas color"
-msgstr "Внутрішній колір"
+msgstr "Колір полотна"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Grid color"
@@ -903,9 +902,8 @@ msgid "Close tabs with middle mouse button"
 msgstr "Закривати вкладки при натисканні середньої кнопки миші"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "When enabled, clicking on a tab with the middle mouse button closes it instead of simply focusing it."
-msgstr "Якщо увімкнено - клацання на вкладку середньою кнопкою миші закриє її. Якщо вимкнено - фокус буде замінено на неї."
+msgstr "Якщо увімкнено - клацання на вкладку середньою кнопкою миші закриє її, замість того, щоб фокусуватися на ній."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Invert zoom direction"
@@ -924,47 +922,41 @@ msgid "Use CTRL for zooming"
 msgstr "Використовувати CTRL для масштабування"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "When enabled, scrolling pans the view instead of zooming in. To zoom, hold CTRL while scrolling."
 msgstr "Якщо увімкнено - гортання буде рухати вікно перегляду. Щоб масштабувати, затисніть CTRL доки гортаєте."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Display"
-msgstr ""
+msgstr "Дисплей"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "UI scale"
 msgstr "Масштаб інтерфейсу"
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
 msgid "Determines the scale factor for the interface."
-msgstr "Змінити масштаб інтерфейсу користувача."
+msgstr "Визначає множник масштабу інтерфейсу."
 
 #. Stands for "Vertical Synchronization".
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "V-Sync"
-msgstr ""
+msgstr "Вертикальна синхроназація"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Synchronizes graphics rendering with display refresh rate to prevent screen tearing artifacts. May increase input lag slightly."
-msgstr ""
+msgstr "Синхронізує відображення графіки з частотою відновлення екрану, щоб запобігати артефактам відображення (на кшталт \"розриву\" екрана). Також може збільшити затримку натискань клавіатури або курсору."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Maximum FPS"
-msgstr ""
+msgstr "Максимальна кількість кадрів на секунду"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Determines the maximum number of frames per second."
-msgstr ""
+msgstr "Визначає максимальну кількість кадрів на секунду."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Keep Screen On"
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
-msgid "Keeps the screen on even after inactivity, so the screensaver does not take over."
-msgstr ""
+msgstr "Тримати екран увімкненим"
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Miscellaneous"
@@ -979,29 +971,32 @@ msgid "Sync window title to file name"
 msgstr "Синхронізувати заголовок вікна з назвою поточного файлу"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
-msgstr ""
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgstr "Коли активовано, додає назву поточного файлу перед \"GodSVG\" у заголовку вікна."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "When enabled, uses spaces instead of a single tab for indentation."
-msgstr ""
+msgstr "Коли активно, використовує пробіли замість одного tab-у для відступів."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
 msgstr "Курсор буде телепортуватися від одного краю до протилежного при пересуванні вікна перегляду."
 
 #: src/ui_widgets/settings_content_generic.gd:
-#, fuzzy
-msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
-msgstr "Якщо увімкнено, то буде використовувати рідний файловий діалог вашої операційної системи для обирання файлів. Якщо вимкнено, то замість буде використовуватися вбудований файловий діалог."
+msgid "Keeps the screen on even after inactivity, so the screensaver does not take over."
+msgstr "Відкладати присипляння системи та/або екрану навіть після бездіяльності, завдяки чому зберігач екрану не буде запускатися."
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Якщо увімкнено, то буде використовувати рідний файловий діалог вашої операційної системи для обирання файлів замість вбудованого."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
-msgstr ""
+msgstr "Це опція не має ефекту на поточну конфігурацію."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting can't be changed on this platform."
-msgstr ""
+msgstr "Ця опція не може бути змінена на поточній платформі."
 
 #: src/ui_widgets/settings_content_palettes.gd:
 msgid "New palette"
@@ -1040,8 +1035,8 @@ msgid "New transform"
 msgstr "Нова трансформація"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "VectorTouch doesn’t recognize this attribute"
-msgstr "VectorTouch не може розпізнати цей атрибут"
+msgid "GodSVG doesn’t recognize this attribute"
+msgstr "GodSVG не може розпізнати цей атрибут"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1096,8 +1091,8 @@ msgid "Don't save"
 msgstr "Не зберігати"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside VectorTouch."
-msgstr "Файл {file_path} вже редагується в VectorTouch."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "Файл {file_path} вже редагується в GodSVG."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1305,20 +1300,20 @@ msgid "Open Donate menu"
 msgstr "Відкрити меню благодійників"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch repository"
-msgstr "Репозиторій VectorTouch"
+msgid "GodSVG repository"
+msgstr "Репозиторій GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch repository"
-msgstr "Відкрити репозиторій VectorTouch"
+msgid "Open GodSVG repository"
+msgstr "Відкрити репозиторій GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch website"
-msgstr "Веб-сайт VectorTouch"
+msgid "GodSVG website"
+msgstr "Веб-сайт GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch website"
-msgstr "Відкрити веб-сайт VectorTouch"
+msgid "Open GodSVG website"
+msgstr "Відкрити веб-сайт GodSVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1409,8 +1404,8 @@ msgstr "Зберегти {format} файл"
 msgid "Only {extension_list} files are supported for this operation."
 msgstr "Тільки файли з розширеннями {extension_list} підтримуються для цієї операції."
 
-#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
-#~ msgstr "Якщо вимкнено - заголовок вікна залишиться як \"VectorTouch\", не включаючи назву поточного файлу."
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Якщо вимкнено - заголовок вікна залишиться як \"GodSVG\", не включаючи назву поточного файлу."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Зберігати не розпізнані структури XML"

@@ -20,7 +20,6 @@ var value: String:
 				value_changed.emit(value)
 		sync()
 
-
 func _ready() -> void:
 	text_submitted.connect(func(x: String) -> void: value = x)
 	pressed.connect(_on_pressed)
