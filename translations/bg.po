@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GodSVG\n"
+"Project-Id-Version: VectorTouch\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -18,12 +18,12 @@ msgid "translation-credits"
 msgstr "MewPurPur <mew.pur.pur@gmail.com>"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit GodSVG"
-msgstr "Затвори GodSVG"
+msgid "Quit VectorTouch"
+msgstr "Затвори VectorTouch"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit GodSVG?"
-msgstr "Наистина ли искаш да затвориш GodSVG?"
+msgid "Do you want to quit VectorTouch?"
+msgstr "Наистина ли искаш да затвориш VectorTouch?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -531,8 +531,8 @@ msgid "View all releases"
 msgstr "Разгледай всички издания"
 
 #: src/ui_parts/update_menu.gd:
-msgid "GodSVG is up-to-date."
-msgstr "GodSVG е актуален."
+msgid "VectorTouch is up-to-date."
+msgstr "VectorTouch е актуален."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -660,7 +660,7 @@ msgstr "Добави бърз клавиш"
 msgid "Press keys…"
 msgstr "Натисни клавиши…"
 
-#. Refers to the formatter used for GodSVG's code editor.
+#. Refers to the formatter used for VectorTouch's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Форматировач за приложението"
@@ -967,8 +967,8 @@ msgid "Sync window title to file name"
 msgstr "Синхронизирай името на прозореца с файла"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
-msgstr "Когато е включено, добавя името на настоящия файл пред заглавието на прозореца \"GodSVG\"."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
+msgstr "Когато е включено, добавя името на настоящия файл пред заглавието на прозореца \"VectorTouch\"."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "When enabled, uses spaces instead of a single tab for indentation."
@@ -983,8 +983,8 @@ msgid "Keeps the screen on even after inactivity, so the screensaver does not ta
 msgstr "Поддържа екрана включен дори при неактивност, така че скрийнсейвърът да не се включва."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
-msgstr "Когато е активирано, ще бъде използван файловият мениджър на твоята операционна система вместо вградения файлов мениджър на GodSVG."
+msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
+msgstr "Когато е активирано, ще бъде използван файловият мениджър на твоята операционна система вместо вградения файлов мениджър на VectorTouch."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1031,8 +1031,8 @@ msgid "New transform"
 msgstr "Нова трансформация"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "GodSVG doesn’t recognize this attribute"
-msgstr "GodSVG не разпознава този атрибут"
+msgid "VectorTouch doesn’t recognize this attribute"
+msgstr "VectorTouch не разпознава този атрибут"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1087,8 +1087,8 @@ msgid "Don't save"
 msgstr "Не записвай"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside GodSVG."
-msgstr "{file_path} вече се редактира в GodSVG."
+msgid "{file_path} is already being edited inside VectorTouch."
+msgstr "{file_path} вече се редактира в VectorTouch."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1295,20 +1295,20 @@ msgid "Open Donate menu"
 msgstr "Отвори менюто за дарения"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG repository"
-msgstr "Репозиторията на GodSVG"
+msgid "VectorTouch repository"
+msgstr "Репозиторията на VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG repository"
-msgstr "Отвори репозиторията на GodSVG"
+msgid "Open VectorTouch repository"
+msgstr "Отвори репозиторията на VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG website"
-msgstr "Уебсайта на GodSVG"
+msgid "VectorTouch website"
+msgstr "Уебсайта на VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG website"
-msgstr "Отвори уебсайта на GodSVG"
+msgid "Open VectorTouch website"
+msgstr "Отвори уебсайта на VectorTouch"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"

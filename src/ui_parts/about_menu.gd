@@ -122,7 +122,7 @@ func _on_tab_changed(idx: int) -> void:
 		2:
 			# This part doesn't need to be translated.
 			%LicenseLabel.text = "MIT License\n\nCopyright (c) 2025 Anish Mishra\n" +\
-					"Copyright (c) 2023-present GodSVG contributors\n\n" +\
+					"Copyright (c) 2023-present VectorTouch contributors\n\n" +\
 					Engine.get_license_info()["Expat"]
 		3:
 			for child in %VectorTouchParts.get_children():

@@ -539,11 +539,11 @@ completion_callback: Callable, multi_select: bool) -> void:
 	# Setup and clearing previous data.
 	_web_file_data_cache.clear()
 	var window = JavaScriptBridge.get_interface("window")
-	window.godsvgFileNames = JavaScriptBridge.create_object("Array")
-	window.godsvgFileDataArray = JavaScriptBridge.create_object("Array")
-	window.godsvgDialogClosed = false
-	window.godsvgFilesToProcess = 0
-	window.godsvgFilesProcessed = 0
+	window.vectortouchFileNames = JavaScriptBridge.create_object("Array")
+	window.vectortouchFileDataArray = JavaScriptBridge.create_object("Array")
+	window.vectortouchDialogClosed = false
+	window.vectortouchFilesToProcess = 0
+	window.vectortouchFilesProcessed = 0
 	
 	_change_callback = JavaScriptBridge.create_callback(_web_on_files_selected)
 	input.addEventListener("change", _change_callback)
@@ -555,26 +555,26 @@ completion_callback: Callable, multi_select: bool) -> void:
 	
 	# Wait for all files to be processed.
 	while true:
-		if window.godsvgDialogClosed:
+		if window.vectortouchDialogClosed:
 			return
 		
-		var files_to_process: int = window.godsvgFilesToProcess
-		var files_processed: int = window.godsvgFilesProcessed
+		var files_to_process: int = window.vectortouchFilesToProcess
+		var files_processed: int = window.vectortouchFilesProcessed
 		
 		if files_to_process > 0 and files_processed >= files_to_process:
 			break
 		await Engine.get_main_loop().create_timer(0.1).timeout
 	
 	# Process all loaded files.
-	var file_count: int = window.godsvgFileNames.length
+	var file_count: int = window.vectortouchFileNames.length
 	if file_count == 0:
 		return
 	
 	var file_names: Array = []
 	var file_data_array: Array = []
 	for i in file_count:
-		var file_name: String = window.godsvgFileNames[i]
-		var file_data: Variant = window.godsvgFileDataArray[i]
+		var file_name: String = window.vectortouchFileNames[i]
+		var file_data: Variant = window.vectortouchFileDataArray[i]
 		file_names.append(file_name)
 		file_data_array.append(file_data)
 	
@@ -595,8 +595,8 @@ static func _web_on_files_selected(args: Array) -> void:
 	
 	# Set up tracking for multiple files.
 	var window = JavaScriptBridge.get_interface("window")
-	window.godsvgFilesToProcess = files.length
-	window.godsvgFilesProcessed = 0
+	window.vectortouchFilesToProcess = files.length
+	window.vectortouchFilesProcessed = 0
 	
 	_file_load_callbacks.clear()
 	_file_load_callbacks.resize(files.length)
@@ -610,7 +610,7 @@ static func _web_on_files_selected(args: Array) -> void:
 		_file_load_callbacks[i] = JavaScriptBridge.create_callback(_web_on_file_loaded.bind(i))
 		reader.onloadend = _file_load_callbacks[i]
 		
-		window.godsvgFileNames[i] = file.name
+		window.vectortouchFileNames[i] = file.name
 		
 		# Read file based on extension.
 		if file.name.get_extension().to_lower() in ["svg", "xml"]:
@@ -626,23 +626,23 @@ static func _web_on_file_loaded(args: Array, file_index: int) -> void:
 		return
 	
 	var window = JavaScriptBridge.get_interface("window")
-	var file_name: String = window.godsvgFileNames[file_index]
+	var file_name: String = window.vectortouchFileNames[file_index]
 	
 	# Store file data based on type.
 	if file_name.get_extension().to_lower() in ["svg", "xml"]:
 		# For text files, store directly
-		window.godsvgFileDataArray[file_index] = event.target.result
+		window.vectortouchFileDataArray[file_index] = event.target.result
 	else:
 		# For binary files, convert ArrayBuffer to Uint8Array.
 		var Uint8Array = JavaScriptBridge.get_interface("Uint8Array")
-		window.godsvgFileDataArray[file_index] = Uint8Array.new(event.target.result)
+		window.vectortouchFileDataArray[file_index] = Uint8Array.new(event.target.result)
 	
 	# Increment processed counter.
-	window.godsvgFilesProcessed += 1
+	window.vectortouchFilesProcessed += 1
 
 static func _web_on_file_dialog_canceled(_args: Array) -> void:
 	var window = JavaScriptBridge.get_interface("window")
-	window.godsvgDialogClosed = true
+	window.vectortouchDialogClosed = true
 
 
 static func _web_save(buffer: PackedByteArray, format_name: String) -> void:

@@ -73,7 +73,7 @@ func _enter_tree() -> void:
 	shortcuts.add_shortcut("about_donate", open_donate, ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
 	shortcuts.add_shortcut("check_updates", open_update_checker, ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
 	shortcuts.add_shortcut("open_settings", open_settings, ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
-	shortcuts.add_shortcut("about_repo", OS.shell_open.bind("https://github.com/MewPurPur/GodSVG"), ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
+	shortcuts.add_shortcut("about_repo", OS.shell_open.bind("https://github.com/MewPurPur/VectorTouch"), ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
 	shortcuts.add_shortcut("about_website", OS.shell_open.bind("https://godsvg.com"), ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
 	shortcuts.add_shortcut("open_externally", func() -> void: FileUtils.open_svg(Configs.savedata.get_active_tab().svg_file_path),
 			ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)

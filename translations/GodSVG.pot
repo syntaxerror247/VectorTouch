@@ -982,7 +982,7 @@ msgid "Keeps the screen on even after inactivity, so the screensaver does not ta
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:

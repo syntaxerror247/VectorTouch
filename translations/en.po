@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: GodSVG\n"
+"Project-Id-Version: VectorTouch\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -18,11 +18,11 @@ msgid "translation-credits"
 msgstr ""
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit GodSVG"
+msgid "Quit VectorTouch"
 msgstr ""
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit GodSVG?"
+msgid "Do you want to quit VectorTouch?"
 msgstr ""
 
 #: src/autoload/HandlerGUI.gd:
@@ -531,7 +531,7 @@ msgid "View all releases"
 msgstr ""
 
 #: src/ui_parts/update_menu.gd:
-msgid "GodSVG is up-to-date."
+msgid "VectorTouch is up-to-date."
 msgstr ""
 
 #: src/ui_parts/update_menu.gd:
@@ -660,7 +660,7 @@ msgstr ""
 msgid "Press keys…"
 msgstr ""
 
-#. Refers to the formatter used for GodSVG's code editor.
+#. Refers to the formatter used for VectorTouch's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr ""
@@ -967,7 +967,7 @@ msgid "Sync window title to file name"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -983,7 +983,7 @@ msgid "Keeps the screen on even after inactivity, so the screensaver does not ta
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -1031,7 +1031,7 @@ msgid "New transform"
 msgstr ""
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "GodSVG doesn’t recognize this attribute"
+msgid "VectorTouch doesn’t recognize this attribute"
 msgstr ""
 
 #: src/utils/FileUtils.gd:
@@ -1087,7 +1087,7 @@ msgid "Don't save"
 msgstr ""
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside GodSVG."
+msgid "{file_path} is already being edited inside VectorTouch."
 msgstr ""
 
 #: src/utils/FileUtils.gd:
@@ -1295,19 +1295,19 @@ msgid "Open Donate menu"
 msgstr ""
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG repository"
+msgid "VectorTouch repository"
 msgstr ""
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG repository"
+msgid "Open VectorTouch repository"
 msgstr ""
 
 #: src/utils/TranslationUtils.gd:
-msgid "GodSVG website"
+msgid "VectorTouch website"
 msgstr ""
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open GodSVG website"
+msgid "Open VectorTouch website"
 msgstr ""
 
 #: src/utils/TranslationUtils.gd:
