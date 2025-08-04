@@ -6,23 +6,22 @@ const MAX_ZOOM = 512.0
 signal zoom_changed(zoom_level: float, offset: Vector2)
 signal zoom_reset_pressed
 
-@onready var zoom_out_button: Button = $ZoomOut
-@onready var zoom_in_button: Button = $ZoomIn
-@onready var zoom_reset_button: Button = $ZoomReset
+@onready var zoom_out_button: BetterButton = $ZoomOut
+@onready var zoom_in_button: BetterButton = $ZoomIn
+@onready var zoom_reset_button: BetterButton = $ZoomReset
 
 var _zoom_level: float
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if ShortcutUtils.is_action_pressed(event, "zoom_in"):
-		zoom_in()
-		accept_event()
-	elif ShortcutUtils.is_action_pressed(event, "zoom_out"):
-		zoom_out()
-		accept_event()
-	elif ShortcutUtils.is_action_pressed(event, "zoom_reset"):
-		zoom_reset()
-		accept_event()
+func _ready() -> void:
+	var shortcuts := ShortcutsRegistration.new()
+	shortcuts.add_shortcut("zoom_in", zoom_in)
+	shortcuts.add_shortcut("zoom_out", zoom_out)
+	shortcuts.add_shortcut("zoom_reset", zoom_reset)
+	HandlerGUI.register_shortcuts(self, shortcuts)
+	zoom_out_button.shortcuts_bind = shortcuts
+	zoom_in_button.shortcuts_bind = shortcuts
+	zoom_reset_button.shortcuts_bind = shortcuts
 
 
 func set_zoom(new_value: float, offset := Vector2(0.5, 0.5)) -> void:
@@ -65,12 +64,10 @@ func update_buttons_appearance() -> void:
 	var is_min_zoom := _zoom_level < MIN_ZOOM or is_equal_approx(_zoom_level, MIN_ZOOM)
 	
 	zoom_in_button.disabled = is_max_zoom
-	zoom_in_button.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
-			is_max_zoom else Control.CURSOR_POINTING_HAND
+	zoom_in_button.mouse_default_cursor_shape = Control.CURSOR_ARROW if is_max_zoom else Control.CURSOR_POINTING_HAND
 	
 	zoom_out_button.disabled = is_min_zoom
-	zoom_out_button.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
-			is_min_zoom else Control.CURSOR_POINTING_HAND
+	zoom_out_button.mouse_default_cursor_shape = Control.CURSOR_ARROW if is_min_zoom else Control.CURSOR_POINTING_HAND
 
 
 func _on_zoom_out_pressed() -> void:

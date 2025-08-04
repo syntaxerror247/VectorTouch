@@ -10,8 +10,6 @@ var _timer := Timer.new()
 
 var _is_caret_queued_for_redraw := false
 
-var _hovered := false
-
 func _init() -> void:
 	# Solves an issue where Ctrl+S would type an "s" and handle the input.
 	# We want anything with Ctrl to not be handled, but other keys to still be handled.
@@ -31,7 +29,7 @@ func _ready() -> void:
 	_timer.timeout.connect(blink)
 	get_v_scroll_bar().value_changed.connect(queue_redraw_caret.unbind(1))
 	get_h_scroll_bar().value_changed.connect(queue_redraw_caret.unbind(1))
-	mouse_exited.connect(_on_base_class_mouse_exited)
+	mouse_exited.connect(queue_redraw)
 	focus_entered.connect(_on_base_class_focus_entered)
 	focus_exited.connect(_on_base_class_focus_exited)
 	caret_changed.connect(queue_redraw_caret)
@@ -50,8 +48,7 @@ func recalibrate_line_gutter() -> void:
 	set_gutter_custom_draw(0, _line_number_draw_callback)
 	set_gutter_clickable(0, false)
 	var max_digits := floori(log(get_line_count()) / log(10) + 1.0)
-	_line_gutter_needed_space = int(max_digits * get_theme_font("font").get_char_size(69,
-			get_theme_font_size("font_size")).x) + 11
+	_line_gutter_needed_space = int(max_digits * get_theme_font("font").get_char_size(69, get_theme_font_size("font_size")).x) + 11
 	set_gutter_width(0, _line_gutter_needed_space)
 
 func _line_number_draw_callback(line: int, _gutter: int, region: Rect2) -> void:
@@ -63,11 +60,9 @@ func _line_number_draw_callback(line: int, _gutter: int, region: Rect2) -> void:
 	var font_size := get_theme_font_size("font_size")
 	
 	# Center vertically, align to the left of the gutter.
-	var text_pos := Vector2(-5,
-			region.get_center().y + font.get_ascent(font_size) - font.get_string_size(
+	var text_pos := Vector2(-5, region.get_center().y + font.get_ascent(font_size) - font.get_string_size(
 			line_number_text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).y / 2)
-	draw_string(font, text_pos, line_number_text, HORIZONTAL_ALIGNMENT_RIGHT,
-			_line_gutter_needed_space, font_size, ThemeUtils.dimmer_text_color)
+	draw_string(font, text_pos, line_number_text, HORIZONTAL_ALIGNMENT_RIGHT, _line_gutter_needed_space, font_size, ThemeUtils.dimmer_text_color)
 
 
 func _exit_tree() -> void:
@@ -97,7 +92,8 @@ func _redraw_caret() -> void:
 	if not has_focus():
 		return
 	
-	var char_size := ThemeUtils.mono_font.get_char_size(69, get_theme_font_size("font_size"))
+	var font_size := get_theme_font_size("font_size")
+	var char_size := ThemeUtils.mono_font.get_char_size(69, font_size)
 	for caret in get_caret_count():
 		var caret_pos := Vector2.ZERO
 		var caret_column := get_caret_column(caret)
@@ -110,39 +106,26 @@ func _redraw_caret() -> void:
 			var glyph_end := Vector2(get_rect_at_line_column(caret_line, caret_column).end)
 			caret_pos = Vector2(glyph_end.x + 1, glyph_end.y - 2)
 			var line := get_line(caret_line)
-			# Workaround for indent_wrapped_lines.
-			if get_line_wrap_index_at_column(caret_line, caret_column) >= 1:
-				var i := 0
-				while true:
-					var c := line[i]
-					if c == ' ':
-						caret_pos.x += char_size.x
-					elif c == '\t':
-						caret_pos.x += char_size.x * get_tab_size()
-					else:
-						break
-					i += 1
 			# Workaround for ligatures.
-			if (caret_column >= line.length() or line[caret_column] != '\t') and\
-			glyph_end.x > 0 and glyph_end.y > 0:
+			if (caret_column >= line.length() or line[caret_column] != '\t') and glyph_end.x > 0 and glyph_end.y > 0:
 				var chars_back := 0
-				while line.length() > caret_column + chars_back and glyph_end ==\
-				Vector2(get_rect_at_line_column(caret_line, caret_column + chars_back + 1).end):
+				while line.length() > caret_column + chars_back and glyph_end == Vector2(get_rect_at_line_column(caret_line, caret_column + chars_back + 1).end):
 					chars_back += 1
 					caret_pos.x -= char_size.x
 		# Determine the end of the caret and draw it.
 		var caret_end := caret_pos
 		if is_overtype_mode_enabled():
-			var char_width: float
 			if caret_column >= get_line(caret_line).length():
-				char_width = char_size.x
+				caret_end.x += char_size.x
 			else:
-				char_width = get_rect_at_line_column(caret_line, caret_column + 1).size.x
-			caret_end.x += char_width
+				var caret_char := get_line(caret_line)[caret_column]
+				if caret_char == '\t':
+					caret_end.x += char_size.x * get_tab_size()
+				else:
+					caret_end.x += ThemeUtils.mono_font.get_char_size(ord(caret_char), font_size).x
 		else:
 			caret_end.y -= char_size.y + 1
-		RenderingServer.canvas_item_add_line(_surface, caret_pos, caret_end,
-				ThemeUtils.caret_color, 1)
+		RenderingServer.canvas_item_add_line(_surface, caret_pos, caret_end, ThemeUtils.caret_color, 1)
 
 var _blonk := true
 func blink() -> void:
@@ -156,26 +139,22 @@ func _on_base_class_focus_exited() -> void:
 	_timer.stop()
 	RenderingServer.canvas_item_clear(_surface)
 
-func _on_base_class_mouse_exited() -> void:
-	_hovered = false
-	queue_redraw()
-
 func _draw() -> void:
-	if editable and _hovered and has_theme_stylebox("hover"):
+	if editable and get_viewport().gui_get_hovered_control() == self and has_theme_stylebox("hover"):
 		draw_style_box(get_theme_stylebox("hover"), Rect2(Vector2.ZERO, size))
 	
 	if get_gutter_count() == 1:
 		var col := ThemeUtils.subtle_text_color
 		col.a *= 0.4
-		draw_line(Vector2(_line_gutter_needed_space, 0),
-				Vector2(_line_gutter_needed_space, size.y), col)
+		var normal_stylebox := get_theme_stylebox("normal")
+		var top_border: float = normal_stylebox.border_width_top if normal_stylebox is StyleBoxFlat else 0.0
+		var bottom_border: float = normal_stylebox.border_width_bottom if normal_stylebox is StyleBoxFlat else 0.0
+		draw_line(Vector2(_line_gutter_needed_space, top_border), Vector2(_line_gutter_needed_space, size.y - bottom_border), col)
 
 
 func _input(event: InputEvent) -> void:
-	if (has_focus() and event is InputEventMouseButton and (event.button_index in\
-	[MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]) and\
-	event.is_pressed() and not get_global_rect().has_point(event.position) and\
-	HandlerGUI.popup_stack.is_empty()):
+	if (has_focus() and event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]) and\
+	event.is_pressed() and not get_global_rect().has_point(event.position) and HandlerGUI.popup_stack.is_empty()):
 		release_focus()
 
 func _gui_input(event: InputEvent) -> void:
@@ -191,7 +170,6 @@ func _gui_input(event: InputEvent) -> void:
 	mouse_filter = Utils.mouse_filter_pass_non_drag_events(event)
 	
 	if event is InputEventMouseMotion and event.button_mask == 0:
-		_hovered = true
 		queue_redraw()
 	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():

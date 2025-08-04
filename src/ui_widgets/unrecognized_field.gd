@@ -21,5 +21,4 @@ func sync() -> void:
 	text = element.get_attribute_value(attribute_name)
 
 func sync_localization() -> void:
-	tooltip_text = attribute_name + "\n(%s)" %\
-			Translator.translate("VectorTouch doesn’t recognize this attribute")
+	tooltip_text = attribute_name + "\n(%s)" % Translator.translate("VectorTouch doesn’t recognize this attribute")

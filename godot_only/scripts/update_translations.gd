@@ -2,7 +2,7 @@
 @tool
 extends EditorScript
 
-const COMMENTS_DICT = {
+const COMMENTS_DICT: Dictionary[String, String] = {
 	"Viewport": "The viewport is the area where the graphic is displayed. In similar applications, it's often called the canvas.",
 	"CDATA color": "CDATA shouldn't be translated. It's a type of XML section.",
 	"Editor formatter": "Refers to the formatter used for VectorTouch's code editor.",
@@ -16,6 +16,7 @@ const COMMENTS_DICT = {
 	"Dark": "Refers to a theme preset.",
 	"Light": "Refers to a theme preset.",
 	"Black (OLED)": "Refers to a theme preset.",
+	"translation-credits": "Translators (comma-separated): Name or alias, optionally followed by an email in angle brackets <email@example.com>.\nUsed for credits. Adding yourself is optional. New entries go at the end. Don't remove or rearrange existing entries.",
 }
 
 const TRANSLATIONS_DIR = "translations"
@@ -104,19 +105,21 @@ func update_translations() -> void:
 	fa.store_string(HEADER)
 	for msg in messages:
 		if COMMENTS_DICT.has(msg.msgid):
-			fa.store_string("#. %s\n" % COMMENTS_DICT[msg.msgid])
+			var comment_lines := COMMENTS_DICT[msg.msgid].split("\n")
+			var comment := ""
+			for line in comment_lines:
+				comment += "#. %s\n" % line
+			fa.store_string(comment)
 			used_comments.append(msg.msgid)
 		fa.store_string(msg.to_string())
 	fa = null
-	print("Created %s with %d strings" % [TRANSLATIONS_DIR.path_join("/VectorTouch.pot"),
-			(messages.size() + 1)])
+	print("Created %s with %d strings" % [TRANSLATIONS_DIR.path_join("/GodSVG.pot"), (messages.size() + 1)])
 	
 	for file in DirAccess.get_files_at(folder_location):
 		if not (file.get_extension() == "po" or file == "VectorTouch.pot"):
 			continue
 		
-		var args := PackedStringArray(["--update", "--quiet", "--verbose", "--backup=off",
-				folder_location.path_join(file), pot_location])
+		var args := PackedStringArray(["--update", "--quiet", "--verbose", "--backup=off", folder_location.path_join(file), pot_location])
 		var output: Array = []
 		var result := OS.execute("msgmerge", args, output, true)
 		if not result == -1:

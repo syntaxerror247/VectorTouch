@@ -15,8 +15,6 @@ const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
 
 var tabs_panel: PanelContainer
 
-var reference_overlay := false
-
 func _ready() -> void:
 	Configs.language_changed.connect(sync_localization)
 	sync_localization()
@@ -54,19 +52,19 @@ func update_snap_config() -> void:
 
 
 func _on_reference_pressed() -> void:
+	var has_reference := is_instance_valid(reference_texture.texture)
 	var btn_arr: Array[Button] = [
 		ContextPopup.create_shortcut_button("load_reference"),
 		ContextPopup.create_button(Translator.translate("Paste reference image"),
 				paste_reference_image, not Utils.has_clipboard_image_web_safe(),
 				load("res://assets/icons/Paste.svg")),
-		ContextPopup.create_shortcut_checkbox("view_show_reference", reference_texture.visible),
-		ContextPopup.create_shortcut_checkbox("view_overlay_reference", reference_overlay)
+		ContextPopup.create_shortcut_checkbox("view_show_reference", State.show_reference and has_reference, not has_reference),
+		ContextPopup.create_shortcut_checkbox("view_overlay_reference", State.overlay_reference and has_reference, not has_reference)
 	]
 	
 	var reference_popup := ContextPopup.new()
 	reference_popup.setup(btn_arr, true)
-	HandlerGUI.popup_under_rect_center(reference_popup, reference_button.get_global_rect(),
-			get_viewport())
+	HandlerGUI.popup_under_rect_center(reference_popup, reference_button.get_global_rect(), get_viewport())
 
 func paste_reference_image() -> void:
 	FileUtils.load_reference_from_image(DisplayServer.clipboard_get_image())
@@ -91,8 +89,7 @@ func sync_reference_image() ->  void:
 		reference_texture.hide()
 
 func _on_snap_button_toggled(toggled_on: bool) -> void:
-	Configs.savedata.snap = absf(Configs.savedata.snap) if toggled_on\
-			else -absf(Configs.savedata.snap)
+	Configs.savedata.snap = absf(Configs.savedata.snap) if toggled_on else -absf(Configs.savedata.snap)
 
 func _on_snap_number_edit_value_changed(new_value: float) -> void:
 	Configs.savedata.snap = new_value * signf(Configs.savedata.snap)
@@ -110,8 +107,7 @@ func _on_show_debug_changed() -> void:
 func update_debug() -> void:
 	var debug_text := ""
 	debug_text += "FPS: %d\n" % Performance.get_monitor(Performance.TIME_FPS)
-	debug_text += "Static Mem: %s\n" % String.humanize_size(int(Performance.get_monitor(
-			Performance.MEMORY_STATIC)))
+	debug_text += "Static Mem: %s\n" % String.humanize_size(int(Performance.get_monitor(Performance.MEMORY_STATIC)))
 	debug_text += "Nodes: %d\n" % Performance.get_monitor(Performance.OBJECT_NODE_COUNT)
 	debug_text += "Stray nodes: %d\n" % Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
 	debug_text += "Objects: %d\n" % Performance.get_monitor(Performance.OBJECT_COUNT)

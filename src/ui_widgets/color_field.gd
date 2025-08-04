@@ -67,8 +67,7 @@ func _on_element_ancestor_attribute_changed(attribute_changed: String) -> void:
 
 # Redraw in case the gradient might have changed.
 func _on_svg_changed() -> void:
-	if cached_allow_url and\
-	ColorParser.is_valid_url(element.get_implied_attribute_value(attribute_name)):
+	if cached_allow_url and ColorParser.is_valid_url(element.get_implied_attribute_value(attribute_name)):
 		update_gradient_texture()
 		queue_redraw()
 	elif element.get_attribute_value(attribute_name) == "currentColor":
@@ -83,8 +82,7 @@ func _on_pressed() -> void:
 	# If it's a color attribute, or there's no color attribute children of this element,
 	# mark the current color keyword as uninteresting (won't be shown in palettes).
 	if not cached_allow_current_color:
-		color_popup.current_color_availability =\
-				color_popup.CurrentColorAvailability.UNAVAILABLE
+		color_popup.current_color_availability = color_popup.CurrentColorAvailability.UNAVAILABLE
 	else:
 		var has_color_attribute_parent := false
 		for element_depth in range(0, element.xid.size()):
@@ -93,10 +91,8 @@ func _on_pressed() -> void:
 			if State.root_element.get_xnode(checked_xid).has_attribute("color"):
 				has_color_attribute_parent = true
 				break
-		color_popup.current_color_availability =\
-				color_popup.CurrentColorAvailability.INTERESTING if\
-				has_color_attribute_parent else\
-				color_popup.CurrentColorAvailability.UNINTERESTING
+		color_popup.current_color_availability = color_popup.CurrentColorAvailability.INTERESTING if has_color_attribute_parent\
+				else color_popup.CurrentColorAvailability.UNINTERESTING
 	color_popup.current_color = element.get_default("color")
 	color_popup.is_none_keyword_available = cached_allow_none
 	color_popup.color_picked.connect(_on_color_picked)
@@ -185,8 +181,7 @@ func update_gradient_texture() -> void:
 		gradient_texture = null
 
 func _on_button_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and\
-	event.is_pressed():
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
 		accept_event()
 		HandlerGUI.throw_mouse_motion_event()
 	else:

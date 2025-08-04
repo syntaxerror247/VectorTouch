@@ -43,9 +43,8 @@ func can_replace(new_element: String) -> bool:
 		if list.size() != 8:
 			return false
 		# Do the x or y coordinates match between opposite pairs of points?
-		return (list[0] == list[2] and list[3] == list[5] and list[4] == list[6] and\
-				list[7] == list[1]) or (list[1] == list[3] and list[2] == list[4] and\
-				list[5] == list[7] and list[6] == list[0])
+		return (list[0] == list[2] and list[3] == list[5] and list[4] == list[6] and list[7] == list[1]) or\
+				(list[1] == list[3] and list[2] == list[4] and list[5] == list[7] and list[6] == list[0])
 	else:
 		return new_element == "path"
 
@@ -57,8 +56,7 @@ func get_replacement(new_element: String) -> Element:
 	var dropped_attributes: PackedStringArray
 	match new_element:
 		"rect":
-			dropped_attributes = PackedStringArray(["points", "rx", "ry", "cx", "cy",
-					"width", "height"])
+			dropped_attributes = PackedStringArray(["points", "rx", "ry", "cx", "cy", "width", "height"])
 			simplify()
 			var list: PackedFloat64Array = get_attribute_list("points")
 			var x1 := list[0]

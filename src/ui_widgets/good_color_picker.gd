@@ -122,8 +122,7 @@ func sync_color_space_buttons() -> void:
 		btn.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 		
 		var on_slider_mode_changed := func() -> void:
-				btn.mouse_default_cursor_shape = Control.CURSOR_ARROW if\
-				slider_mode == color_space else Control.CURSOR_POINTING_HAND
+				btn.mouse_default_cursor_shape = Control.CURSOR_ARROW if slider_mode == color_space else Control.CURSOR_POINTING_HAND
 		
 		slider_mode_changed.connect(on_slider_mode_changed)
 		btn.tree_exiting.connect(slider_mode_changed.disconnect.bind(on_slider_mode_changed))
@@ -143,6 +142,11 @@ func update_keyword_button() -> void:
 		keyword_button.show()
 
 func _ready() -> void:
+	var shortcuts := ShortcutsRegistration.new()
+	shortcuts.add_shortcut("ui_undo", undo_redo.undo)
+	shortcuts.add_shortcut("ui_redo", undo_redo.redo)
+	HandlerGUI.register_shortcuts(self, shortcuts)
+	
 	Configs.theme_changed.connect(sync_color_space_buttons)
 	sync_color_space_buttons()
 	# Set up signals.
@@ -187,8 +191,7 @@ func _on_slider_mode_changed() -> void:
 func register_visual_change(new_color: Color, use_backup := true) -> void:
 	# Return early if the color didn't change. If the color is a keyword, all visual
 	# changes reset it to a normal color.
-	if not color in ["none", "currentColor"] and\
-	new_color == (backup_display_color if use_backup else display_color):
+	if not color in ["none", "currentColor"] and new_color == (backup_display_color if use_backup else display_color):
 		return
 	
 	undo_redo.create_action()
@@ -218,8 +221,7 @@ func set_display_color(new_display_color: Color) -> void:
 func update() -> void:
 	# Adjust the shaders.
 	tracks_arr[0].material.set_shader_parameter("v", display_color.v)
-	tracks_arr[0].material.set_shader_parameter("base_color",
-			Color.from_hsv(display_color.h, display_color.s, 1.0))
+	tracks_arr[0].material.set_shader_parameter("base_color", Color.from_hsv(display_color.h, display_color.s, 1.0))
 	tracks_arr[1].material.set_shader_parameter("base_color", display_color)
 	tracks_arr[2].material.set_shader_parameter("base_color", display_color)
 	tracks_arr[3].material.set_shader_parameter("base_color", display_color)
@@ -255,11 +257,9 @@ func _on_color_wheel_gui_input(event: InputEvent) -> void:
 		backup()
 	var new_color := display_color
 	if Utils.is_event_drag(event) or is_event_drag_start:
-		var event_pos_on_wheel: Vector2 = event.position + color_wheel.position -\
-				color_wheel_drawn.position
+		var event_pos_on_wheel: Vector2 = event.position + color_wheel.position - color_wheel_drawn.position
 		new_color.h = fposmod(center.angle_to_point(event_pos_on_wheel), TAU) / TAU
-		new_color.s = minf(event_pos_on_wheel.distance_to(center) * 2 /\
-				color_wheel_drawn.size.x, 1.0)
+		new_color.s = minf(event_pos_on_wheel.distance_to(center) * 2 / color_wheel_drawn.size.x, 1.0)
 		set_display_color(new_color)
 	if Utils.is_event_drag_end(event):
 		register_visual_change(display_color)
@@ -394,8 +394,7 @@ func _on_keyword_button_pressed() -> void:
 	
 	var context_popup := ContextPopup.new()
 	context_popup.setup(btn_arr, true)
-	HandlerGUI.popup_under_rect(context_popup, keyword_button.get_global_rect(),
-			get_viewport())
+	HandlerGUI.popup_under_rect(context_popup, keyword_button.get_global_rect(), get_viewport())
 
 func set_to_keyword(keyword: String) -> void:
 	undo_redo.create_action()
@@ -446,27 +445,23 @@ func _on_side_slider_draw() -> void:
 	if not sliders_dragged[0]:
 		arrow_modulate.a = 0.7
 	widgets_arr[0].draw_texture(side_slider_arrow, Vector2(0, tracks_arr[0].position.y +\
-			tracks_arr[0].size.y * (1 - display_color.v) -\
-			side_slider_arrow.get_height() / 2.0), arrow_modulate)
+			tracks_arr[0].size.y * (1 - display_color.v) - side_slider_arrow.get_height() / 2.0), arrow_modulate)
 
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(color_wheel_surface)
 	# Draw the color wheel handle.
-	var point_pos := center + Vector2(center.x * cos(display_color.h * TAU),
-			center.y * sin(display_color.h * TAU)) * display_color.s
-	RenderingServer.canvas_item_add_texture_rect(color_wheel_surface, Rect2(point_pos -\
-			handle_texture.get_size() / 2, handle_texture.get_size()), handle_texture)
+	var handle_texture_size := handle_texture.get_size()
+	var point_pos := center + Vector2(center.x * cos(display_color.h * TAU), center.y * sin(display_color.h * TAU)) * display_color.s
+	RenderingServer.canvas_item_add_texture_rect(color_wheel_surface, Rect2(point_pos - handle_texture_size / 2, handle_texture_size), handle_texture)
 
 # Helper for drawing the horizontal sliders.
 func draw_hslider(idx: int, offset: float, chr: String) -> void:
 	var arrow_modulate := ThemeUtils.tinted_contrast_color
 	if not sliders_dragged[idx]:
 		arrow_modulate.a = 0.7
-	widgets_arr[idx].draw_texture(slider_arrow, Vector2(tracks_arr[idx].position.x +\
-			tracks_arr[idx].size.x * offset - slider_arrow.get_width() / 2.0,
+	widgets_arr[idx].draw_texture(slider_arrow, Vector2(tracks_arr[idx].position.x + tracks_arr[idx].size.x * offset - slider_arrow.get_width() / 2.0,
 			tracks_arr[idx].size.y), arrow_modulate)
-	widgets_arr[idx].draw_string(get_theme_default_font(), Vector2(-12, 11), chr,
-			HORIZONTAL_ALIGNMENT_CENTER, 12, 14, ThemeUtils.text_color)
+	widgets_arr[idx].draw_string(get_theme_default_font(), Vector2(-12, 11), chr, HORIZONTAL_ALIGNMENT_CENTER, 12, 14, ThemeUtils.text_color)
 
 # Make sure the arrows are redrawn when the tracks finish resizing.
 func _on_track_resized() -> void:
@@ -528,18 +523,6 @@ func hex(col: Color) -> String:
 		col.h = 1.0
 	
 	return col.to_html(alpha_enabled and col.a != 1.0)
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if not visible:
-		return
-	
-	if ShortcutUtils.is_action_pressed(event, "ui_undo"):
-		undo_redo.undo()
-		accept_event()
-	elif ShortcutUtils.is_action_pressed(event, "ui_redo"):
-		undo_redo.redo()
-		accept_event()
 
 
 func _on_eyedropper_pressed() -> void:

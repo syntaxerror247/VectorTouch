@@ -28,33 +28,24 @@ static func get_action_description(action_name: String, for_button := false) -> 
 		"close_all_other_tabs": return Translator.translate("Close all other tabs")
 		"close_empty_tabs": return Translator.translate("Close empty tabs")
 		"close_saved_tabs": return Translator.translate("Close saved tabs")
-		"new_tab": return Translator.translate("Create tab") if\
-				for_button else Translator.translate("Create a new tab")
+		"new_tab": return Translator.translate("Create tab") if for_button else Translator.translate("Create a new tab")
 		"select_next_tab": return Translator.translate("Select the next tab")
 		"select_previous_tab": return Translator.translate("Select the previous tab")
-		"optimize": return Translator.translate("Optimize") if\
-				for_button else Translator.translate("Optimize SVG")
-		"copy_svg_text": return Translator.translate("Copy all text") if\
-				for_button else Translator.translate("Copy the SVG text")
+		"optimize": return Translator.translate("Optimize") if for_button else Translator.translate("Optimize SVG")
+		"copy_svg_text": return Translator.translate("Copy all text") if for_button else Translator.translate("Copy the SVG text")
 		"reset_svg": return Translator.translate("Reset SVG")
-		"open_externally": return Translator.translate("Open externally") if\
-				for_button else Translator.translate("Open SVG externally")
-		"open_in_folder": return Translator.translate("Show in File Manager") if\
-				for_button else Translator.translate("Show SVG in File Manager")
+		"open_externally": return Translator.translate("Open externally") if for_button else Translator.translate("Open SVG externally")
+		"open_in_folder": return Translator.translate("Show in File Manager") if for_button else Translator.translate("Show SVG in File Manager")
 		"ui_undo": return Translator.translate("Undo")
 		"ui_redo": return Translator.translate("Redo")
 		"ui_copy": return Translator.translate("Copy")
 		"ui_paste": return Translator.translate("Paste")
 		"ui_cut": return Translator.translate("Cut")
 		"select_all": return Translator.translate("Select all")
-		"duplicate": return Translator.translate("Duplicate") if\
-				for_button else Translator.translate("Duplicate the selection")
-		"delete": return Translator.translate("Delete") if\
-				for_button else Translator.translate("Delete the selection")
-		"move_up": return Translator.translate("Move up") if\
-				for_button else Translator.translate("Move the selection up")
-		"move_down": return Translator.translate("Move down") if\
-				for_button else Translator.translate("Move the selection down")
+		"duplicate": return Translator.translate("Duplicate") if for_button else Translator.translate("Duplicate the selection")
+		"delete": return Translator.translate("Delete") if for_button else Translator.translate("Delete the selection")
+		"move_up": return Translator.translate("Move up") if for_button else Translator.translate("Move the selection up")
+		"move_down": return Translator.translate("Move down") if for_button else Translator.translate("Move the selection down")
 		"find": return Translator.translate("Find")
 		"zoom_in": return Translator.translate("Zoom in")
 		"zoom_out": return Translator.translate("Zoom out")
@@ -87,24 +78,18 @@ static func get_action_description(action_name: String, for_button := false) -> 
 		"cubic_bezier_absolute": return get_path_command_description("C")
 		"shorthand_cubic_bezier_relative": return get_path_command_description("s")
 		"shorthand_cubic_bezier_absolute": return get_path_command_description("S")
-		"open_settings": return Translator.translate("Settings") if\
-				for_button else Translator.translate("Open Settings menu")
-		"about_info": return Translator.translate("About…") if\
-				for_button else Translator.translate("Open About menu")
-		"about_donate": return Translator.translate("Donate…") if\
-				for_button else Translator.translate("Open Donate menu")
-		"about_repo": return Translator.translate("VectorTouch repository") if\
-				for_button else Translator.translate("Open VectorTouch repository")
-		"about_website": return Translator.translate("VectorTouch website") if\
-				for_button else Translator.translate("Open VectorTouch website")
+		"open_settings": return Translator.translate("Settings") if for_button else Translator.translate("Open Settings menu")
+		"about_info": return Translator.translate("About…") if for_button else Translator.translate("Open About menu")
+		"about_donate": return Translator.translate("Donate…") if for_button else Translator.translate("Open Donate menu")
+		"about_repo": return Translator.translate("VectorTouch repository") if for_button else Translator.translate("Open VectorTouch repository")
+		"about_website": return Translator.translate("VectorTouch website") if for_button else Translator.translate("Open VectorTouch website")
 		"check_updates": return Translator.translate("Check for updates")
 		"quit": return Translator.translate("Quit the application")
 		"toggle_fullscreen": return Translator.translate("Toggle fullscreen")
 		_: return action_name
 
 
-static func get_path_command_description(command_char: String,
-omit_relativity := false) -> String:
+static func get_path_command_description(command_char: String, omit_relativity := false) -> String:
 	var description: String
 	match command_char:
 		"M", "m": description = Translator.translate("Move to")
@@ -139,27 +124,21 @@ static func get_extension_alert_text(allowed_extensions: PackedStringArray) -> S
 	for i in allowed_extensions.size():
 		allowed_extensions[i] = get_extension_readable_name(allowed_extensions[i])
 	var extension_list := ", ".join(allowed_extensions)
-	return Translator.translate(
-			"Only {extension_list} files are supported for this operation.").format(
-			{"extension_list": extension_list})
+	return Translator.translate("Only {extension_list} files are supported for this operation.").format({"extension_list": extension_list})
 
-static func get_file_dialog_select_mode_title_text(multi_select: bool,
-extensions: PackedStringArray) -> String:
+static func get_file_dialog_select_mode_title_text(multi_select: bool, extensions: PackedStringArray) -> String:
 	if multi_select:
-		return Translator.translate("Select {format} files").format(
-				{"format": get_extension_readable_name("svg")})
+		return Translator.translate("Select {format} files").format({"format": get_extension_readable_name("svg")})
 	else:
 		if extensions.size() > 1:
 			# Multiple formats currently only show up for reference images.
 			return Translator.translate("Select an image")
 		else:
 			# "an" because this can currently only show for SVG and XML files.
-			return Translator.translate("Select an {format} file").format(
-					{"format": get_extension_readable_name(extensions[0])})
+			return Translator.translate("Select an {format} file").format({"format": get_extension_readable_name(extensions[0])})
 
 static func get_file_dialog_save_mode_title_text(extension: String) -> String:
-	return Translator.translate("Save the {format} file").format(
-			{"format": get_extension_readable_name(extension)})
+	return Translator.translate("Save the {format} file").format({"format": get_extension_readable_name(extension)})
 
 static func get_extension_readable_name(extension: String) -> String:
 	match extension:

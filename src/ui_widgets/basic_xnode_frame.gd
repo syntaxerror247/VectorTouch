@@ -40,8 +40,7 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	return data
 
 func _on_xnodes_dragging_state_changed() -> void:
-	modulate.a = 0.55 if (State.is_xnode_selection_dragged and\
-			xnode.xid in State.selected_xids) else 1.0
+	modulate.a = 0.55 if (State.is_xnode_selection_dragged and xnode.xid in State.selected_xids) else 1.0
 
 
 func _on_title_button_pressed() -> void:
@@ -50,15 +49,13 @@ func _on_title_button_pressed() -> void:
 	State.normal_select(xnode.xid)
 	var viewport := get_viewport()
 	var rect := title_bar.get_global_rect()
-	HandlerGUI.popup_under_rect_center(State.get_selection_context(
-			HandlerGUI.popup_under_rect_center.bind(rect, viewport),
+	HandlerGUI.popup_under_rect_center(State.get_selection_context(HandlerGUI.popup_under_rect_center.bind(rect, viewport),
 			Utils.LayoutPart.INSPECTOR), rect, viewport)
 
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and event.button_mask == 0:
-		if State.semi_hovered_xid != xnode.xid and\
-		not XIDUtils.is_parent(xnode.xid, State.hovered_xid):
+		if State.semi_hovered_xid != xnode.xid and not XIDUtils.is_parent(xnode.xid, State.hovered_xid):
 			State.set_hovered(xnode.xid)
 	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -69,8 +66,7 @@ func _gui_input(event: InputEvent) -> void:
 					State.ctrl_select(xnode.xid)
 				elif not xnode.xid in State.selected_xids:
 					State.normal_select(xnode.xid)
-			elif event.is_released() and not event.shift_pressed and\
-			not event.is_command_or_control_pressed() and\
+			elif event.is_released() and not event.shift_pressed and not event.is_command_or_control_pressed() and\
 			State.selected_xids.size() > 1 and xnode.xid in State.selected_xids:
 				State.normal_select(xnode.xid)
 			accept_event()
@@ -79,8 +75,7 @@ func _gui_input(event: InputEvent) -> void:
 				State.normal_select(xnode.xid)
 			var viewport := get_viewport()
 			var popup_pos := viewport.get_mouse_position()
-			HandlerGUI.popup_under_pos(State.get_selection_context(
-					HandlerGUI.popup_under_pos.bind(popup_pos, viewport),
+			HandlerGUI.popup_under_pos(State.get_selection_context(HandlerGUI.popup_under_pos.bind(popup_pos, viewport),
 					Utils.LayoutPart.INSPECTOR), popup_pos, viewport)
 			accept_event()
 
@@ -162,8 +157,7 @@ func _draw() -> void:
 			are_all_children_valid = false
 			break
 	
-	var drop_border_color := Configs.savedata.get_validity_color(false,
-			not are_all_children_valid)
+	var drop_border_color := Configs.savedata.get_validity_color(false, not are_all_children_valid)
 	drop_border_color.s = lerpf(drop_border_color.s, 1.0, 0.5)
 	drop_sb.border_color = drop_border_color
 	if drop_xid == parent_xid + PackedInt32Array([xnode.xid[-1]]):

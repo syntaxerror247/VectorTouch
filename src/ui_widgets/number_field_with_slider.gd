@@ -98,8 +98,7 @@ func _draw() -> void:
 	stylebox.corner_radius_bottom_right = 5
 	stylebox.bg_color = get_theme_stylebox("normal", "LineEdit").bg_color
 	stylebox.draw(ci, Rect2(size.x - BUTTON_WIDTH, 1, BUTTON_WIDTH - 2, size.y - 2))
-	var fill_height := (size.y - 4) * (element.get_attribute_num(attribute_name) -\
-			MIN_VALUE) / MAX_VALUE
+	var fill_height := (size.y - 4) * (element.get_attribute_num(attribute_name) - MIN_VALUE) / MAX_VALUE
 	# Create a stylebox that'll occupy the exact amount of space.
 	var fill_stylebox := StyleBoxFlat.new()
 	fill_stylebox.bg_color = ThemeUtils.tinted_contrast_color
@@ -107,8 +106,7 @@ func _draw() -> void:
 		fill_stylebox.bg_color.a = 0.65
 	elif not slider_hovered:
 		fill_stylebox.bg_color.a = 0.5
-	fill_stylebox.draw(ci, Rect2(size.x - BUTTON_WIDTH, size.y - 2 - fill_height,
-			BUTTON_WIDTH - 2, fill_height))
+	fill_stylebox.draw(ci, Rect2(size.x - BUTTON_WIDTH, size.y - 2 - fill_height, BUTTON_WIDTH - 2, fill_height))
 	if slider_dragged:
 		draw_button_border("pressed")
 	elif slider_hovered:
@@ -120,8 +118,7 @@ func _on_slider_gui_input(event: InputEvent) -> void:
 	if not temp_button.mouse_exited.is_connected(_on_slider_mouse_exited):
 		temp_button.mouse_exited.connect(_on_slider_mouse_exited)
 	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and\
-	event.is_pressed():
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
 		accept_event()
 		HandlerGUI.throw_mouse_motion_event()
 	else:
@@ -140,8 +137,7 @@ func _on_slider_gui_input(event: InputEvent) -> void:
 		elif Utils.is_event_drag_end(event):
 			slider_dragged = false
 			var final_slider_value := get_slider_value_at_y(event.position.y)
-			if initial_slider_value !=\
-			element.get_attribute(attribute_name).num_to_text(final_slider_value):
+			if initial_slider_value != element.get_attribute(attribute_name).num_to_text(final_slider_value):
 				set_num(final_slider_value, true)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -150,9 +146,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		set_value(initial_slider_value)
 		accept_event()
 
+
 func get_slider_value_at_y(y_coord: float) -> float:
-	return snappedf(lerpf(MAX_VALUE, MIN_VALUE,
-			(y_coord - 4) / (temp_button.size.y - 4)), SLIDER_STEP)
+	return snappedf(lerpf(MAX_VALUE, MIN_VALUE, (y_coord - 4) / (temp_button.size.y - 4)), SLIDER_STEP)
 
 func _on_slider_mouse_exited() -> void:
 	slider_hovered = false

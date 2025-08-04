@@ -7,8 +7,7 @@ var y_name: String
 var d_name: String
 var horizontal: bool
 
-func _init(new_element: Element, xref: String, yref: String, dref: String,
-p_horizontal: bool) -> void:
+func _init(new_element: Element, xref: String, yref: String, dref: String, p_horizontal: bool) -> void:
 	element = new_element
 	x_name = xref
 	y_name = yref
@@ -26,8 +25,7 @@ func set_pos(new_pos: PackedFloat64Array) -> void:
 		new_pos[0] = element.get_attribute_num(x_name)
 	
 	if precise_pos != new_pos:
-		element.set_attribute(d_name, absf(new_pos[0] - element.get_attribute_num(x_name)\
-				if horizontal else new_pos[1] - element.get_attribute_num(y_name)))
+		element.set_attribute(d_name, absf(new_pos[0] - element.get_attribute_num(x_name) if horizontal else new_pos[1] - element.get_attribute_num(y_name)))
 		sync()
 
 func sync() -> void:
