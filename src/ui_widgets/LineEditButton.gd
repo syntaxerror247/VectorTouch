@@ -5,7 +5,7 @@ class_name LineEditButton extends Control
 # A fake-out is drawn to avoid adding unnecessary nodes.
 # The real controls are only created when necessary, such as when hovered or focused.
 
-const BUTTON_WIDTH = 14.0
+const BUTTON_WIDTH = 20.0
 
 signal pressed
 signal text_change_canceled
