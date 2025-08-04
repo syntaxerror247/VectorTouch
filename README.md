@@ -15,6 +15,16 @@ Download the latest release of the app from the [releases](https://github.com/sy
 
 To try the latest version, download the apk from the last [CI run](https://github.com/syntaxerror247/VectorTouch/actions) artifact.
 
+To verify the APK signature, check if the release APK is signed with the correct certificate by comparing the following fingerprints:
+```
+SHA1: DD:16:9C:8C:46:FE:7E:C1:9C:99:08:10:D0:1D:3D:58:49:6D:A5:44
+SHA256: 13:14:A8:F6:96:20:45:20:71:04:D8:70:9F:34:85:5B:8D:9E:8A:F5:0C:E8:EE:E5:48:66:DC:3E:A0:3E:0C:C6
+```
+You can use this command to display the certificate details, including the SHA-1 and SHA-256 fingerprints:
+```
+keytool -printcert -jarfile <APK-file>
+```
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
