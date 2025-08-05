@@ -97,7 +97,7 @@ func _ready() -> void:
 	update_ui_scale()
 	
 	android_runtime = Engine.get_singleton("AndroidRuntime")
-	set_system_bar_color(ThemeUtils.base_color, true)
+	#set_system_bar_color(ThemeUtils.base_color, true)
 	#toogle_status_bar(Configs.current_orientation == Configs.orientation.PORTRAIT)
 	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
 	if version: Configs.current_sdk = version.SDK_INT
