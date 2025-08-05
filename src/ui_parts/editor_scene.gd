@@ -197,6 +197,8 @@ func update_layout() -> void:
 			side_panel_vbox.add_child(create_layout_node(side_panel_top[0]))
 		elif not side_panel_bottom.is_empty():
 			side_panel_vbox.add_child(create_layout_node(side_panel_bottom[0]))
+	
+	HandlerGUI.minimum_content_width = get_minimum_size().x
 
 func _on_main_splitter_dragged(offset: int) -> void:
 	Configs.savedata.main_splitter_offset = offset
