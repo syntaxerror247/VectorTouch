@@ -557,9 +557,11 @@ func setup_other_content() -> void:
 	var dropdown_map := {
 		SaveData.ScalingApproach.AUTO: "Auto (%d%%)" % int(auto_scale * 100),
 	}
+	var screen_width := get_tree().root.size.x
 	for approach in all_options.keys():
 		var value: float= all_options[approach]
-		dropdown_map[approach] = "%d%%" % int(value * 100)
+		if ((screen_width / value) >= HandlerGUI.minimum_content_width) && value >= auto_scale/2:
+			dropdown_map[approach] = "%d%%" % int(value * 100)
 	
 	current_setup_setting = "ui_scale"
 	add_dropdown(Translator.translate("UI scale"), dropdown_map.keys(), dropdown_map)

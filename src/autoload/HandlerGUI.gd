@@ -20,8 +20,9 @@ var tabs_panel: PanelContainer
 
 var android_runtime: JNISingleton
 var is_light_system_bars: bool = false
-
 var status_bar_visible: bool = true
+
+var minimum_content_width : float
 
 func set_system_bar_color(color: Color, override_appearance := false) -> void:
 	if not android_runtime:
@@ -380,8 +381,19 @@ func get_auto_ui_scale() -> float:
 	var base_dpi := 160.0
 	var scale := dpi / base_dpi
 	var blend: float = clamp((dpi - 240.0) / 400.0, 0.0, 1.0)
-	var adjusted_scale: float = lerp(scale, pow(scale, 0.75), blend)
-	return max(adjusted_scale, 1.0)
+	var adjusted_scale: float = max(lerp(scale, pow(scale, 0.75), blend), 1.0)
+	
+	var screen_width := get_tree().root.size.x
+	print("contents_minimum_width: ", minimum_content_width)
+	print("screen_width: ", screen_width)
+	print("adjusted_scale: ", adjusted_scale)
+
+	# Ensure the scale doesn't cause UI overflow.
+	if (screen_width / adjusted_scale) < minimum_content_width:
+		adjusted_scale = screen_width / minimum_content_width
+		print("Adjusted scale due to min content width: ", adjusted_scale)
+
+	return snapped(adjusted_scale, 0.01)
 
 func update_ui_scale() -> void:
 	var window := get_window()
