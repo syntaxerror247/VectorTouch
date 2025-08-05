@@ -44,7 +44,7 @@ func check_orientation():
 	if new_orientation != current_orientation:
 		current_orientation = new_orientation
 		orientation_changed.emit()
-		HandlerGUI.toogle_status_bar(new_orientation == orientation.PORTRAIT)
+		#HandlerGUI.toogle_status_bar(new_orientation == orientation.PORTRAIT)
 
 const savedata_path = "user://savedata.tres"
 var savedata: SaveData:

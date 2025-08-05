@@ -98,7 +98,7 @@ func _ready() -> void:
 	
 	android_runtime = Engine.get_singleton("AndroidRuntime")
 	set_system_bar_color(ThemeUtils.base_color, true)
-	toogle_status_bar(Configs.current_orientation == Configs.orientation.PORTRAIT)
+	#toogle_status_bar(Configs.current_orientation == Configs.orientation.PORTRAIT)
 	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
 	if version: Configs.current_sdk = version.SDK_INT
 	
@@ -113,10 +113,10 @@ func _ready() -> void:
 	get_tree().root.add_child.call_deferred(overlay_ref)
 	overlay_ref.add_child(tabs_panel)
 
-func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_RESUMED:
-		if not status_bar_visible:
-			toogle_status_bar(false, true)
+#func _notification(what: int) -> void:
+	#if what == NOTIFICATION_APPLICATION_RESUMED:
+		#if not status_bar_visible:
+			#toogle_status_bar(false, true)
 
 # Drag-and-drop of files.
 func _on_files_dropped(files: PackedStringArray) -> void:
