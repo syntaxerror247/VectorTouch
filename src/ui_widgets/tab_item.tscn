@@ -6,6 +6,7 @@
 [node name="TabItem" type="PanelContainer"]
 custom_minimum_size = Vector2(120, 160)
 size_flags_horizontal = 6
+mouse_filter = 1
 theme_type_variation = &"TabItem"
 script = ExtResource("1_aprl0")
 
