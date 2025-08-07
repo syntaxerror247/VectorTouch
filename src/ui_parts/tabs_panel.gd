@@ -10,8 +10,19 @@ func _ready() -> void:
 	get_parent().gui_input.connect(_on_parent_gui_input)
 	Configs.tab_removed.connect(refresh_tabs)
 	Configs.tab_selected.connect(highlight_active_tab)
+	Configs.theme_changed.connect(sync_theming)
+	sync_theming()
 	Configs.tabs_changed.connect(func(): should_refresh = true)
 	refresh_tabs()
+
+func sync_theming():
+	var scroll_bar: VScrollBar=  $VBoxContainer/ScrollContainer.get_v_scroll_bar()
+	scroll_bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var s: StyleBoxFlat = scroll_bar.get_theme_stylebox("scroll").duplicate()
+	s.draw_center = false
+	s.content_margin_left = 2
+	s.content_margin_right = 2
+	scroll_bar.add_theme_stylebox_override("scroll", s)
 
 func animate_in() -> void:
 	if should_refresh:

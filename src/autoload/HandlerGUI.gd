@@ -382,17 +382,10 @@ func get_auto_ui_scale() -> float:
 	var scale := dpi / base_dpi
 	var blend: float = clamp((dpi - 240.0) / 400.0, 0.0, 1.0)
 	var adjusted_scale: float = max(lerp(scale, pow(scale, 0.75), blend), 1.0)
-	
 	var screen_width := get_tree().root.size.x
-	print("contents_minimum_width: ", minimum_content_width)
-	print("screen_width: ", screen_width)
-	print("adjusted_scale: ", adjusted_scale)
-
 	# Ensure the scale doesn't cause UI overflow.
 	if (screen_width / adjusted_scale) < minimum_content_width:
 		adjusted_scale = screen_width / minimum_content_width
-		print("Adjusted scale due to min content width: ", adjusted_scale)
-
 	return snapped(adjusted_scale, 0.01)
 
 func update_ui_scale() -> void:

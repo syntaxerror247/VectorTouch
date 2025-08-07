@@ -5,6 +5,11 @@ const PreviewRectScene = preload("res://src/ui_widgets/preview_rect.tscn")
 @onready var title: Label = $VBoxContainer/HBoxContainer/title
 @onready var close_button: Button = $VBoxContainer/HBoxContainer/close
 
+var _click_start_time := 0
+var _dragged := false
+const CLICK_MAX_TIME := 300
+
+
 func setup(tab_title: String, svg_text: String, is_active: bool = false) -> void:
 	title.text = tab_title
 	highlight(is_active)
@@ -30,12 +35,18 @@ func highlight(is_active: bool) -> void:
 		theme_type_variation = "TabItem"
 
 func _gui_input(event: InputEvent) -> void:
-	if not event is InputEventMouseButton:
-		return
-	if event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
-		var index := get_index()
-		Configs.tab_selected.emit(index)
-	
+	if event is InputEventMouseMotion:
+		_dragged = true
+
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.is_pressed():
+			_click_start_time = Time.get_ticks_msec()
+			_dragged = false
+		else:
+			var time_diff := Time.get_ticks_msec() - _click_start_time
+			if time_diff <= CLICK_MAX_TIME and not _dragged:
+				var index := get_index()
+				Configs.tab_selected.emit(index)
 
 func _on_close_pressed() -> void:
 	FileUtils.close_tabs(get_index())
