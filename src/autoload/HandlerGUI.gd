@@ -34,14 +34,12 @@ func set_system_bar_color(color: Color, override_appearance := false) -> void:
 		var decorView: JavaObject = window.getDecorView()
 		decorView.setBackgroundColor(color.to_argb32())
 		
-		if (is_light_system_bars != (color.get_luminance() > 0.5)) or override_appearance:
-			is_light_system_bars = color.get_luminance() > 0.5
-			var wic = JavaClassWrapper.wrap("android.view.WindowInsetsController")
-			var insets_controller = window.getInsetsController()
-			insets_controller.setSystemBarsAppearance(
-				wic.APPEARANCE_LIGHT_STATUS_BARS if is_light_system_bars else 0, wic.APPEARANCE_LIGHT_STATUS_BARS)
-			insets_controller.setSystemBarsAppearance(
-				wic.APPEARANCE_LIGHT_NAVIGATION_BARS if is_light_system_bars else 0, wic.APPEARANCE_LIGHT_NAVIGATION_BARS)
+		if (is_light_system_bars != (color.get_luminance() > 0.45)) or override_appearance:
+			is_light_system_bars = color.get_luminance() > 0.45
+			var WindowInsetsControllerCompat = JavaClassWrapper.wrap("androidx.core.view.WindowInsetsControllerCompat")
+			var controller = WindowInsetsControllerCompat.call("<init>", window, window.getDecorView())
+			controller.setAppearanceLightNavigationBars(is_light_system_bars)
+			controller.setAppearanceLightStatusBars(is_light_system_bars)
 	
 	activity.runOnUiThread(android_runtime.createRunnableFromGodotCallable(callable))
 
