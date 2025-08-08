@@ -191,6 +191,8 @@ static func recalculate_colors() -> void:
 
 	flat_button_color_disabled = base_color.lerp(max_contrast_color, 0.08)
 	translucent_button_color_disabled = base_color.lerp(max_contrast_color, 0.1)
+	context_button_color_disabled = Color(Color.BLACK, maxf(0.16, 0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2)) if is_theme_dark\
+			else Color(Color.BLACK, 0.055)
 
 	connected_button_inner_color_hover = line_edit_inner_color.blend(hover_overlay_color)
 	connected_button_border_color_hover = line_edit_normal_border_color.blend(strong_hover_overlay_color)

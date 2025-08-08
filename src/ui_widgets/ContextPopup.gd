@@ -54,6 +54,7 @@ static func create_button(text: String, press_callback: Callable, disabled := fa
 	var main_button := Button.new()
 	main_button.theme_type_variation = "ContextButton"
 	main_button.focus_mode = Control.FOCUS_NONE
+	main_button.mouse_filter = Control.MouseFilter.MOUSE_FILTER_PASS
 	if disabled:
 		main_button.disabled = true
 	else:

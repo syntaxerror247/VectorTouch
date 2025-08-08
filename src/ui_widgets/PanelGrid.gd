@@ -19,6 +19,7 @@ var copy_button: Button
 
 func _ready() -> void:
 	mouse_exited.connect(remove_copy_button)
+	mouse_filter = MOUSE_FILTER_IGNORE
 
 func _draw() -> void:
 	boxes.clear()
