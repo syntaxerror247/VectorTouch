@@ -3,13 +3,19 @@ extends PanelContainer
 const tabItem = preload("res://src/ui_widgets/tab_item.tscn")
 
 @onready var tab_container: VBoxContainer = $VBoxContainer/ScrollContainer/VBoxContainer
+@onready var top_bar: HBoxContainer = $VBoxContainer/TopBar
+@onready var select_all_btn: CheckBox = $VBoxContainer/TopBar/SelectAll
 
-var should_refresh = false
+var should_refresh := false
+
+var multi_selection_enabled := false
+var selected_tabs := []
 
 func _ready() -> void:
 	get_parent().gui_input.connect(_on_parent_gui_input)
 	Configs.tab_removed.connect(refresh_tabs)
-	Configs.tab_selected.connect(highlight_active_tab)
+	Configs.tab_selected.connect(_on_tab_selected)
+	Configs.tab_multi_selection_enabled.connect(_on_tab_multi_selction_enabled)
 	Configs.theme_changed.connect(sync_theming)
 	sync_theming()
 	Configs.tabs_changed.connect(func(): should_refresh = true)
@@ -74,18 +80,44 @@ func refresh_tabs() -> void:
 		tab_container.add_child(tab)
 		tab.setup(tab_name, svg_text, is_active)
 
-func highlight_active_tab(new_index: int) -> void:
-	var active_index = Configs.savedata.get_active_tab_index()
-	tab_container.get_child(active_index).highlight(false)
+func _on_tab_selected(new_index: int) -> void:
+	if not multi_selection_enabled:
+		var active_index = Configs.savedata.get_active_tab_index()
+		tab_container.get_child(active_index).highlight(false)
 	Configs.savedata.set_active_tab_index(new_index)
 	tab_container.get_child(new_index).highlight(true)
+	
+	if multi_selection_enabled:
+		if selected_tabs.has(new_index):
+			selected_tabs.erase(new_index)
+			tab_container.get_child(new_index).highlight(false)
+		else:
+			selected_tabs.append(new_index)
+			tab_container.get_child(new_index).highlight(true)
+		
+		if selected_tabs.is_empty():
+			Configs.tab_multi_selection_enabled.emit(false)
+		select_all_btn.button_pressed = selected_tabs.size() == tab_container.get_child_count()
 
 func _on_new_tab_pressed() -> void:
 	Configs.savedata.add_empty_tab()
 	refresh_tabs()
+
+func _on_tab_multi_selction_enabled(enabled: bool) -> void:
+	multi_selection_enabled = enabled
+	top_bar.visible = enabled
+	var active_index = Configs.savedata.get_active_tab_index()
+	tab_container.get_child(active_index).highlight(false)
+	for i in tab_container.get_children():
+		i.close_button.visible = not enabled
+	
 
 func _on_parent_gui_input(event: InputEvent) -> void:
 	if not event is InputEventMouseButton:
 		return
 	if event.is_pressed() and event.button_index == MOUSE_BUTTON_LEFT:
 		animate_out()
+
+
+func _on_top_bar_delete_pressed() -> void:
+	pass # Replace with function body.

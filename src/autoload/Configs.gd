@@ -19,6 +19,7 @@ signal active_tab_changed
 signal tabs_changed
 signal tab_removed
 signal tab_selected(index: int)
+signal tab_multi_selection_enabled(enabled: bool)
 signal layout_changed
 signal orientation_changed
 @warning_ignore_restore("unused_signal")

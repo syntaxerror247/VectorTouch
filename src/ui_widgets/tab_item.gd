@@ -37,16 +37,20 @@ func highlight(is_active: bool) -> void:
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		_dragged = true
-
-	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.is_pressed():
-			_click_start_time = Time.get_ticks_msec()
-			_dragged = false
-		else:
-			var time_diff := Time.get_ticks_msec() - _click_start_time
-			if time_diff <= CLICK_MAX_TIME and not _dragged:
-				var index := get_index()
-				Configs.tab_selected.emit(index)
+	
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.is_pressed():
+				_click_start_time = Time.get_ticks_msec()
+				_dragged = false
+			else:
+				var time_diff := Time.get_ticks_msec() - _click_start_time
+				if time_diff <= CLICK_MAX_TIME and not _dragged:
+					Configs.tab_selected.emit(get_index())
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.is_pressed():
+				Configs.tab_multi_selection_enabled.emit(true)
+				Configs.tab_selected.emit(get_index())
 
 func _on_close_pressed() -> void:
 	FileUtils.close_tabs(get_index())

@@ -6,6 +6,7 @@ extends VBoxContainer
 @onready var error_label: RichTextLabel = $ScriptEditor/ErrorBar/Label
 @onready var options_button: Button = %MetaActions/OptionsButton
 
+
 func _ready() -> void:
 	var shortcuts := ShortcutsRegistration.new()
 	shortcuts.add_shortcut("copy_svg_text", func() -> void: DisplayServer.clipboard_set(State.svg_text))
