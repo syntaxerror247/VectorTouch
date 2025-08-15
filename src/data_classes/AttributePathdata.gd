@@ -1,4 +1,4 @@
-# The "d" attribute of ElementPath.
+## The "d" attribute of ElementPath.
 class_name AttributePathdata extends Attribute
 
 var _commands: Array[PathCommand]
@@ -208,8 +208,7 @@ func convert_command(idx: int, cmd_char: String) -> void:
 	if conversion_made:
 		sync_after_commands_change()
 
-func convert_commands_optimized(indices: PackedInt32Array,
-cmd_chars: PackedStringArray) -> void:
+func convert_commands_optimized(indices: PackedInt32Array, cmd_chars: PackedStringArray) -> void:
 	var conversions_made := false
 	for i in indices.size():
 		var conversion_made := _convert_command(indices[i], cmd_chars[i])

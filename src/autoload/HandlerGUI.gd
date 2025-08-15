@@ -1,3 +1,4 @@
+## An autoload that handles various core UI functions.
 extends Node
 
 const AlertDialogScene = preload("res://src/ui_widgets/alert_dialog.tscn")
@@ -10,9 +11,16 @@ const ExportMenuScene = preload("res://src/ui_parts/export_menu.tscn")
 const ShortcutPanelScene = preload("res://src/ui_parts/shortcut_panel.tscn")
 const TabsPanel = preload("res://src/ui_parts/tabs_panel.tscn")
 
-# Menus should be added with add_menu() and removed by being freed.
-# To add them as modals that don't hide the previous one, use add_dialog().
+signal popups_cleared
+
+## A stack of the current menus, dialogs in the foreground, center of the screen, that also darken the background for more focus.
+## Menus should be added with add_menu(), which hides previous menus, or add_dialog() which doesn't hide previous menus.
+## Menus are removed by being freed, which automatically removes them from the stack.
+## This is typically done by tying a cancel button to queue_free, or pressing Esc.
 var menu_stack: Array[ColorRect]
+
+## A stack of the current popups. They are cleared by pressing Esc, clicking outside, or other ways.
+## Popups are always on top of the menu stack, and changes to the menu stack clear all popups.
 var popup_stack: Array[Control]
 
 var shortcut_panel: PanelContainer
@@ -36,6 +44,10 @@ func toogle_status_bar(visible: bool, override := false) -> void:
 	VTAndroidCore.toogleStatusBar(visible)
 	status_bar_visible = visible
 
+## A dictionary for shortcut registrations for each node.
+## If a node is freed, its shortcut registrations are cleared.
+## Every time a shortcut is pressed, the list of registrations is walked through to find if there's an appropriate one.
+## For a registratition to be appropriate, its behavior must coincide with where the node is relative to the menu/popup stack.
 var shortcut_registrations: Dictionary[Node, ShortcutsRegistration] = {}
 
 func _enter_tree() -> void:
@@ -53,7 +65,7 @@ func _enter_tree() -> void:
 	shortcuts.add_shortcut("open_in_folder", func() -> void: FileUtils.open_svg_folder(Configs.savedata.get_active_tab().svg_file_path),
 			ShortcutsRegistration.Behavior.PASS_THROUGH_ALL)
 	register_shortcuts(self, shortcuts)
-	
+	# Connect window signals to appropriate methods.
 	var window := get_window()
 	window.files_dropped.connect(_on_files_dropped)
 	window.dpi_changed.connect(update_ui_scale)
@@ -90,28 +102,30 @@ func _notification(what: int) -> void:
 		if not status_bar_visible:
 			toogle_status_bar(false, true)
 
-# Drag-and-drop of files.
+# Handles drag-and-drop of files.
 func _on_files_dropped(files: PackedStringArray) -> void:
 	if menu_stack.is_empty():
 		get_window().grab_focus()
 		FileUtils.apply_svgs_from_paths(files)
 
-
+## Registers the given set of shortcuts to the given node.
 func register_shortcuts(node: Node, registrations: ShortcutsRegistration) -> void:
 	shortcut_registrations[node] = registrations
 	node.tree_exiting.connect(func() -> void: shortcut_registrations.erase(node))
 
-
+## Adds a new menu to menu_stack which hides the previous one.
 func add_menu(new_menu: Control) -> void:
 	if not menu_stack.is_empty():
 		menu_stack.back().hide()
 	_add_control(new_menu)
 
+## Adds a new menu to the menu_stack that is overlaid on top of the previous one.
 func add_dialog(new_dialog: Control) -> void:
 	if not menu_stack.is_empty():
 		menu_stack.back().show()
 	_add_control(new_dialog)
 
+# Common logic for add_menu() and add_dialog().
 func _add_control(new_control: Control) -> void:
 	# FIXME subpar workaround to drag & drop not able to be canceled manually.
 	get_tree().root.propagate_notification(NOTIFICATION_DRAG_END)
@@ -147,13 +161,12 @@ func _remove_control(overlay_ref: ColorRect = null) -> void:
 		overlay_ref.queue_free()
 	throw_mouse_motion_event()
 
+## Frees all nodes in the menu_stack, emptying it.
 func remove_all_menus() -> void:
-	if menu_stack.is_empty():
-		return
-	
-	while not menu_stack.is_empty():
-		menu_stack.pop_back().queue_free()
-	throw_mouse_motion_event()
+	if not menu_stack.is_empty():
+		while not menu_stack.is_empty():
+			menu_stack.pop_back().queue_free()
+		throw_mouse_motion_event()
 
 
 # The passed popup control may be added to a shadow panel. The shadow panel is
@@ -201,15 +214,17 @@ func remove_popup(overlay_ref: Control = null) -> void:
 	overlay_ref = popup_stack.pop_back()
 	if is_instance_valid(overlay_ref):
 		overlay_ref.queue_free()
+	
+	if popup_stack.is_empty():
+		popups_cleared.emit()
 	throw_mouse_motion_event()
 
 func remove_all_popups() -> void:
-	if popup_stack.is_empty():
-		return
-	
-	while not popup_stack.is_empty():
-		popup_stack.pop_back().queue_free()
-	throw_mouse_motion_event()
+	if not popup_stack.is_empty():
+		while not popup_stack.is_empty():
+			popup_stack.pop_back().queue_free()
+		popups_cleared.emit()
+		throw_mouse_motion_event()
 
 
 # Should usually be the global rect of a control.
@@ -259,8 +274,7 @@ func popup_clamp_pos(popup: Control, attempt_pos: Vector2, vp: Viewport) -> Vect
 
 func _parse_popup_overlay_event(event: InputEvent) -> void:
 	if not popup_stack.is_empty():
-		if event is InputEventMouseButton and event.button_index in [MOUSE_BUTTON_LEFT,
-		MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_RIGHT]:
+		if event is InputEventMouseButton and event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_MIDDLE, MOUSE_BUTTON_RIGHT]:
 			remove_popup()
 	get_viewport().set_input_as_handled()
 
@@ -332,8 +346,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func get_window_default_size() -> Vector2i:
-	return Vector2i(ProjectSettings.get_setting("display/window/size/viewport_width"),
-			ProjectSettings.get_setting("display/window/size/viewport_height"))
+	return Vector2i(ProjectSettings.get_setting("display/window/size/viewport_width"), ProjectSettings.get_setting("display/window/size/viewport_height"))
 
 func get_usable_rect() -> Vector2i:
 	var window := get_window()
@@ -400,8 +413,7 @@ func toggle_fullscreen() -> void:
 			was_window_maximized = true
 		else:
 			was_window_maximized = false
-			window_old_rect = Rect2(DisplayServer.window_get_position(),
-					DisplayServer.window_get_size())
+			window_old_rect = Rect2(DisplayServer.window_get_position(), DisplayServer.window_get_size())
 		DisplayServer.window_set_mode(DisplayServer.WindowMode.WINDOW_MODE_FULLSCREEN)
 	else:
 		if was_window_maximized:
@@ -456,11 +468,9 @@ func open_export() -> void:
 	
 	var message: String
 	if dimensions_too_different:
-		message = Translator.translate(
-				"The graphic can be exported only as SVG because its proportions are too extreme.")
+		message = Translator.translate("The graphic can be exported only as SVG because its proportions are too extreme.")
 	else:
-		message = Translator.translate(
-				"The graphic can be exported only as SVG because its size is not defined.")
+		message = Translator.translate("The graphic can be exported only as SVG because its size is not defined.")
 	message += "\n\n" + Translator.translate("Do you want to proceed?")
 	
 	var confirm_dialog := ConfirmDialogScene.instantiate()
@@ -478,8 +488,7 @@ func update_window_title() -> void:
 
 # Helpers
 
-# Used to trigger a mouse motion event, which can be used to update some things,
-# when Godot doesn't want to do so automatically.
+## Triggers a mouse motion event, which can update hover or mouse shape if Godot didn't do it automatically.
 func throw_mouse_motion_event() -> void:
 	var mm_event := InputEventMouseMotion.new()
 	var window := get_window()
@@ -494,7 +503,7 @@ func throw_mouse_motion_event() -> void:
 	mm_event.position = mouse_position * window.get_final_transform()
 	Input.parse_input_event.call_deferred(mm_event)
 
-# Trigger a shortcut automatically.
+## Triggers a shortcut.
 func throw_action_event(action: String) -> void:
 	var events := InputMap.action_get_events(action)
 	for event in events:

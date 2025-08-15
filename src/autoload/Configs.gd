@@ -1,4 +1,4 @@
-# This singleton handles session data and settings.
+## An autoload that manages the savefile. Stores signals relating to changes to settings.
 extends Node
 
 @warning_ignore_start("unused_signal")
@@ -14,7 +14,6 @@ signal selection_rectangle_visuals_changed
 signal grid_color_changed
 signal shortcut_panel_changed
 signal active_tab_status_changed
-signal active_tab_reference_changed
 signal active_tab_changed
 signal tabs_changed
 signal tab_removed
@@ -46,7 +45,9 @@ func check_orientation():
 		orientation_changed.emit()
 		HandlerGUI.toogle_status_bar(new_orientation == orientation.PORTRAIT)
 
-const savedata_path = "user://savedata.tres"
+const _SAVEDATA_PATH = "user://savedata.tres"
+
+## Main point of access to the savefile data. This includes user settings and session data.
 var savedata: SaveData:
 	set(new_value):
 		if savedata != new_value and is_instance_valid(new_value):
@@ -54,11 +55,12 @@ var savedata: SaveData:
 			savedata.validate()
 			savedata.changed_deferred.connect(save)
 
-
+## Helper for updating the savefile.
 func save() -> void:
-	ResourceSaver.save(savedata, savedata_path)
+	ResourceSaver.save(savedata, _SAVEDATA_PATH)
 
 
+## Default shortcuts to be able to reset a single action to its defaults.
 var default_shortcuts: Dictionary[String, Array] = {}
 
 func _enter_tree() -> void:
@@ -66,32 +68,26 @@ func _enter_tree() -> void:
 	for action in ShortcutUtils.get_all_actions():
 		if InputMap.has_action(action):
 			default_shortcuts[action] = InputMap.action_get_events(action)
-	load_config()
-
-
-func load_config() -> void:
-	if not FileAccess.file_exists(savedata_path):
-		reset_settings()
-		return
 	
-	savedata = ResourceLoader.load(savedata_path)
-	if not is_instance_valid(savedata):
-		reset_settings()
-		return
+	var savedata_reset_needed := true
+	# Load savedata.
+	if FileAccess.file_exists(_SAVEDATA_PATH):
+		savedata = ResourceLoader.load(_SAVEDATA_PATH)
+		if is_instance_valid(savedata):
+			savedata_reset_needed = false
 	
-	post_load()
-
-
-func reset_settings() -> void:
-	savedata = SaveData.new()
-	savedata.reset_to_default()
-	savedata.language = "en"
-	savedata.set_shortcut_panel_slots({ 0: "ui_undo", 1: "ui_redo", 2: "duplicate", 3: "delete", 4: "import", 5: "export"})
-	savedata.set_palettes([Palette.new("Pure", Palette.Preset.PURE)])
-	save()
-	post_load()
-
-func post_load() -> void:
+	# Build everything from scratch if the savedata didn't exist or was invalid.
+	# Reset settings to their defaults.
+	if savedata_reset_needed:
+		savedata = SaveData.new()
+		savedata.reset_to_default()
+		savedata.language = "en"
+		savedata.set_shortcut_panel_slots({ 0: "ui_undo", 1: "ui_redo", 2: "duplicate", 3: "delete", 4: "import", 5: "export"})
+		savedata.set_palettes([Palette.new("Pure", Palette.Preset.PURE)])
+		save()
+	
+	# Syncs various settings with their savedata value.
+	# TODO I'm not sure why I made it so syncing within the SaveData only starts when it's fully initialized.
 	savedata.get_active_tab().activate()
 	sync_canvas_color()
 	sync_locale()
@@ -100,27 +96,30 @@ func post_load() -> void:
 	sync_theme()
 
 
-# Global effects from settings. Some of them should also be used on launch.
-
+## Syncs the canvas color to the value in the savedata.
 func sync_canvas_color() -> void:
 	RenderingServer.set_default_clear_color(savedata.canvas_color)
 
+## Syncs the locale to the value in the savedata.
 func sync_locale() -> void:
 	if not savedata.language in TranslationServer.get_loaded_locales():
 		savedata.language = "en"
 	else:
 		TranslationServer.set_locale(savedata.language)
 
+## Syncs the VSync to the value in the savedata.
 func sync_vsync() -> void:
-	DisplayServer.window_set_vsync_mode(
-			DisplayServer.VSYNC_ENABLED if savedata.vsync else DisplayServer.VSYNC_DISABLED)
+	DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_ENABLED if savedata.vsync else DisplayServer.VSYNC_DISABLED)
 
+## Syncs the engine max FPS to the value in the savedata.
 func sync_max_fps() -> void:
 	Engine.max_fps = savedata.max_fps
 
+## Syncs the display server's "Keep screen on" behavior to the value in the savedata.
 func sync_keep_screen_on() -> void:
 	DisplayServer.screen_set_keep_on(savedata.keep_screen_on)
 
+## Syncs the app theme based on the configurations in the savedata.
 func sync_theme() -> void:
 	ThemeUtils.generate_and_apply_theme()
 	theme_changed.emit()

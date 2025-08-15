@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: VectorTouch\n"
+"Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -18,12 +18,12 @@ msgid "translation-credits"
 msgstr "Kiisu-Master"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit VectorTouch"
-msgstr "Sulge VectorTouch"
+msgid "Quit GodSVG"
+msgstr "Sulge GodSVG"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit VectorTouch?"
-msgstr "Kas te tahate sulgeda VectorTouch?"
+msgid "Do you want to quit GodSVG?"
+msgstr "Kas te tahate sulgeda GodSVG?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -42,6 +42,14 @@ msgid "OK"
 msgstr "Okei"
 
 #: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its proportions are too extreme."
+msgstr "Graafika saab eksportida ainult SVG-na, sest selle proportsioonid on liiga ekstreemsed."
+
+#: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its size is not defined."
+msgstr "Graafika saab eksportida ainult SVG-na, sest selle suurus pole defineeritud."
+
+#: src/autoload/HandlerGUI.gd:
 msgid "Do you want to proceed?"
 msgstr "Kas te tahate jätkata?"
 
@@ -53,14 +61,6 @@ msgstr "Ekspordi SVG"
 #: src/utils/TranslationUtils.gd:
 msgid "Export"
 msgstr "Ekspordi"
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its proportions are too extreme."
-msgstr "Graafika saab eksportida ainult SVG-na, sest selle proportsioonid on liiga ekstreemsed."
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its size is not defined."
-msgstr "Graafika saab eksportida ainult SVG-na, sest selle suurus pole defineeritud."
 
 #: src/autoload/State.gd: src/ui_parts/good_file_dialog.gd:
 #: src/ui_widgets/alert_dialog.gd: src/utils/FileUtils.gd:
@@ -280,6 +280,10 @@ msgstr "Uus element"
 msgid "Dimensions"
 msgstr "Dimensioonid"
 
+#: src/ui_parts/export_menu.gd:
+msgid "Preview image size is limited to {dimensions}"
+msgstr "Eelvaade on piiratud suurusele {dimensions}"
+
 #: src/ui_parts/export_menu.gd: src/ui_widgets/settings_content_generic.gd:
 msgid "Size"
 msgstr "Suurus"
@@ -315,10 +319,6 @@ msgstr "Kõrgus"
 #: src/ui_parts/export_menu.gd: src/utils/TranslationUtils.gd:
 msgid "Copy"
 msgstr "Kopeeri"
-
-#: src/ui_parts/export_menu.gd:
-msgid "Preview image size is limited to {dimensions}"
-msgstr "Eelvaade on piiratud suurusele {dimensions}"
 
 #: src/ui_parts/global_actions.gd: src/ui_parts/layout_configuration.gd:
 #: src/ui_parts/shortcut_panel_config.gd:
@@ -394,6 +394,10 @@ msgid "New shape"
 msgstr "Uus kujund"
 
 #: src/ui_parts/import_warning_menu.gd:
+msgid "Syntax error"
+msgstr "Süntaksiviga"
+
+#: src/ui_parts/import_warning_menu.gd:
 msgid "Import Problems"
 msgstr "Impordi probleemid"
 
@@ -408,10 +412,6 @@ msgstr "Tundmatu element"
 #: src/ui_parts/import_warning_menu.gd:
 msgid "Unrecognized attribute"
 msgstr "Tundmatu atribuut"
-
-#: src/ui_parts/import_warning_menu.gd:
-msgid "Syntax error"
-msgstr "Süntaksiviga"
 
 #: src/ui_parts/inspector.gd:
 msgid "Add element"
@@ -532,8 +532,8 @@ msgid "View all releases"
 msgstr "Näita kõiki väljaandeid"
 
 #: src/ui_parts/update_menu.gd:
-msgid "VectorTouch is up-to-date."
-msgstr "VectorTouch on ajakohane."
+msgid "GodSVG is up-to-date."
+msgstr "GodSVG on ajakohane."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -580,6 +580,11 @@ msgstr "Värvi võtmesõnad"
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Eyedropper"
 msgstr "Värvipipett"
+
+#: src/ui_widgets/palette_config.gd:
+#, fuzzy
+msgid "Add new color"
+msgstr "Teksti värv"
 
 #: src/ui_widgets/palette_config.gd:
 msgid "Unnamed palettes won't be shown."
@@ -662,7 +667,7 @@ msgstr "Lisa kiirklahv"
 msgid "Press keys…"
 msgstr "Vajuta klahve…"
 
-#. Refers to the formatter used for VectorTouch's code editor.
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Redaktori vormindus"
@@ -980,7 +985,7 @@ msgid "Sync window title to file name"
 msgstr "Sünkrooni akna tiitel avatud faili nimega"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -997,8 +1002,8 @@ msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
-msgstr "Sisselülitamisel kasutab süsteemi vaikefailidialoogi. Väljalülitamisel VectorTouch sisseehitatud failidialoogi."
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Sisselülitamisel kasutab süsteemi vaikefailidialoogi. Väljalülitamisel GodSVG sisseehitatud failidialoogi."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1045,8 +1050,8 @@ msgid "New transform"
 msgstr "Uus teisendus"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "VectorTouch doesn’t recognize this attribute"
-msgstr "VectorTouch ei tunne seda atribuuti"
+msgid "GodSVG doesn’t recognize this attribute"
+msgstr "GodSVG ei tunne seda atribuuti"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1101,8 +1106,8 @@ msgid "Don't save"
 msgstr "Ära salvesta"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside VectorTouch."
-msgstr "{file_path} on juba avatud VectorTouchs."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "{file_path} on juba avatud GodSVGs."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1309,20 +1314,20 @@ msgid "Open Donate menu"
 msgstr "Ava annetuste menüü"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch repository"
-msgstr "VectorTouch repositoorium"
+msgid "GodSVG repository"
+msgstr "GodSVG repositoorium"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch repository"
-msgstr "Ava VectorTouch repositoorium"
+msgid "Open GodSVG repository"
+msgstr "Ava GodSVG repositoorium"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch website"
-msgstr "VectorTouch veebileht"
+msgid "GodSVG website"
+msgstr "GodSVG veebileht"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch website"
-msgstr "Ava VectorTouch veebileht"
+msgid "Open GodSVG website"
+msgstr "Ava GodSVG veebileht"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1394,6 +1399,10 @@ msgid "Viewport"
 msgstr "Vaade"
 
 #: src/utils/TranslationUtils.gd:
+msgid "Only {extension_list} files are supported for this operation."
+msgstr "Ainult {extension_list} failid on toetatud selle tehingu jaoks."
+
+#: src/utils/TranslationUtils.gd:
 msgid "Select {format} files"
 msgstr "Vali {format} faile"
 
@@ -1409,12 +1418,8 @@ msgstr "Vali {format} fail"
 msgid "Save the {format} file"
 msgstr "Salvesta {format} fail"
 
-#: src/utils/TranslationUtils.gd:
-msgid "Only {extension_list} files are supported for this operation."
-msgstr "Ainult {extension_list} failid on toetatud selle tehingu jaoks."
-
-#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
-#~ msgstr "Väljalülitamisel jääb akna nimieks \"VectorTouch\" sõltumata avatud failist."
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Väljalülitamisel jääb akna nimieks \"GodSVG\" sõltumata avatud failist."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Hoia tundmatud XML struktuurid alles"

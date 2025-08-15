@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: VectorTouch\n"
+"Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: freeducks-debug <applesause454@gmail.com>\n"
@@ -19,12 +19,12 @@ msgid "translation-credits"
 msgstr "volkov, Gallifreyan <gallifreyan@protonmail.ch>, freeducks-debug"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit VectorTouch"
-msgstr "Выйти из VectorTouch"
+msgid "Quit GodSVG"
+msgstr "Выйти из GodSVG"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit VectorTouch?"
-msgstr "Вы хотите выйти из VectorTouch?"
+msgid "Do you want to quit GodSVG?"
+msgstr "Вы хотите выйти из GodSVG?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -43,6 +43,14 @@ msgid "OK"
 msgstr "Хорошо"
 
 #: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its proportions are too extreme."
+msgstr "Изображение можно экспортировать только как SVG, поскольку его пропорции слишком экстремальные."
+
+#: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its size is not defined."
+msgstr "Изображение можно экспортировать только как SVG, поскольку его размеры не заданы."
+
+#: src/autoload/HandlerGUI.gd:
 msgid "Do you want to proceed?"
 msgstr "Продолжить?"
 
@@ -54,14 +62,6 @@ msgstr "Экспортировать SVG"
 #: src/utils/TranslationUtils.gd:
 msgid "Export"
 msgstr "Экспортовать"
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its proportions are too extreme."
-msgstr "Изображение можно экспортировать только как SVG, поскольку его пропорции слишком экстремальные."
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its size is not defined."
-msgstr "Изображение можно экспортировать только как SVG, поскольку его размеры не заданы."
 
 #: src/autoload/State.gd: src/ui_parts/good_file_dialog.gd:
 #: src/ui_widgets/alert_dialog.gd: src/utils/FileUtils.gd:
@@ -280,6 +280,10 @@ msgstr "Новый элемент"
 msgid "Dimensions"
 msgstr "Размеры"
 
+#: src/ui_parts/export_menu.gd:
+msgid "Preview image size is limited to {dimensions}"
+msgstr "Размер предварительного просмотра изображения ограничен до {dimensions}"
+
 #: src/ui_parts/export_menu.gd: src/ui_widgets/settings_content_generic.gd:
 msgid "Size"
 msgstr "Размер"
@@ -315,10 +319,6 @@ msgstr "Высота"
 #: src/ui_parts/export_menu.gd: src/utils/TranslationUtils.gd:
 msgid "Copy"
 msgstr "Скопировать"
-
-#: src/ui_parts/export_menu.gd:
-msgid "Preview image size is limited to {dimensions}"
-msgstr "Размер предварительного просмотра изображения ограничен до {dimensions}"
 
 #: src/ui_parts/global_actions.gd: src/ui_parts/layout_configuration.gd:
 #: src/ui_parts/shortcut_panel_config.gd:
@@ -394,6 +394,10 @@ msgid "New shape"
 msgstr "Новая привязка"
 
 #: src/ui_parts/import_warning_menu.gd:
+msgid "Syntax error"
+msgstr "Синтаксическая ошибка"
+
+#: src/ui_parts/import_warning_menu.gd:
 msgid "Import Problems"
 msgstr "Проблемы с импортированием"
 
@@ -408,10 +412,6 @@ msgstr "Неизвестный элемент"
 #: src/ui_parts/import_warning_menu.gd:
 msgid "Unrecognized attribute"
 msgstr "Неизвестный атрибут"
-
-#: src/ui_parts/import_warning_menu.gd:
-msgid "Syntax error"
-msgstr "Синтаксическая ошибка"
 
 #: src/ui_parts/inspector.gd:
 msgid "Add element"
@@ -532,8 +532,8 @@ msgid "View all releases"
 msgstr "Показать все сборки"
 
 #: src/ui_parts/update_menu.gd:
-msgid "VectorTouch is up-to-date."
-msgstr "Установлена последняя версия VectorTouch."
+msgid "GodSVG is up-to-date."
+msgstr "Установлена последняя версия GodSVG."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -579,6 +579,11 @@ msgstr "Ключевые слова цвета"
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Eyedropper"
 msgstr "Пипетка"
+
+#: src/ui_widgets/palette_config.gd:
+#, fuzzy
+msgid "Add new color"
+msgstr "Цвет акцента"
 
 #: src/ui_widgets/palette_config.gd:
 msgid "Unnamed palettes won't be shown."
@@ -661,7 +666,7 @@ msgstr "Добавить сочетание клавиш"
 msgid "Press keys…"
 msgstr "Нажмите клавиши…"
 
-#. Refers to the formatter used for VectorTouch's code editor.
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Форматер редактора"
@@ -968,8 +973,8 @@ msgid "Sync window title to file name"
 msgstr "Синхронизировать заголовок окна с названием файла"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
-msgstr "Когда активно, добавит текущий открытый файл перед \"VectorTouch\" в заголовке окна."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgstr "Когда активно, добавит текущий открытый файл перед \"GodSVG\" в заголовке окна."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "When enabled, uses spaces instead of a single tab for indentation."
@@ -984,8 +989,8 @@ msgid "Keeps the screen on even after inactivity, so the screensaver does not ta
 msgstr "Будет удерживать экран активным, даже после бездействия, поэтому хранитель экрана не будет запускаться."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
-msgstr "Если включено, то будет использоваться родной файловый диалог вашей операционной системы для выбора файлов вместо встроенного в VectorTouch."
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Если включено, то будет использоваться родной файловый диалог вашей операционной системы для выбора файлов вместо встроенного в GodSVG."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1032,8 +1037,8 @@ msgid "New transform"
 msgstr "Новая трансформация"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "VectorTouch doesn’t recognize this attribute"
-msgstr "VectorTouch не может распознать этот атрибут"
+msgid "GodSVG doesn’t recognize this attribute"
+msgstr "GodSVG не может распознать этот атрибут"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1088,8 +1093,8 @@ msgid "Don't save"
 msgstr "Не сохранять"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside VectorTouch."
-msgstr "Файл {file_path} уже редактируется внутри VectorTouch."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "Файл {file_path} уже редактируется внутри GodSVG."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1296,20 +1301,20 @@ msgid "Open Donate menu"
 msgstr "Открыть меню благотворителей"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch repository"
-msgstr "Репозиторий VectorTouch"
+msgid "GodSVG repository"
+msgstr "Репозиторий GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch repository"
-msgstr "Открыть репозиторий VectorTouch"
+msgid "Open GodSVG repository"
+msgstr "Открыть репозиторий GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch website"
-msgstr "Веб-сайт VectorTouch"
+msgid "GodSVG website"
+msgstr "Веб-сайт GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch website"
-msgstr "Открыть веб-сайт VectorTouch"
+msgid "Open GodSVG website"
+msgstr "Открыть веб-сайт GodSVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1381,6 +1386,10 @@ msgid "Viewport"
 msgstr "Окно просмотра"
 
 #: src/utils/TranslationUtils.gd:
+msgid "Only {extension_list} files are supported for this operation."
+msgstr "Только файлы с расширениями {extension_list} поддерживаются для этой операции."
+
+#: src/utils/TranslationUtils.gd:
 msgid "Select {format} files"
 msgstr "Выбрать {format} файлы"
 
@@ -1396,12 +1405,8 @@ msgstr "Выбрать {format} файл"
 msgid "Save the {format} file"
 msgstr "Сохранить {format} файл"
 
-#: src/utils/TranslationUtils.gd:
-msgid "Only {extension_list} files are supported for this operation."
-msgstr "Только файлы с расширениями {extension_list} поддерживаются для этой операции."
-
-#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
-#~ msgstr "Если выключено - заголовок окна будет просто \"VectorTouch\", не включая текущий файл."
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Если выключено - заголовок окна будет просто \"GodSVG\", не включая текущий файл."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Сохранять нераспознанные XML"

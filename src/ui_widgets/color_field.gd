@@ -7,16 +7,16 @@ var element: Element
 var attribute_name: String:  # May propagate.
 	set(new_value):
 		attribute_name = new_value
-		cached_allow_url = attribute_name in DB.attribute_color_url_allowed
-		cached_allow_none = attribute_name in DB.attribute_color_none_allowed
-		cached_allow_current_color = attribute_name in DB.attribute_color_current_color_allowed
+		cached_allow_url = attribute_name in DB.COLOR_ATTRIBUTES_WITH_URL_ALLOWED
+		cached_allow_none = attribute_name in DB.COLOR_ATTRIBUTES_WITH_NONE_ALLOWED
+		cached_allow_current_color = attribute_name in DB.COLOR_ATTRIBUTES_WITH_CURRENT_COLOR_ALLOWED
 
 var cached_allow_url: bool
 var cached_allow_none: bool
 var cached_allow_current_color: bool
 
 const ColorFieldPopupScene = preload("res://src/ui_widgets/color_field_popup.tscn")
-const checkerboard = preload("res://assets/icons/backgrounds/ColorButtonBG.svg")
+const checkerboard = preload("res://assets/icons/CheckerboardColorButton.svg")
 
 var color_popup: ColorFieldPopup
 var gradient_texture: SVGTexture
@@ -41,7 +41,7 @@ func _ready() -> void:
 	Configs.basic_colors_changed.connect(sync)
 	sync()
 	element.attribute_changed.connect(_on_element_attribute_changed)
-	if attribute_name in DB.propagated_attributes:
+	if attribute_name in DB.PROPAGATED_ATTRIBUTES:
 		element.ancestor_attribute_changed.connect(_on_element_ancestor_attribute_changed)
 	text_submitted.connect(set_value.bind(true))
 	focus_entered.connect(reset_font_color)
@@ -141,8 +141,7 @@ func _draw() -> void:
 	# Draw the button border.
 	if is_instance_valid(temp_button) and temp_button.button_pressed:
 		draw_button_border("pressed")
-	elif is_instance_valid(temp_button) and temp_button.get_global_rect().has_point(
-	get_viewport().get_mouse_position()):
+	elif is_instance_valid(temp_button) and temp_button.get_global_rect().has_point(get_viewport().get_mouse_position()):
 		draw_button_border("hover")
 	else:
 		draw_button_border("normal")
@@ -152,12 +151,11 @@ func _on_color_picked(new_color: String, close_picker: bool) -> void:
 	set_value(new_color, close_picker)
 
 func is_valid(color_text: String) -> bool:
-	return ColorParser.is_valid(ColorParser.add_hash_if_hex(color_text), false,
-			cached_allow_url, cached_allow_none, cached_allow_current_color)
+	return ColorParser.is_valid(ColorParser.add_hash_if_hex(color_text), false, cached_allow_url, cached_allow_none, cached_allow_current_color)
 
 
 func _on_text_changed(new_text: String) -> void:
-	font_color = Configs.savedata.get_validity_color(!is_valid(new_text))
+	font_color = Configs.savedata.get_validity_color(not is_valid(new_text))
 
 func sync() -> void:
 	var new_value := element.get_attribute_value(attribute_name)

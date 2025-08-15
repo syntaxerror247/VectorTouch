@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: VectorTouch\n"
+"Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: freeducks-debug <applesause454@gmail.com>\n"
@@ -18,12 +18,12 @@ msgid "translation-credits"
 msgstr "volkov, freeducks-debug"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit VectorTouch"
-msgstr "Вийти із VectorTouch"
+msgid "Quit GodSVG"
+msgstr "Вийти із GodSVG"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit VectorTouch?"
-msgstr "Ви дійсно бажаєте вийти із VectorTouch?"
+msgid "Do you want to quit GodSVG?"
+msgstr "Ви дійсно бажаєте вийти із GodSVG?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -42,6 +42,14 @@ msgid "OK"
 msgstr "Добре"
 
 #: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its proportions are too extreme."
+msgstr "Це зображення може бути експортоване тільки як SVG, оскільки його пропорції занадто екстремальні."
+
+#: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its size is not defined."
+msgstr "Це зображення може бути експортоване тільки як SVG, оскільки його розмір не завданий."
+
+#: src/autoload/HandlerGUI.gd:
 msgid "Do you want to proceed?"
 msgstr "Ви дійсно бажаєте продовжити?"
 
@@ -53,14 +61,6 @@ msgstr "Експортувати SVG"
 #: src/utils/TranslationUtils.gd:
 msgid "Export"
 msgstr "Експортувати"
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its proportions are too extreme."
-msgstr "Це зображення може бути експортоване тільки як SVG, оскільки його пропорції занадто екстремальні."
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its size is not defined."
-msgstr "Це зображення може бути експортоване тільки як SVG, оскільки його розмір не завданий."
 
 #: src/autoload/State.gd: src/ui_parts/good_file_dialog.gd:
 #: src/ui_widgets/alert_dialog.gd: src/utils/FileUtils.gd:
@@ -279,6 +279,10 @@ msgstr "Новий елемент"
 msgid "Dimensions"
 msgstr "Розміри"
 
+#: src/ui_parts/export_menu.gd:
+msgid "Preview image size is limited to {dimensions}"
+msgstr "Розмір попереднього перегляду зображення обмежено до {dimensions}"
+
 #: src/ui_parts/export_menu.gd: src/ui_widgets/settings_content_generic.gd:
 msgid "Size"
 msgstr "Розмір"
@@ -314,10 +318,6 @@ msgstr "Висота"
 #: src/ui_parts/export_menu.gd: src/utils/TranslationUtils.gd:
 msgid "Copy"
 msgstr "Скопіювати"
-
-#: src/ui_parts/export_menu.gd:
-msgid "Preview image size is limited to {dimensions}"
-msgstr "Розмір попереднього перегляду зображення обмежено до {dimensions}"
 
 #: src/ui_parts/global_actions.gd: src/ui_parts/layout_configuration.gd:
 #: src/ui_parts/shortcut_panel_config.gd:
@@ -393,6 +393,10 @@ msgid "New shape"
 msgstr "Нова форма"
 
 #: src/ui_parts/import_warning_menu.gd:
+msgid "Syntax error"
+msgstr "Синтаксична помилка"
+
+#: src/ui_parts/import_warning_menu.gd:
 msgid "Import Problems"
 msgstr "Проблема з імпортуванням"
 
@@ -407,10 +411,6 @@ msgstr "Невідомий елемент"
 #: src/ui_parts/import_warning_menu.gd:
 msgid "Unrecognized attribute"
 msgstr "Невідомий атрибут"
-
-#: src/ui_parts/import_warning_menu.gd:
-msgid "Syntax error"
-msgstr "Синтаксична помилка"
 
 #: src/ui_parts/inspector.gd:
 msgid "Add element"
@@ -531,8 +531,8 @@ msgid "View all releases"
 msgstr "Показати усі версії"
 
 #: src/ui_parts/update_menu.gd:
-msgid "VectorTouch is up-to-date."
-msgstr "VectorTouch оновлено до останньої версії."
+msgid "GodSVG is up-to-date."
+msgstr "GodSVG оновлено до останньої версії."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -578,6 +578,11 @@ msgstr "Ключові слова кольорів"
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Eyedropper"
 msgstr "Піпетка"
+
+#: src/ui_widgets/palette_config.gd:
+#, fuzzy
+msgid "Add new color"
+msgstr "Колір акценту"
 
 #: src/ui_widgets/palette_config.gd:
 msgid "Unnamed palettes won't be shown."
@@ -660,7 +665,7 @@ msgstr "Додати клавіатурне скорочення"
 msgid "Press keys…"
 msgstr "Натисніть кнопки…"
 
-#. Refers to the formatter used for VectorTouch's code editor.
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Форматер редактору"
@@ -971,8 +976,8 @@ msgid "Sync window title to file name"
 msgstr "Синхронізувати заголовок вікна з назвою поточного файлу"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
-msgstr "Коли активовано, додає назву поточного файлу перед \"VectorTouch\" у заголовку вікна."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgstr "Коли активовано, додає назву поточного файлу перед \"GodSVG\" у заголовку вікна."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "When enabled, uses spaces instead of a single tab for indentation."
@@ -987,7 +992,7 @@ msgid "Keeps the screen on even after inactivity, so the screensaver does not ta
 msgstr "Відкладати присипляння системи та/або екрану навіть після бездіяльності, завдяки чому зберігач екрану не буде запускатися."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
 msgstr "Якщо увімкнено, то буде використовувати рідний файловий діалог вашої операційної системи для обирання файлів замість вбудованого."
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -1035,8 +1040,8 @@ msgid "New transform"
 msgstr "Нова трансформація"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "VectorTouch doesn’t recognize this attribute"
-msgstr "VectorTouch не може розпізнати цей атрибут"
+msgid "GodSVG doesn’t recognize this attribute"
+msgstr "GodSVG не може розпізнати цей атрибут"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1091,8 +1096,8 @@ msgid "Don't save"
 msgstr "Не зберігати"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside VectorTouch."
-msgstr "Файл {file_path} вже редагується в VectorTouch."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "Файл {file_path} вже редагується в GodSVG."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1300,20 +1305,20 @@ msgid "Open Donate menu"
 msgstr "Відкрити меню благодійників"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch repository"
-msgstr "Репозиторій VectorTouch"
+msgid "GodSVG repository"
+msgstr "Репозиторій GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch repository"
-msgstr "Відкрити репозиторій VectorTouch"
+msgid "Open GodSVG repository"
+msgstr "Відкрити репозиторій GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch website"
-msgstr "Веб-сайт VectorTouch"
+msgid "GodSVG website"
+msgstr "Веб-сайт GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch website"
-msgstr "Відкрити веб-сайт VectorTouch"
+msgid "Open GodSVG website"
+msgstr "Відкрити веб-сайт GodSVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1385,6 +1390,10 @@ msgid "Viewport"
 msgstr "Вікно перегляду"
 
 #: src/utils/TranslationUtils.gd:
+msgid "Only {extension_list} files are supported for this operation."
+msgstr "Тільки файли з розширеннями {extension_list} підтримуються для цієї операції."
+
+#: src/utils/TranslationUtils.gd:
 msgid "Select {format} files"
 msgstr "Обрати {format} файли"
 
@@ -1400,12 +1409,8 @@ msgstr "Обрати {format} файл"
 msgid "Save the {format} file"
 msgstr "Зберегти {format} файл"
 
-#: src/utils/TranslationUtils.gd:
-msgid "Only {extension_list} files are supported for this operation."
-msgstr "Тільки файли з розширеннями {extension_list} підтримуються для цієї операції."
-
-#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
-#~ msgstr "Якщо вимкнено - заголовок вікна залишиться як \"VectorTouch\", не включаючи назву поточного файлу."
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Якщо вимкнено - заголовок вікна залишиться як \"GodSVG\", не включаючи назву поточного файлу."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Зберігати не розпізнані структури XML"

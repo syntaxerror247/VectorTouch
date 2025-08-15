@@ -7,7 +7,6 @@ const DEFAULT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="
 const EDITED_FILES_DIR = "user://edited"
 
 signal status_changed
-signal reference_changed
 signal data_synced
 
 var presented_name: String:
@@ -22,18 +21,16 @@ var marked_unsaved := false:
 			marked_unsaved = new_value
 			status_changed.emit()
 
-var reference_image: Texture2D:
-	set(new_value):
-		if reference_image != new_value:
-			reference_image = new_value
-			reference_changed.emit()
-
+var reference_image: Texture2D
+var overlay_reference := false
+var show_reference := true
+var undo_redo: UndoRedoRef
+var camera_center := Vector2(NAN, NAN)
+var camera_zoom := -1.0
 
 var active := false
-
 var fully_loaded := true
 var empty_unsaved := false
-var undo_redo: UndoRedoRef
 
 # This variable represents the saved state of the SVG. Intermediate operations such as
 # dragging a handle or editing the code shouldn't affect this variable.
@@ -63,12 +60,10 @@ func _save_svg_text() -> void:
 	if active:
 		FileAccess.open(edited_file_path, FileAccess.WRITE).store_string(_svg_text)
 	else:
-		var edited_text_parse_result := SVGParser.text_to_root(
-				FileAccess.get_file_as_string(get_edited_file_path()))
+		var edited_text_parse_result := SVGParser.markup_to_root(FileAccess.get_file_as_string(get_edited_file_path()))
 		
 		if is_instance_valid(edited_text_parse_result.svg):
-			FileAccess.open(edited_file_path, FileAccess.WRITE).store_string(
-					SVGParser.root_to_export_text(edited_text_parse_result.svg))
+			FileAccess.open(edited_file_path, FileAccess.WRITE).store_string(SVGParser.root_to_export_markup(edited_text_parse_result.svg))
 	queue_sync()
 
 func save_to_bound_path() -> void:
@@ -161,16 +156,16 @@ func _sync() -> void:
 		if not fully_loaded:
 			marked_unsaved = false
 		else:
-			var edited_text_parse_result := SVGParser.text_to_root(
+			var edited_text_parse_result := SVGParser.markup_to_root(
 					FileAccess.get_file_as_string(get_edited_file_path()))
 			
 			if is_instance_valid(edited_text_parse_result.svg):
-				marked_unsaved = FileAccess.get_file_as_string(svg_file_path) != SVGParser.root_to_export_text(edited_text_parse_result.svg)
+				marked_unsaved = FileAccess.get_file_as_string(svg_file_path) != SVGParser.root_to_export_markup(edited_text_parse_result.svg)
 			else:
 				marked_unsaved = true
 				
 	
-	elif not FileAccess.file_exists(get_edited_file_path()) or SVGParser.text_check_is_root_empty(get_true_svg_text()):
+	elif not FileAccess.file_exists(get_edited_file_path()) or SVGParser.markup_check_is_root_empty(get_true_svg_text()):
 		empty_unsaved = true
 		marked_unsaved = false
 		presented_name = "[ %s ]" % Translator.translate("Empty")

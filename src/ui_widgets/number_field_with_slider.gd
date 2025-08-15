@@ -14,7 +14,7 @@ func set_value(new_value: String, save := false) -> void:
 		if not AttributeNumeric.text_check_percentage(new_value):
 			var numeric_value := NumstringParser.evaluate(new_value)
 			# Validate the value.
-			if !is_finite(numeric_value):
+			if not is_finite(numeric_value):
 				sync()
 				return
 			
@@ -40,7 +40,7 @@ func _ready() -> void:
 	Configs.basic_colors_changed.connect(sync)
 	sync()
 	element.attribute_changed.connect(_on_element_attribute_changed)
-	if attribute_name in DB.propagated_attributes:
+	if attribute_name in DB.PROPAGATED_ATTRIBUTES:
 		element.ancestor_attribute_changed.connect(_on_element_ancestor_attribute_changed)
 	text_submitted.connect(set_value.bind(true))
 	focus_entered.connect(reset_font_color)

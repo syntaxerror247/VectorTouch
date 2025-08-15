@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: VectorTouch\n"
+"Project-Id-Version: GodSVG\n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
@@ -18,12 +18,12 @@ msgid "translation-credits"
 msgstr "thatoddshade <thatoddshade@proton.me>"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Quit VectorTouch"
-msgstr "Quitter VectorTouch"
+msgid "Quit GodSVG"
+msgstr "Quitter GodSVG"
 
 #: src/autoload/HandlerGUI.gd:
-msgid "Do you want to quit VectorTouch?"
-msgstr "Voulez-vous quitter VectorTouch ?"
+msgid "Do you want to quit GodSVG?"
+msgstr "Voulez-vous quitter GodSVG ?"
 
 #: src/autoload/HandlerGUI.gd:
 msgid "Quit"
@@ -42,6 +42,14 @@ msgid "OK"
 msgstr "OK"
 
 #: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its proportions are too extreme."
+msgstr "Le graphique ne peut être exporté qu'en SVG car ses proportions sont trop extrêmes."
+
+#: src/autoload/HandlerGUI.gd:
+msgid "The graphic can be exported only as SVG because its size is not defined."
+msgstr "Le graphique ne peut être exporté qu'en SVG car sa taille n'a pas été pas définie."
+
+#: src/autoload/HandlerGUI.gd:
 msgid "Do you want to proceed?"
 msgstr "Voulez-vous poursuivre ?"
 
@@ -53,14 +61,6 @@ msgstr "Exporter le SVG"
 #: src/utils/TranslationUtils.gd:
 msgid "Export"
 msgstr "Exporter"
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its proportions are too extreme."
-msgstr "Le graphique ne peut être exporté qu'en SVG car ses proportions sont trop extrêmes."
-
-#: src/autoload/HandlerGUI.gd:
-msgid "The graphic can be exported only as SVG because its size is not defined."
-msgstr "Le graphique ne peut être exporté qu'en SVG car sa taille n'a pas été pas définie."
 
 #: src/autoload/State.gd: src/ui_parts/good_file_dialog.gd:
 #: src/ui_widgets/alert_dialog.gd: src/utils/FileUtils.gd:
@@ -280,6 +280,10 @@ msgstr "Nouvel élément"
 msgid "Dimensions"
 msgstr "Dimensions"
 
+#: src/ui_parts/export_menu.gd:
+msgid "Preview image size is limited to {dimensions}"
+msgstr "La taille de l'image de prévisualisation est limitée à {dimensions}"
+
 #: src/ui_parts/export_menu.gd: src/ui_widgets/settings_content_generic.gd:
 msgid "Size"
 msgstr "Taille"
@@ -315,10 +319,6 @@ msgstr "Hauteur"
 #: src/ui_parts/export_menu.gd: src/utils/TranslationUtils.gd:
 msgid "Copy"
 msgstr "Copier"
-
-#: src/ui_parts/export_menu.gd:
-msgid "Preview image size is limited to {dimensions}"
-msgstr "La taille de l'image de prévisualisation est limitée à {dimensions}"
 
 #: src/ui_parts/global_actions.gd: src/ui_parts/layout_configuration.gd:
 #: src/ui_parts/shortcut_panel_config.gd:
@@ -394,6 +394,10 @@ msgid "New shape"
 msgstr "Nouvelle forme"
 
 #: src/ui_parts/import_warning_menu.gd:
+msgid "Syntax error"
+msgstr "Erreur de syntaxe"
+
+#: src/ui_parts/import_warning_menu.gd:
 msgid "Import Problems"
 msgstr "Importer des problèmes"
 
@@ -408,10 +412,6 @@ msgstr "Élément non reconnu"
 #: src/ui_parts/import_warning_menu.gd:
 msgid "Unrecognized attribute"
 msgstr "Attribut non reconnu"
-
-#: src/ui_parts/import_warning_menu.gd:
-msgid "Syntax error"
-msgstr "Erreur de syntaxe"
 
 #: src/ui_parts/inspector.gd:
 msgid "Add element"
@@ -532,8 +532,8 @@ msgid "View all releases"
 msgstr "Voir toutes les versions"
 
 #: src/ui_parts/update_menu.gd:
-msgid "VectorTouch is up-to-date."
-msgstr "VectorTouch est à jour."
+msgid "GodSVG is up-to-date."
+msgstr "GodSVG est à jour."
 
 #: src/ui_parts/update_menu.gd:
 msgid "New versions available!"
@@ -580,6 +580,11 @@ msgstr "Colorier les mots-clés"
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Eyedropper"
 msgstr "Pipette"
+
+#: src/ui_widgets/palette_config.gd:
+#, fuzzy
+msgid "Add new color"
+msgstr "Couleur de texte"
 
 #: src/ui_widgets/palette_config.gd:
 msgid "Unnamed palettes won't be shown."
@@ -662,7 +667,7 @@ msgstr "Ajouter un raccourci"
 msgid "Press keys…"
 msgstr "Appuyez sur des touches…"
 
-#. Refers to the formatter used for VectorTouch's code editor.
+#. Refers to the formatter used for GodSVG's code editor.
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "Editor formatter"
 msgstr "Formatage de l'éditeur"
@@ -982,7 +987,7 @@ msgid "Sync window title to file name"
 msgstr "Synchroniser le titre de la fenêtre avec le nom du fichier"
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -999,8 +1004,8 @@ msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "When enabled, uses your operating system's native file dialog instead of VectorTouch's built-in one."
-msgstr "Si activé, utilise le sélecteur de fichiers système. Si désactivé, utilise la boîte de dialogue intégrée de VectorTouch."
+msgid "When enabled, uses your operating system's native file dialog instead of GodSVG's built-in one."
+msgstr "Si activé, utilise le sélecteur de fichiers système. Si désactivé, utilise la boîte de dialogue intégrée de GodSVG."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "The setting has no effect in the current configuration."
@@ -1047,8 +1052,8 @@ msgid "New transform"
 msgstr "Nouvelle transformation"
 
 #: src/ui_widgets/unrecognized_field.gd:
-msgid "VectorTouch doesn’t recognize this attribute"
-msgstr "VectorTouch ne reconnaît pas cet attribut"
+msgid "GodSVG doesn’t recognize this attribute"
+msgstr "GodSVG ne reconnaît pas cet attribut"
 
 #: src/utils/FileUtils.gd:
 msgid "The following files were discarded:"
@@ -1103,8 +1108,8 @@ msgid "Don't save"
 msgstr "Ne pas enregistrer"
 
 #: src/utils/FileUtils.gd:
-msgid "{file_path} is already being edited inside VectorTouch."
-msgstr "{file_path} est déjà en cours de modification dans VectorTouch."
+msgid "{file_path} is already being edited inside GodSVG."
+msgstr "{file_path} est déjà en cours de modification dans GodSVG."
 
 #: src/utils/FileUtils.gd:
 msgid "If you want to revert your edits since the last save, use {reset_svg}."
@@ -1311,20 +1316,20 @@ msgid "Open Donate menu"
 msgstr "Ouvrir le menu « Faire un don »"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch repository"
-msgstr "Dépôt de VectorTouch"
+msgid "GodSVG repository"
+msgstr "Dépôt de GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch repository"
-msgstr "Ouvrir le dépôt de VectorTouch"
+msgid "Open GodSVG repository"
+msgstr "Ouvrir le dépôt de GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "VectorTouch website"
-msgstr "Site web de VectorTouch"
+msgid "GodSVG website"
+msgstr "Site web de GodSVG"
 
 #: src/utils/TranslationUtils.gd:
-msgid "Open VectorTouch website"
-msgstr "Ouvrir le site web de VectorTouch"
+msgid "Open GodSVG website"
+msgstr "Ouvrir le site web de GodSVG"
 
 #: src/utils/TranslationUtils.gd:
 msgid "Check for updates"
@@ -1396,6 +1401,10 @@ msgid "Viewport"
 msgstr "Zone d'affichage"
 
 #: src/utils/TranslationUtils.gd:
+msgid "Only {extension_list} files are supported for this operation."
+msgstr "Seuls les fichiers {extension_list} sont supportés par cette opération."
+
+#: src/utils/TranslationUtils.gd:
 msgid "Select {format} files"
 msgstr "Sélectionner des fichiers {format}"
 
@@ -1411,12 +1420,8 @@ msgstr "Sélectionner un fichier {format}"
 msgid "Save the {format} file"
 msgstr "Enregistrer le fichier {format}"
 
-#: src/utils/TranslationUtils.gd:
-msgid "Only {extension_list} files are supported for this operation."
-msgstr "Seuls les fichiers {extension_list} sont supportés par cette opération."
-
-#~ msgid "If turned off, the window title remains as \"VectorTouch\" without including the current file."
-#~ msgstr "Si désactivé, le titre de la fenêtre restera simplement « VectorTouch » quel que soit le fichier actuel."
+#~ msgid "If turned off, the window title remains as \"GodSVG\" without including the current file."
+#~ msgstr "Si désactivé, le titre de la fenêtre restera simplement « GodSVG » quel que soit le fichier actuel."
 
 #~ msgid "Keep unrecognized XML structures"
 #~ msgstr "Conserver les structures XML non reconnues"
@@ -1482,8 +1487,8 @@ msgstr "Seuls les fichiers {extension_list} sont supportés par cette opération
 #~ msgid "Wraps the mouse cursor around when panning the viewport."
 #~ msgstr "Déplace le pointeur de souris d'un bout à l'autre de l'écran lorsque le bord est atteint lors d'un balayage."
 
-#~ msgid "This requires VectorTouch to connect to the internet."
-#~ msgstr "Ceci nécessite que VectorTouch se connecte à Internet."
+#~ msgid "This requires GodSVG to connect to the internet."
+#~ msgstr "Ceci nécessite que GodSVG se connecte à Internet."
 
 #~ msgid "Open file"
 #~ msgstr "Ouvrir le fichier"
