@@ -6,19 +6,21 @@
 [node name="SettingFrame" type="Control"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 3
-anchors_preset = 10
 anchor_right = 1.0
+offset_bottom = 24.0
 grow_horizontal = 2
 focus_mode = 1
 mouse_filter = 1
 script = ExtResource("1_p1ngn")
 
 [node name="ResetButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 1000.0
-offset_top = 3.0
-offset_right = 1024.0
-offset_bottom = 27.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -24.0
+offset_bottom = 24.0
+grow_horizontal = 0
 size_flags_horizontal = 10
 size_flags_vertical = 4
 focus_mode = 0
