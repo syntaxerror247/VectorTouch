@@ -97,13 +97,13 @@ func _ready() -> void:
 	if type != Type.NONE:
 		widget.reset_size()
 	reset_button.tooltip_text = Translator.translate("Reset to default")
-	reset_button.position = Vector2(size.x - 24, 4)
+	reset_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
 	reset_button.pressed.connect(_on_reset_button_pressed)
 	update_widgets()
 
 func _on_resized() -> void:
 	widget.position = Vector2(size.x - panel_width, 3)
-	reset_button.position = Vector2(size.x - 24, 4)
+	reset_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
 	queue_redraw()
 
 func _on_reset_button_pressed() -> void:
