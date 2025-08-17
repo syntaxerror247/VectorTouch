@@ -18,49 +18,23 @@ var popup_stack: Array[Control]
 var shortcut_panel: PanelContainer
 var tabs_panel: PanelContainer
 
-var android_runtime: JNISingleton
-var is_light_system_bars: bool = false
+var VTAndroidCore: JNISingleton
+var system_bar_color: Color = Color.BLACK
 var status_bar_visible: bool = true
 
 var minimum_content_width : float
 
-func set_system_bar_color(color: Color, override_appearance := false) -> void:
-	if not android_runtime:
+func set_system_bar_color(color: Color, override := false) -> void:
+	if (system_bar_color == color and not override) or not VTAndroidCore:
 		return
-	
-	var activity = android_runtime.getActivity()
-	var callable = func ():
-		var window = activity.getWindow()
-		var decorView: JavaObject = window.getDecorView()
-		decorView.setBackgroundColor(color.to_argb32())
-		
-		if (is_light_system_bars != (color.get_luminance() > 0.45)) or override_appearance:
-			is_light_system_bars = color.get_luminance() > 0.45
-			var WindowInsetsControllerCompat = JavaClassWrapper.wrap("androidx.core.view.WindowInsetsControllerCompat")
-			var controller = WindowInsetsControllerCompat.call("<init>", window, window.getDecorView())
-			controller.setAppearanceLightNavigationBars(is_light_system_bars)
-			controller.setAppearanceLightStatusBars(is_light_system_bars)
-	
-	activity.runOnUiThread(android_runtime.createRunnableFromGodotCallable(callable))
+	VTAndroidCore.setWindowColor(color)
+	system_bar_color = color
 
 func toogle_status_bar(visible: bool, override := false) -> void:
-	if (status_bar_visible == visible and not override) or not android_runtime:
+	if (status_bar_visible == visible and not override) or not VTAndroidCore:
 		return
-	
-	var activity = android_runtime.getActivity()
-	var callable = func ():
-		var window = activity.getWindow()
-		var WindowInsetsControllerCompat = JavaClassWrapper.wrap("androidx.core.view.WindowInsetsControllerCompat")
-		var controller = WindowInsetsControllerCompat.call("<init>", window, window.getDecorView())
-		var type = JavaClassWrapper.wrap("androidx.core.view.WindowInsetsCompat$Type")
-		if visible:
-			controller.show(type.statusBars())
-		else:
-			controller.hide(type.statusBars())
-			controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE)
-		status_bar_visible = visible
-	
-	activity.runOnUiThread(android_runtime.createRunnableFromGodotCallable(callable))
+	VTAndroidCore.toogleStatusBar(visible)
+	status_bar_visible = visible
 
 var shortcut_registrations: Dictionary[Node, ShortcutsRegistration] = {}
 
@@ -94,7 +68,7 @@ func _ready() -> void:
 	await get_tree().process_frame  # Helps make things more consistent.
 	update_ui_scale()
 	
-	android_runtime = Engine.get_singleton("AndroidRuntime")
+	VTAndroidCore = Engine.get_singleton("VTAndroidCore")
 	set_system_bar_color(ThemeUtils.base_color, true)
 	toogle_status_bar(Configs.current_orientation == Configs.orientation.PORTRAIT)
 	var version = JavaClassWrapper.wrap("android.os.Build$VERSION")
