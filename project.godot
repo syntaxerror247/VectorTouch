@@ -47,6 +47,7 @@ text_editor/completion/add_type_hints=true
 text_editor/completion/add_node_path_literals=true
 text_editor/completion/add_string_name_literals=false
 text_editor/appearance/guidelines/line_length_guideline_hard_column=160
+enabled=PackedStringArray("res://addons/VTAndroidCore/plugin.cfg")
 
 [filesystem]
 
