@@ -1,4 +1,5 @@
-# A resource used to determine how to structure the XML and represent attributes.
+## A resource used to determine how to structure the XML and format attribute values.
+## The various configs are described interactively in the GodSVG settings menu.
 class_name Formatter extends ConfigResource
 
 enum Preset {COMPACT, PRETTY}
@@ -7,7 +8,7 @@ enum NamedColorUse {ALWAYS, WHEN_SHORTER_OR_EQUAL, WHEN_SHORTER, NEVER}
 enum PrimaryColorSyntax {THREE_OR_SIX_DIGIT_HEX, SIX_DIGIT_HEX, RGB}
 
 # Elements that don't make sense without child elements.
-const container_elements: Array[String] = ["svg", "g", "linearGradient", "radialGradient"]
+const CONTAINER_ELEMENTS: PackedStringArray = ["svg", "g", "linearGradient", "radialGradient"]
 
 # TODO Typed Dictionary wonkiness  Dictionary[Preset, String]
 static func get_preset_value_text_map() -> Dictionary:
@@ -50,7 +51,7 @@ static func get_enum_value_text_map(property: String) -> Dictionary:
 		"color_primary_syntax": return get_primary_color_syntax_value_text_map()
 	return {}
 
-
+## Returns the default of a settings based on the preset.
 func get_setting_default(setting: String) -> Variant:
 	match setting:
 		"xml_add_trailing_newline": return false
@@ -75,10 +76,12 @@ func get_setting_default(setting: String) -> Variant:
 		"transform_list_remove_unnecessary_params": return preset == Preset.COMPACT
 	return null
 
+## Resets all settings to their defaults based on the preset.
 func reset_to_default() -> void:
 	for setting in _get_setting_names():
 		set(setting, get_setting_default(setting))
 
+## Returns true if all settings are set to their default value based on the preset.
 func is_everything_default() -> bool:
 	for setting in _get_setting_names():
 		if get(setting) != get_setting_default(setting):
@@ -99,6 +102,7 @@ func _init(new_preset := Preset.COMPACT) -> void:
 	super()
 
 
+## A preset that determines the default values of the formatter configs.
 @export var preset := Preset.COMPACT:
 	set(new_value):
 		if preset != new_value:

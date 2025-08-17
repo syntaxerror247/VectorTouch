@@ -1,37 +1,45 @@
 extends VBoxContainer
 
 const NumberEdit = preload("res://src/ui_widgets/number_edit.gd")
+const ZoomWidget = preload("res://src/ui_widgets/zoom_widget.gd")
+const MainCanvas = preload("res://src/ui_parts/main_canvas.gd")
 
-@onready var viewport: SubViewport = %Viewport
-@onready var reference_texture: TextureRect = %Viewport/ReferenceTexture
+@onready var canvas: MainCanvas = $ViewportPanel/VBoxContainer/Canvas
 @onready var reference_button: Button = %ViewportOptions/Reference
 @onready var snapper: NumberEdit = %ViewportOptions/Snapping/SnapNumberEdit
 @onready var snap_button: BetterButton = %ViewportOptions/Snapping/SnapButton
 @onready var viewport_panel: PanelContainer = $ViewportPanel
-@onready var debug_container: MarginContainer = $ViewportPanel/DebugMargins
-@onready var debug_label: Label = %DebugContainer/DebugLabel
-@onready var input_debug_label: Label = %DebugContainer/InputDebugLabel
 @onready var toolbar: PanelContainer = $ViewportPanel/VBoxContainer/Toolbar
+@onready var zoom_widget: ZoomWidget = %ZoomMenu
 
 var tabs_panel: PanelContainer
 
 func _ready() -> void:
+	var shortcuts := ShortcutsRegistration.new()
+	shortcuts.add_shortcut("load_reference", FileUtils.open_image_import_dialog.bind(set_main_viewport_reference_image),
+			ShortcutsRegistration.Behavior.PASS_THROUGH_POPUPS)
+	shortcuts.add_shortcut("view_show_reference", func() -> void: canvas.show_reference = not canvas.show_reference,
+			ShortcutsRegistration.Behavior.PASS_THROUGH_AND_PRESERVE_POPUPS)
+	shortcuts.add_shortcut("view_overlay_reference", func() -> void: canvas.overlay_reference = not canvas.overlay_reference,
+			ShortcutsRegistration.Behavior.PASS_THROUGH_AND_PRESERVE_POPUPS)
+	shortcuts.add_shortcut("toggle_snap", func() -> void: Configs.savedata.snap *= -1, ShortcutsRegistration.Behavior.PASS_THROUGH_AND_PRESERVE_POPUPS)
+	HandlerGUI.register_shortcuts(self, shortcuts)
+	
+	zoom_widget.setup_limits(Canvas.MIN_ZOOM, Canvas.MAX_ZOOM)
+	zoom_widget.zoom_in_pressed.connect(canvas.zoom_in)
+	zoom_widget.zoom_out_pressed.connect(canvas.zoom_out)
+	zoom_widget.zoom_reset_pressed.connect(canvas.center_frame)
+	canvas.camera_zoom_changed.connect(func() -> void: zoom_widget.sync_to_value(canvas.camera_zoom))
+	
+	reference_button.pressed.connect(_on_reference_button_pressed)
+	snap_button.toggled.connect(_on_snap_button_toggled)
+	snapper.value_changed.connect(_on_snap_number_edit_value_changed)
 	Configs.language_changed.connect(sync_localization)
 	sync_localization()
 	Configs.snap_changed.connect(update_snap_config)
 	update_snap_config()
 	Configs.theme_changed.connect(sync_theming)
 	sync_theming()
-	Configs.active_tab_changed.connect(sync_reference_image)
-	Configs.active_tab_reference_changed.connect(sync_reference_image)
-	sync_reference_image()
-	State.show_reference_changed.connect(_on_show_reference_updated)
-	_on_show_reference_updated()
-	State.overlay_reference_changed.connect(_on_overlay_reference_updated)
-	_on_overlay_reference_updated()
-	State.show_debug_changed.connect(_on_show_debug_changed)
-	_on_show_debug_changed()
-	get_window().window_input.connect(_update_input_debug)
 
 
 func sync_localization() -> void:
@@ -50,16 +58,17 @@ func update_snap_config() -> void:
 	snapper.editable = snap_enabled
 	snapper.set_value(absf(snap_config))
 
-
-func _on_reference_pressed() -> void:
-	var has_reference := is_instance_valid(reference_texture.texture)
+func _on_reference_button_pressed() -> void:
+	var active_tab := Configs.savedata.get_active_tab()
+	var has_reference := is_instance_valid(active_tab.reference_image)
 	var btn_arr: Array[Button] = [
 		ContextPopup.create_shortcut_button("load_reference"),
 		ContextPopup.create_button(Translator.translate("Paste reference image"),
-				paste_reference_image, not Utils.has_clipboard_image_web_safe(),
-				load("res://assets/icons/Paste.svg")),
-		ContextPopup.create_shortcut_checkbox("view_show_reference", State.show_reference and has_reference, not has_reference),
-		ContextPopup.create_shortcut_checkbox("view_overlay_reference", State.overlay_reference and has_reference, not has_reference)
+				paste_reference_image, not Utils.has_clipboard_image_web_safe(), load("res://assets/icons/Paste.svg")),
+		ContextPopup.create_button(Translator.translate("Clear reference image"),
+				clear_reference_image, not has_reference, load("res://assets/icons/Clear.svg")),
+		ContextPopup.create_shortcut_checkbox("view_show_reference", active_tab.show_reference and has_reference, not has_reference),
+		ContextPopup.create_shortcut_checkbox("view_overlay_reference", active_tab.overlay_reference and has_reference, not has_reference)
 	]
 	
 	var reference_popup := ContextPopup.new()
@@ -67,72 +76,20 @@ func _on_reference_pressed() -> void:
 	HandlerGUI.popup_under_rect_center(reference_popup, reference_button.get_global_rect(), get_viewport())
 
 func paste_reference_image() -> void:
-	FileUtils.load_reference_from_image(DisplayServer.clipboard_get_image())
+	set_main_viewport_reference_image(DisplayServer.clipboard_get_image())
 
+func clear_reference_image() -> void:
+	set_main_viewport_reference_image(null)
 
-func _on_show_reference_updated() -> void:
-	reference_texture.visible = State.show_reference
-
-func _on_overlay_reference_updated() -> void:
-	if State.overlay_reference:
-		viewport.move_child(reference_texture, viewport.get_child_count() - 1)
+func set_main_viewport_reference_image(image: Image) -> void:
+	if is_instance_valid(image):
+		canvas.reference_image = ImageTexture.create_from_image(image)
 	else:
-		viewport.move_child(reference_texture, 0)
+		canvas.reference_image = null
 
-func sync_reference_image() ->  void:
-	var reference := Configs.savedata.get_active_tab().reference_image
-	if is_instance_valid(reference):
-		reference_texture.texture = reference
-		reference_texture.show()
-	else:
-		reference_texture.texture = null
-		reference_texture.hide()
 
 func _on_snap_button_toggled(toggled_on: bool) -> void:
 	Configs.savedata.snap = absf(Configs.savedata.snap) if toggled_on else -absf(Configs.savedata.snap)
 
 func _on_snap_number_edit_value_changed(new_value: float) -> void:
 	Configs.savedata.snap = new_value * signf(Configs.savedata.snap)
-
-
-func _on_show_debug_changed() -> void:
-	if State.show_debug:
-		debug_container.show()
-		update_debug()
-		input_debug_label.text = ""
-	else:
-		debug_container.hide()
-
-# The strings here are intentionally not localized.
-func update_debug() -> void:
-	var debug_text := ""
-	debug_text += "FPS: %d\n" % Performance.get_monitor(Performance.TIME_FPS)
-	debug_text += "Static Mem: %s\n" % String.humanize_size(int(Performance.get_monitor(Performance.MEMORY_STATIC)))
-	debug_text += "Nodes: %d\n" % Performance.get_monitor(Performance.OBJECT_NODE_COUNT)
-	debug_text += "Stray nodes: %d\n" % Performance.get_monitor(Performance.OBJECT_ORPHAN_NODE_COUNT)
-	debug_text += "Objects: %d\n" % Performance.get_monitor(Performance.OBJECT_COUNT)
-	debug_label.text = debug_text
-	# Set up the next update if the container is still visible.
-	if debug_container.visible:
-		get_tree().create_timer(1.0).timeout.connect(update_debug)
-
-var last_event_text := ""
-var last_event_repeat_count := 1
-
-func _update_input_debug(event: InputEvent) -> void:
-	if debug_container.visible and event.is_pressed():
-		var new_text := input_debug_label.text
-		var event_text := event.as_text()
-		if event is InputEventMouse:
-			event_text += " (" + String.num(event.position.x, 2) + ", " + String.num(event.position.y, 2) + ")"
-		if event_text == last_event_text:
-			last_event_repeat_count += 1
-			new_text = new_text.left(new_text.rfind("\n", new_text.length() - 2) + 1)
-			event_text += " (%d)" % last_event_repeat_count
-		else:
-			last_event_text = event_text
-			last_event_repeat_count = 1
-		if new_text.count("\n") >= 5:
-			new_text = new_text.right(-new_text.find("\n") - 1)
-		new_text += event_text + "\n"
-		input_debug_label.text = new_text

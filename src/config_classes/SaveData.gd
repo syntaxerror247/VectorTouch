@@ -60,15 +60,15 @@ func get_setting_default(setting: String) -> Variant:
 				HighlighterPreset.DEFAULT_LIGHT: return Color("cc0000")
 		"basic_color_valid":
 			match theme_preset:
-				ThemePreset.DARK,ThemePreset.BLACK: return Color("9f9")
+				ThemePreset.DARK, ThemePreset.BLACK: return Color("9f9")
 				ThemePreset.LIGHT: return Color("2b2")
 		"basic_color_error":
 			match theme_preset:
-				ThemePreset.DARK,ThemePreset.BLACK: return Color("f99")
+				ThemePreset.DARK, ThemePreset.BLACK: return Color("f99")
 				ThemePreset.LIGHT: return Color("b22")
 		"basic_color_warning":
 			match theme_preset:
-				ThemePreset.DARK,ThemePreset.BLACK: return Color("ee6")
+				ThemePreset.DARK, ThemePreset.BLACK: return Color("ee6")
 				ThemePreset.LIGHT: return Color("991")
 		"handle_size": return 1.0 if OS.get_name() != "Android" else 2.0
 		"handle_inner_color": return Color("fff")
@@ -88,7 +88,7 @@ func get_setting_default(setting: String) -> Variant:
 				ThemePreset.BLACK: return Color("000")
 		"grid_color":
 			match theme_preset:
-				ThemePreset.DARK,ThemePreset.BLACK: return Color("808080")
+				ThemePreset.DARK, ThemePreset.BLACK: return Color("808080")
 				ThemePreset.LIGHT: return Color("666")
 		
 		"invert_zoom": return false
@@ -102,19 +102,22 @@ func get_setting_default(setting: String) -> Variant:
 		"use_filename_for_window_title": return true
 	return null
 
+## Resets all settings to their defaults.
 func reset_to_default() -> void:
 	for setting in _get_setting_names():
 		set(setting, get_setting_default(setting))
 
+## Resets the settings tied to theme presets to their defaults, based on the current preset.
 func reset_theme_items_to_default() -> void:
 	var old_highlighter_preset_value := highlighter_preset
-	for setting in theme_items:
+	for setting in THEME_ITEMS:
 		set(setting, get_setting_default(setting))
 	if old_highlighter_preset_value != highlighter_preset:
 		reset_highlighting_items_to_default()
 
+## Resets the settings tied to highlighter presets to their defaults, based on the current preset.
 func reset_highlighting_items_to_default() -> void:
-	for setting in highlighting_items:
+	for setting in HIGHLIGHTING_ITEMS:
 		set(setting, get_setting_default(setting))
 
 func _get_setting_names() -> PackedStringArray:
@@ -125,7 +128,7 @@ func _get_setting_names() -> PackedStringArray:
 				arr.append(p.name)
 	return arr
 
-const theme_items: PackedStringArray = [
+const THEME_ITEMS: PackedStringArray = [
 	"base_color",
 	"accent_color",
 	"highlighter_preset",
@@ -137,12 +140,12 @@ const theme_items: PackedStringArray = [
 ]
 
 func is_theming_default() -> bool:
-	for setting in theme_items:
+	for setting in THEME_ITEMS:
 		if get(setting) != get_setting_default(setting):
 			return false
 	return true
 
-# TODO Typed Dictionary wonkiness  Dictionary[ThemePreset, String]. This one was copied
+# TODO Typed Dictionary wonkiness Dictionary[ThemePreset, String]. This one was copied
 # from an earlier similar implementation, but I didn't bother to test if it's still
 # necessary because VectorTouch was disheveled while I was implementing the feature.
 static func get_theme_preset_value_text_map() -> Dictionary:
@@ -152,7 +155,7 @@ static func get_theme_preset_value_text_map() -> Dictionary:
 		ThemePreset.BLACK: Translator.translate("Black (OLED)"),
 	}
 
-const highlighting_items: PackedStringArray = [
+const HIGHLIGHTING_ITEMS: PackedStringArray = [
 	"highlighting_symbol_color",
 	"highlighting_element_color",
 	"highlighting_attribute_color",
@@ -164,7 +167,7 @@ const highlighting_items: PackedStringArray = [
 ]
 
 func is_highlighting_default() -> bool:
-	for setting in highlighting_items:
+	for setting in HIGHLIGHTING_ITEMS:
 		if get(setting) != get_setting_default(setting):
 			return false
 	return true
@@ -856,7 +859,6 @@ const MAX_TABS = 4096
 			for tab in _tabs:
 				tab.changed.connect(emit_changed)
 				tab.status_changed.connect(_on_tab_status_changed.bind(tab.id))
-				tab.reference_changed.connect(_on_tab_reference_changed.bind(tab.id))
 			emit_changed()
 			if _tabs.is_empty():
 				_add_new_tab()
@@ -880,10 +882,6 @@ func _on_tab_status_changed(id: int) -> void:
 	if id == _tabs[_active_tab_index].id:
 		Configs.active_tab_status_changed.emit()
 	Configs.tabs_changed.emit()
-
-func _on_tab_reference_changed(id: int) -> void:
-	if id == _tabs[_active_tab_index].id:
-		Configs.active_tab_reference_changed.emit()
 
 func has_tabs() -> bool:
 	return not _tabs.is_empty()
@@ -937,7 +935,6 @@ func _add_new_tab() -> void:
 	new_tab.fully_loaded = false
 	new_tab.changed.connect(emit_changed)
 	new_tab.status_changed.connect(_on_tab_status_changed.bind(new_id))
-	new_tab.reference_changed.connect(_on_tab_reference_changed.bind(new_id))
 	
 	# Clear file path for the new tab.
 	var new_tab_path := new_tab.get_edited_file_path()

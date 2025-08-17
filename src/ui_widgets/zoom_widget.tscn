@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://oltvrf01xrxl"]
+[gd_scene load_steps=5 format=3 uid="uid://ywqwxvmepuji"]
 
 [ext_resource type="Texture2D" uid="uid://c2h5snkvemm4p" path="res://assets/icons/Minus.svg" id="1_8ggy2"]
-[ext_resource type="Script" uid="uid://dj2q7wnto3uqp" path="res://src/ui_widgets/zoom_menu.gd" id="1_18ab8"]
+[ext_resource type="Script" uid="uid://dj2q7wnto3uqp" path="res://src/ui_widgets/zoom_widget.gd" id="1_qudrd"]
 [ext_resource type="Texture2D" uid="uid://eif2ioi0mw17" path="res://assets/icons/Plus.svg" id="2_284x5"]
 [ext_resource type="Script" uid="uid://ynx3s1jc6bwq" path="res://src/ui_widgets/BetterButton.gd" id="3_r0sro"]
 
@@ -10,7 +10,7 @@ anchors_preset = -1
 offset_right = 114.0
 offset_bottom = 24.0
 alignment = 1
-script = ExtResource("1_18ab8")
+script = ExtResource("1_qudrd")
 
 [node name="ZoomOut" type="Button" parent="."]
 layout_mode = 2
@@ -19,6 +19,7 @@ mouse_default_cursor_shape = 2
 icon = ExtResource("1_8ggy2")
 icon_alignment = 1
 script = ExtResource("3_r0sro")
+action = "zoom_out"
 metadata/_custom_type_script = "uid://ynx3s1jc6bwq"
 
 [node name="ZoomReset" type="Button" parent="."]
@@ -28,6 +29,7 @@ focus_mode = 0
 mouse_default_cursor_shape = 2
 text = "100%"
 script = ExtResource("3_r0sro")
+action = "zoom_reset"
 metadata/_custom_type_script = "uid://ynx3s1jc6bwq"
 
 [node name="ZoomIn" type="Button" parent="."]
@@ -37,8 +39,5 @@ mouse_default_cursor_shape = 2
 icon = ExtResource("2_284x5")
 icon_alignment = 1
 script = ExtResource("3_r0sro")
+action = "zoom_in"
 metadata/_custom_type_script = "uid://ynx3s1jc6bwq"
-
-[connection signal="pressed" from="ZoomOut" to="." method="_on_zoom_out_pressed"]
-[connection signal="pressed" from="ZoomReset" to="." method="_on_zoom_reset_pressed"]
-[connection signal="pressed" from="ZoomIn" to="." method="_on_zoom_in_pressed"]

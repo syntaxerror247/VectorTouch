@@ -32,5 +32,3 @@ mouse_default_cursor_shape = 2
 theme_type_variation = &"LeftConnectedButton"
 icon = ExtResource("2_4oygd")
 expand_icon = true
-
-[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

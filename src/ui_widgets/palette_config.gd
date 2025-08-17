@@ -77,6 +77,7 @@ func rebuild_colors() -> void:
 	fake_swatch.focus_mode = Control.FOCUS_NONE
 	fake_swatch.mouse_filter = Control.MOUSE_FILTER_PASS
 	fake_swatch.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	fake_swatch.tooltip_text = Translator.translate("Add new color")
 	var color_swatch_ref := ColorSwatchScene.instantiate()
 	fake_swatch.custom_minimum_size = color_swatch_ref.custom_minimum_size
 	color_swatch_ref.queue_free()
@@ -185,22 +186,22 @@ func move_down() -> void:
 	layout_changed.emit()
 
 func copy_palette(palette_idx: int) -> void:
-	DisplayServer.clipboard_set(Configs.savedata.get_palette(palette_idx).to_text())
+	DisplayServer.clipboard_set(Configs.savedata.get_palette(palette_idx).get_as_markup())
 
 func save_palette(palette_idx: int) -> void:
 	var saved_palette := Configs.savedata.get_palette(palette_idx)
-	FileUtils.open_xml_export_dialog(saved_palette.to_text(), saved_palette.title)
+	FileUtils.open_xml_export_dialog(saved_palette.get_as_markup(), saved_palette.title)
 
 func open_palette_options() -> void:
 	var btn_arr: Array[Button] = []
 	btn_arr.append(ContextPopup.create_button("Pure",
 			apply_preset.bind(Palette.Preset.PURE),
 			palette.is_same_as_preset(Palette.Preset.PURE),
-			load("res://assets/icons/PresetPure.svg")))
+			load("res://assets/icons/PresetPure.svg"), true))
 	btn_arr.append(ContextPopup.create_button("Grayscale",
 			apply_preset.bind(Palette.Preset.GRAYSCALE),
 			palette.is_same_as_preset(Palette.Preset.GRAYSCALE),
-			load("res://assets/icons/PresetGrayscale.svg")))
+			load("res://assets/icons/PresetGrayscale.svg"), true))
 	btn_arr.append(ContextPopup.create_button("Empty",
 			apply_preset.bind(Palette.Preset.EMPTY),
 			palette.is_same_as_preset(Palette.Preset.EMPTY),

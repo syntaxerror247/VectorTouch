@@ -1,6 +1,7 @@
 # Godot-specific ignores
 .godot/
 .nomedia
+android/
 
 # Others
 .~lock.*

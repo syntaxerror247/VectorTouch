@@ -35,7 +35,7 @@ func _ready() -> void:
 	back_button.pressed.connect(queue_free)
 	change_orientation()
 	Configs.orientation_changed.connect(change_orientation)
-	
+	lang_button.pressed.connect(_on_language_pressed)
 	scroll_container.get_v_scroll_bar().visibility_changed.connect(adjust_right_margin)
 	adjust_right_margin()
 	
@@ -131,7 +131,8 @@ func setup_content() -> void:
 func set_preview(node: Control) -> void:
 	for child in preview_panel.get_children():
 		child.queue_free()
-	preview_panel.add_child(node)
+	if is_instance_valid(node):
+		preview_panel.add_child(node)
 
 
 func _on_language_pressed() -> void:
@@ -149,7 +150,7 @@ func _on_language_pressed() -> void:
 			btn_arr.append(ContextPopup.create_button(
 					TranslationUtils.get_locale_display(locale),
 					_on_language_chosen.bind(locale), is_current_locale,
-					null, Utils.num_simple(translated_count * 100.0 / strings_count, 1) + "%"))
+					null, false, Utils.num_simple(translated_count * 100.0 / strings_count, 1) + "%"))
 		else:
 			btn_arr.append(ContextPopup.create_button(
 					TranslationUtils.get_locale_display(locale),

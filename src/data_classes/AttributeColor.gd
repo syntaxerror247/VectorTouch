@@ -1,12 +1,12 @@
-# An attribute representing a color string, or an url to the ID of a paint element.
+## An attribute representing a color string or a url to the ID of a paint element.
 class_name AttributeColor extends Attribute
 
 # No direct color representation for this attribute type. There are too many quirks.
 
 func set_value(new_value: String) -> void:
 	super(new_value if ColorParser.is_valid(new_value, false,
-			name in DB.attribute_color_url_allowed, name in DB.attribute_color_none_allowed,
-			name in DB.attribute_color_current_color_allowed) else "")
+			name in DB.COLOR_ATTRIBUTES_WITH_URL_ALLOWED, name in DB.COLOR_ATTRIBUTES_WITH_NONE_ALLOWED,
+			name in DB.COLOR_ATTRIBUTES_WITH_CURRENT_COLOR_ALLOWED) else "")
 
 func format(text: String, formatter: Formatter) -> String:
 	text = text.strip_edges()
@@ -68,16 +68,16 @@ func format(text: String, formatter: Formatter) -> String:
 					text = named_color_text
 	return text
 
-
+## Source: https://www.w3.org/TR/SVG11/types.html#ColorKeywords
 static func get_named_colors(include_alpha := false) -> Dictionary:
 	if include_alpha:
-		var extended_named_colors := _named_colors.duplicate()
+		var extended_named_colors := _NAMED_COLORS.duplicate()
 		extended_named_colors["transparent"] = "#00000000"
 		return extended_named_colors
 	else:
-		return _named_colors
+		return _NAMED_COLORS
 
-const _named_colors: Dictionary[String, String] = {
+const _NAMED_COLORS: Dictionary[String, String] = {
 	"aliceblue": "#f0f8ff",
 	"antiquewhite": "#faebd7",
 	"aqua": "#00ffff",

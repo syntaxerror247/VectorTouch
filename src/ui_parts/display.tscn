@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://bvrncl7e6yn5b"]
+[gd_scene load_steps=13 format=3 uid="uid://bvrncl7e6yn5b"]
 
 [ext_resource type="Script" uid="uid://bxmb134e3sqpr" path="res://src/ui_parts/display.gd" id="1_oib5g"]
 [ext_resource type="Texture2D" uid="uid://iglrqrqyg4kn" path="res://assets/icons/Reference.svg" id="4_2hiq7"]
@@ -6,20 +6,12 @@
 [ext_resource type="Script" uid="uid://ynx3s1jc6bwq" path="res://src/ui_widgets/BetterButton.gd" id="6_3v3ve"]
 [ext_resource type="PackedScene" uid="uid://dad7fkhmsooc6" path="res://src/ui_widgets/number_edit.tscn" id="7_wrrfr"]
 [ext_resource type="Texture2D" uid="uid://dgoy38n5me7r0" path="res://assets/icons/Grid.svg" id="8_rll1m"]
-[ext_resource type="PackedScene" uid="uid://oltvrf01xrxl" path="res://src/ui_widgets/zoom_menu.tscn" id="8_xtdmn"]
-[ext_resource type="Script" uid="uid://b6pmlbnl76wmm" path="res://src/ui_parts/viewport.gd" id="9_4xrk7"]
-[ext_resource type="Script" uid="uid://cbajqkgudfvh0" path="res://src/ui_parts/viewport_container.gd" id="9_ryr8t"]
+[ext_resource type="PackedScene" uid="uid://ywqwxvmepuji" path="res://src/ui_widgets/zoom_widget.tscn" id="8_xtdmn"]
+[ext_resource type="Script" uid="uid://1da5k40m2tl2" path="res://src/ui_parts/main_canvas.gd" id="9_ryr8t"]
 [ext_resource type="FontVariation" uid="uid://dg5vsg45k8y7w" path="res://assets/fonts/IconButtonFont.tres" id="10_kq8gf"]
 [ext_resource type="Texture2D" uid="uid://b7r171i82g3xl" path="res://assets/icons/Translate.svg" id="10_rll1m"]
-[ext_resource type="Shader" uid="uid://i2y5pyhcgra2" path="res://src/shaders/zoom_shader.gdshader" id="10_x7ybk"]
-[ext_resource type="Texture2D" uid="uid://c68og6bsqt0lb" path="res://assets/icons/backgrounds/Checkerboard.svg" id="11_1bm1s"]
-[ext_resource type="Script" uid="uid://dtplje5mhdmrj" path="res://src/ui_parts/display_texture.gd" id="12_qi23s"]
-[ext_resource type="Script" uid="uid://csqewpxr21ywy" path="res://src/ui_parts/handles_manager.gd" id="13_lwhwy"]
 [ext_resource type="Texture2D" uid="uid://d04w7h3k83w8u" path="res://assets/icons/element/svg.svg" id="15_kq8gf"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_kqplg"]
-shader = ExtResource("10_x7ybk")
-shader_parameter/uv_scale = 1.0
+[ext_resource type="PackedScene" uid="uid://vrmbmt18wocm" path="res://src/ui_parts/debug_content.tscn" id="15_ryr8t"]
 
 [node name="Display" type="VBoxContainer"]
 anchors_preset = 15
@@ -39,55 +31,10 @@ size_flags_vertical = 3
 [node name="VBoxContainer" type="VBoxContainer" parent="ViewportPanel"]
 layout_mode = 2
 
-[node name="ViewportContainer" type="SubViewportContainer" parent="ViewportPanel/VBoxContainer"]
-clip_contents = true
+[node name="Canvas" type="SubViewportContainer" parent="ViewportPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-stretch = true
 script = ExtResource("9_ryr8t")
-
-[node name="Viewport" type="SubViewport" parent="ViewportPanel/VBoxContainer/ViewportContainer"]
-unique_name_in_owner = true
-disable_3d = true
-handle_input_locally = false
-gui_snap_controls_to_pixels = false
-size = Vector2i(480, 811)
-size_2d_override_stretch = true
-render_target_update_mode = 4
-script = ExtResource("9_4xrk7")
-
-[node name="ReferenceTexture" type="TextureRect" parent="ViewportPanel/VBoxContainer/ViewportContainer/Viewport"]
-visible = false
-anchors_preset = -1
-offset_right = 128.0
-offset_bottom = 128.0
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Checkerboard" type="TextureRect" parent="ViewportPanel/VBoxContainer/ViewportContainer/Viewport"]
-texture_filter = 1
-material = SubResource("ShaderMaterial_kqplg")
-clip_contents = true
-texture = ExtResource("11_1bm1s")
-expand_mode = 1
-stretch_mode = 1
-
-[node name="DisplayTexture" type="TextureRect" parent="ViewportPanel/VBoxContainer/ViewportContainer/Viewport/Checkerboard"]
-clip_contents = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-expand_mode = 1
-script = ExtResource("12_qi23s")
-
-[node name="Controls" type="Control" parent="ViewportPanel/VBoxContainer/ViewportContainer/Viewport"]
-layout_mode = 3
-anchors_preset = 0
-mouse_filter = 1
-script = ExtResource("13_lwhwy")
 
 [node name="Toolbar" type="PanelContainer" parent="ViewportPanel/VBoxContainer"]
 layout_mode = 2
@@ -181,42 +128,7 @@ layout_mode = 2
 size_flags_vertical = 4
 alignment = 2
 
-[node name="DebugMargins" type="MarginContainer" parent="ViewportPanel"]
-visible = false
+[node name="DebugContent" parent="ViewportPanel" instance=ExtResource("15_ryr8t")]
 layout_mode = 2
-size_flags_horizontal = 8
-size_flags_vertical = 0
-mouse_filter = 2
-theme_override_constants/margin_top = 36
-theme_override_constants/margin_right = 10
 
-[node name="DebugContainer" type="VBoxContainer" parent="ViewportPanel/DebugMargins"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = -18
-
-[node name="DebugLabel" type="Label" parent="ViewportPanel/DebugMargins/DebugContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/line_spacing = 0
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 14
-horizontal_alignment = 2
-
-[node name="InputDebugLabel" type="Label" parent="ViewportPanel/DebugMargins/DebugContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.75, 0.75, 0.75, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/line_spacing = 0
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 14
-horizontal_alignment = 2
-
-[connection signal="size_changed" from="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="_on_size_changed"]
 [connection signal="pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/Reference" to="." method="_on_reference_pressed"]
-[connection signal="toggled" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/Snapping/SnapButton" to="." method="_on_snap_button_toggled"]
-[connection signal="value_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/Snapping/SnapNumberEdit" to="." method="_on_snap_number_edit_value_changed"]
-[connection signal="zoom_changed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/ZoomMenu" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="_on_zoom_changed"]
-[connection signal="zoom_reset_pressed" from="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions/ZoomMenu" to="ViewportPanel/VBoxContainer/ViewportContainer/Viewport" method="center_frame"]

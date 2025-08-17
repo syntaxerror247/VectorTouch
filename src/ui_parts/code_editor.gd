@@ -11,6 +11,10 @@ func _ready() -> void:
 	shortcuts.add_shortcut("copy_svg_text", func() -> void: DisplayServer.clipboard_set(State.svg_text))
 	HandlerGUI.register_shortcuts(self, shortcuts)
 	
+	options_button.pressed.connect(_on_options_button_pressed)
+	code_edit.text_changed.connect(_on_svg_code_edit_text_changed)
+	code_edit.focus_entered.connect(_on_svg_code_edit_focus_entered)
+	code_edit.focus_exited.connect(_on_svg_code_edit_focus_exited)
 	Configs.theme_changed.connect(sync_theming)
 	sync_theming()
 	State.parsing_finished.connect(update_error)
@@ -35,7 +39,7 @@ func update_error(err_id: SVGParser.ParseError) -> void:
 		# When the error is shown, the code editor's theme is changed to match up.
 		if not error_bar.visible:
 			error_bar.show()
-			error_label.text = SVGParser.get_error_string(err_id)
+			error_label.text = SVGParser.get_parsing_error_string(err_id)
 			sync_theming()
 
 func sync_theming() -> void:

@@ -43,6 +43,7 @@ icon = ExtResource("2_y6afs")
 
 [node name="NameEdit" type="LineEdit" parent="ConfigureContainer/TopContainer"]
 visible = false
+custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -68,6 +69,3 @@ focus_mode = 0
 mouse_default_cursor_shape = 2
 theme_type_variation = &"IconButton"
 icon = ExtResource("6_50dbg")
-
-[connection signal="pressed" from="ConfigureContainer/TopContainer/LabelContainer/EditButton" to="." method="_on_edit_button_pressed"]
-[connection signal="pressed" from="ConfigureContainer/BottomContainer/DeleteButton" to="." method="_on_delete_button_pressed"]
