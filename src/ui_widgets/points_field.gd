@@ -46,7 +46,7 @@ func set_value(new_value: String, save := false) -> void:
 	element.set_attribute(attribute_name, new_value)
 	sync()
 	if save:
-		State.queue_svg_save()
+		State.save_svg()
 
 
 func setup() -> void:
@@ -138,17 +138,17 @@ func update_point_x_coordinate(new_value: float, idx: int) -> void:
 	var list := element.get_attribute_list(attribute_name)
 	list[idx * 2] = new_value
 	element.get_attribute(attribute_name).set_list(list)
-	State.queue_svg_save()
+	State.save_svg()
 
 func update_point_y_coordinate(new_value: float, idx: int) -> void:
 	var list := element.get_attribute_list(attribute_name)
 	list[idx * 2 + 1] = new_value
 	element.get_attribute(attribute_name).set_list(list)
-	State.queue_svg_save()
+	State.save_svg()
 
 func _on_add_move_button_pressed() -> void:
 	element.get_attribute(attribute_name).set_list(PackedFloat64Array([0.0, 0.0]))
-	State.queue_svg_save()
+	State.save_svg()
 
 
 # Points editor orchestration.
@@ -243,21 +243,17 @@ func points_draw() -> void:
 				stylebox.bg_color = ThemeUtils.soft_pressed_overlay_color
 			elif hovered:
 				stylebox.bg_color = ThemeUtils.soft_hover_overlay_color
-			stylebox.draw(ci, Rect2(Vector2(0, v_offset), Vector2(points_container.size.x,
-					STRIP_HEIGHT)))
+			stylebox.draw(ci, Rect2(Vector2(0, v_offset), Vector2(points_container.size.x, STRIP_HEIGHT)))
 		# Draw the child controls. They are going to be drawn, not added as a node unless
 		# the mouse hovers them. This is a hack to significantly improve performance.
 		if i == hovered_idx or i == focused_idx:
 			continue
 		
-		var point_x := element.get_attribute_list(attribute_name)[i * 2]
-		var point_y := element.get_attribute_list(attribute_name)[i * 2 + 1]
 		# Draw the action button.
-		more_icon.draw_rect(ci, Rect2(Vector2(points_container.size.x - 19, 4 + v_offset),
-				Vector2(14, 14)), false, ThemeUtils.tinted_contrast_color)
+		more_icon.draw(ci, Vector2(points_container.size.x - 19, 4 + v_offset), ThemeUtils.icon_normal_color)
 		# Draw the fields.
-		draw_numfield(Rect2(Vector2(4, 2 + v_offset), Vector2(44, 18)), point_x)
-		draw_numfield(Rect2(Vector2(52, 2 + v_offset), Vector2(44, 18)), point_y)
+		draw_numfield(Rect2(Vector2(4, 2 + v_offset), Vector2(44, 18)), element.get_attribute_list(attribute_name)[i * 2])
+		draw_numfield(Rect2(Vector2(52, 2 + v_offset), Vector2(44, 18)), element.get_attribute_list(attribute_name)[i * 2 + 1])
 
 func draw_numfield(rect: Rect2, num: float) -> void:
 	mini_line_edit_stylebox.draw(ci, rect)

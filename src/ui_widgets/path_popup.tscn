@@ -5,7 +5,6 @@
 
 [node name="PathCommandPopup" type="PanelContainer"]
 custom_minimum_size = Vector2(236, 0)
-anchors_preset = -1
 offset_right = 106.0
 offset_bottom = 97.0
 script = ExtResource("1_j10aq")
@@ -25,6 +24,7 @@ layout_mode = 2
 size_flags_horizontal = 8
 focus_mode = 0
 mouse_default_cursor_shape = 2
+action_mode = 0
 flat = true
 alignment = 2
 

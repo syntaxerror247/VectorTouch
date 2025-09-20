@@ -62,6 +62,10 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
+#: src/autoload/State.gd:
+msgid "The last edited state of this tab could not be found."
+msgstr ""
+
 #: src/autoload/State.gd: src/ui_parts/good_file_dialog.gd:
 #: src/ui_widgets/alert_dialog.gd: src/utils/FileUtils.gd:
 msgid "Alert!"
@@ -85,10 +89,6 @@ msgstr ""
 
 #: src/autoload/State.gd: src/ui_widgets/transform_popup.gd:
 msgid "Insert After"
-msgstr ""
-
-#: src/autoload/State.gd:
-msgid "The last edited state of this tab could not be found."
 msgstr ""
 
 #: src/autoload/State.gd:
@@ -261,6 +261,10 @@ msgstr ""
 msgid "Paste reference image"
 msgstr ""
 
+#: src/ui_parts/display.gd:
+msgid "Clear reference image"
+msgstr ""
+
 #: src/ui_parts/donate_menu.gd:
 msgid "Links to donation platforms"
 msgstr ""
@@ -329,10 +333,6 @@ msgid "View savedata"
 msgstr ""
 
 #: src/ui_parts/good_file_dialog.gd:
-msgid "Go to parent folder"
-msgstr ""
-
-#: src/ui_parts/good_file_dialog.gd:
 msgid "Refresh files"
 msgstr ""
 
@@ -344,16 +344,20 @@ msgstr ""
 msgid "Search files"
 msgstr ""
 
+#: src/ui_parts/good_file_dialog.gd:
+msgid "Go back"
+msgstr ""
+
+#: src/ui_parts/good_file_dialog.gd:
+msgid "Go forward"
+msgstr ""
+
 #: src/ui_parts/good_file_dialog.gd: src/utils/FileUtils.gd:
 msgid "Save"
 msgstr ""
 
 #: src/ui_parts/good_file_dialog.gd:
 msgid "Select"
-msgstr ""
-
-#: src/ui_parts/good_file_dialog.gd:
-msgid "Path"
 msgstr ""
 
 #: src/ui_parts/good_file_dialog.gd:
@@ -386,10 +390,6 @@ msgstr ""
 
 #: src/ui_parts/good_file_dialog.gd:
 msgid "A file named \"{file_name}\" already exists. Replacing will overwrite its contents!"
-msgstr ""
-
-#: src/ui_parts/handles_manager.gd:
-msgid "New shape"
 msgstr ""
 
 #: src/ui_parts/import_warning_menu.gd:
@@ -439,10 +439,6 @@ msgstr ""
 
 #: src/ui_parts/mac_menu.gd: src/ui_widgets/settings_content_shortcuts.gd:
 msgid "View"
-msgstr ""
-
-#: src/ui_parts/mac_menu.gd:
-msgid "Snap"
 msgstr ""
 
 #: src/ui_parts/settings_menu.gd:
@@ -577,6 +573,14 @@ msgstr ""
 
 #: src/ui_widgets/good_color_picker.gd:
 msgid "Eyedropper"
+msgstr ""
+
+#: src/ui_widgets/handles_manager.gd:
+msgid "New shape"
+msgstr ""
+
+#: src/ui_widgets/invalid_syntax_warning.gd:
+msgid "The SVG has invalid syntax. Any edit not made through the code editor will reset it."
 msgstr ""
 
 #: src/ui_widgets/palette_config.gd:
@@ -771,10 +775,6 @@ msgid "Theme preset"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the default values of theming-related settings, including the highlighter preset."
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
 msgid "Primary theme colors"
 msgstr ""
 
@@ -902,15 +902,7 @@ msgid "Close tabs with middle mouse button"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, clicking on a tab with the middle mouse button closes it instead of simply focusing it."
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
 msgid "Invert zoom direction"
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
-msgid "Swaps the scroll directions for zooming in and zooming out."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -918,11 +910,11 @@ msgid "Wrap-around panning"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Use CTRL for zooming"
+msgid "Panning speed"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, scrolling pans the view instead of zooming in. To zoom, hold CTRL while scrolling."
+msgid "Use CTRL for zooming"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -933,17 +925,9 @@ msgstr ""
 msgid "UI scale"
 msgstr ""
 
-#: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the scale factor for the interface."
-msgstr ""
-
 #. Stands for "Vertical Synchronization".
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "V-Sync"
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
-msgid "Synchronizes graphics rendering with display refresh rate to prevent screen tearing artifacts. May increase input lag slightly."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -951,11 +935,7 @@ msgid "Maximum FPS"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the maximum number of frames per second."
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
-msgid "Keep Screen On"
+msgid "Keep screen on"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -971,7 +951,11 @@ msgid "Sync window title to file name"
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
+msgid "The setting has no effect in the current configuration."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "The setting can't be changed on this platform."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -979,7 +963,47 @@ msgid "When enabled, uses spaces instead of a single tab for indentation."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
+msgid "Determines the default values of theming-related settings, including the highlighter preset."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Determines the base color of GodSVG's interface."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Determines the accent color used for highlighted elements in GodSVG's interface."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "When enabled, clicking on a tab with the middle mouse button closes it instead of simply focusing it."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Swaps the scroll directions for zooming in and zooming out."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
 msgid "Warps the cursor to the opposite side whenever it reaches a viewport boundary while panning."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Determines how much the view moves for scroll-based panning inputs."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "When enabled, scrolling pans the view instead of zooming in. To zoom, hold CTRL while scrolling."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Determines the scale factor for the interface."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Synchronizes graphics rendering with display refresh rate to prevent screen tearing artifacts. May increase input lag slightly."
+msgstr ""
+
+#: src/ui_widgets/settings_content_generic.gd:
+msgid "Determines the maximum number of frames per second."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -991,11 +1015,7 @@ msgid "When enabled, uses your operating system's native file dialog instead of 
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "The setting has no effect in the current configuration."
-msgstr ""
-
-#: src/ui_widgets/settings_content_generic.gd:
-msgid "The setting can't be changed on this platform."
+msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_palettes.gd:
@@ -1272,6 +1292,10 @@ msgstr ""
 
 #: src/utils/TranslationUtils.gd:
 msgid "View debug information"
+msgstr ""
+
+#: src/utils/TranslationUtils.gd:
+msgid "View advanced debug information"
 msgstr ""
 
 #: src/utils/TranslationUtils.gd:

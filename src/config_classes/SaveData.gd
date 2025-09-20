@@ -20,7 +20,7 @@ func get_setting_default(setting: String) -> Variant:
 		"accent_color":
 			match theme_preset:
 				ThemePreset.DARK: return Color("3e8cfc")
-				ThemePreset.LIGHT: return Color("0031bf")
+				ThemePreset.LIGHT: return Color("0053a6")
 				ThemePreset.BLACK: return Color("7c8dbf")
 		"highlighter_preset":
 			match theme_preset:
@@ -48,8 +48,8 @@ func get_setting_default(setting: String) -> Variant:
 				HighlighterPreset.DEFAULT_LIGHT: return Color("3e3e4080")
 		"highlighting_text_color":
 			match highlighter_preset:
-				HighlighterPreset.DEFAULT_DARK: return Color("d5d7f2aa")
-				HighlighterPreset.DEFAULT_LIGHT: return Color("242433aa")
+				HighlighterPreset.DEFAULT_DARK: return Color("d5d7f2ac")
+				HighlighterPreset.DEFAULT_LIGHT: return Color("242433ac")
 		"highlighting_cdata_color":
 			match highlighter_preset:
 				HighlighterPreset.DEFAULT_DARK: return Color("ffeda1ac")
@@ -73,7 +73,10 @@ func get_setting_default(setting: String) -> Variant:
 		"handle_size": return 1.0 if OS.get_name() != "Android" else 2.0
 		"handle_inner_color": return Color("fff")
 		"handle_color": return Color("111")
-		"handle_hovered_color": return Color("aaa")
+		"handle_hovered_color":
+			match theme_preset:
+				ThemePreset.DARK, ThemePreset.BLACK: return Color("aaa")
+				ThemePreset.LIGHT: return Color("808080")
 		"handle_selected_color": return Color("46f")
 		"handle_hovered_selected_color": return Color("f44")
 		"selection_rectangle_speed": return 30.0
@@ -93,6 +96,7 @@ func get_setting_default(setting: String) -> Variant:
 		
 		"invert_zoom": return false
 		"wraparound_panning": return false
+		"panning_speed": return 20
 		"use_ctrl_for_zoom": return true
 		"ui_scale": return ScalingApproach.AUTO
 		"vsync": return true
@@ -132,11 +136,12 @@ const THEME_ITEMS: PackedStringArray = [
 	"base_color",
 	"accent_color",
 	"highlighter_preset",
+	"handle_hovered_color",
+	"canvas_color",
+	"grid_color",
 	"basic_color_valid",
 	"basic_color_error",
 	"basic_color_warning",
-	"canvas_color",
-	"grid_color",
 ]
 
 func is_theming_default() -> bool:
@@ -285,7 +290,7 @@ const CURRENT_VERSION = 1
 			emit_changed()
 			Configs.highlighting_colors_changed.emit()
 
-@export var highlighting_text_color := Color("d5d7f2aa"):
+@export var highlighting_text_color := Color("d5d7f2ac"):
 	set(new_value):
 		if highlighting_text_color != new_value:
 			highlighting_text_color = new_value
@@ -472,6 +477,20 @@ const MAX_SELECTION_RECTANGLE_DASH_LENGTH = 600.0
 	set(new_value):
 		if wraparound_panning != new_value:
 			wraparound_panning = new_value
+			emit_changed()
+
+const PANNING_SPEED_MIN = 1
+const PANNING_SPEED_MAX = 400
+@export var panning_speed := 20:
+	set(new_value):
+		# Validation
+		if is_nan(new_value):
+			new_value = 20
+		else:
+			new_value = clampi(new_value, PANNING_SPEED_MIN, PANNING_SPEED_MAX)
+		# Main part
+		if panning_speed != new_value:
+			panning_speed = new_value
 			emit_changed()
 
 @export var use_ctrl_for_zoom := true:
@@ -777,7 +796,7 @@ func set_palettes(new_palettes: Array[Palette]) -> void:
 			editor_formatter = new_value
 			emit_changed()
 			editor_formatter.changed.connect(emit_changed)
-			editor_formatter.changed_deferred.connect(State.sync_to_editor_formatter)
+			editor_formatter.changed_deferred.connect(State.sync_stable_editor_markup)
 
 @export var export_formatter: Formatter = null:
 	set(new_value):
@@ -932,7 +951,6 @@ func _add_new_tab() -> void:
 		new_id += 1
 	
 	var new_tab := TabData.new(new_id)
-	new_tab.fully_loaded = false
 	new_tab.changed.connect(emit_changed)
 	new_tab.status_changed.connect(_on_tab_status_changed.bind(new_id))
 	
@@ -949,8 +967,7 @@ func add_empty_tab() -> void:
 	Configs.tabs_changed.emit()
 	set_active_tab_index(_tabs.size() - 1)
 
-# Adds a new path with the given path.
-# If a tab with the path already exists, it's set as the active tab instead.
+## Adds a new path with the given path. If a tab with the path already exists, it's set as the active tab instead.
 func add_tab_with_path(new_file_path: String) -> void:
 	for idx in _tabs.size():
 		if _tabs[idx].svg_file_path == new_file_path:

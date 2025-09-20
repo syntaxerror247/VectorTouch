@@ -4,58 +4,40 @@ extends Node
 const OptionsDialogScene = preload("res://src/ui_widgets/options_dialog.tscn")
 const PathCommandPopupScene = preload("res://src/ui_widgets/path_popup.tscn")
 
-signal svg_unknown_change
-
-# These signals copy the ones in ElementRoot.
-# ElementRoot is not persistent, while these signals can be connected to reliably.
 signal any_attribute_changed(xid: PackedInt32Array)
-signal xnodes_added(xids: Array[PackedInt32Array])
-signal xnodes_deleted(xids: Array[PackedInt32Array])
-signal xnodes_moved_in_parent(parent_xid: PackedInt32Array, old_indices: Array[int])
-signal xnodes_moved_to(xids: Array[PackedInt32Array], location: PackedInt32Array)
 signal xnode_layout_changed  # Emitted together with any of the above 4.
 signal basic_xnode_text_changed
 signal basic_xnode_rendered_text_changed
+signal svg_unknown_change
 
-signal parsing_finished(error_id: SVGParser.ParseError)
-signal svg_changed  # Should only connect to persistent parts of the UI.
+signal parsing_finished
+signal svg_edited
+signal svg_switched_to_another
+signal svg_changed
 
-var _update_pending := false
-
-# "unstable_text" is the current state, which might have errors (i.e., while using the
-# code editor). "text" is the last state without errors.
+# "unstable_markup" is the current state, which might have errors (i.e., while using the code editor).
+# "stable_markup" is the last state without errors, and is what the editor is synced to.
 # These both differ from the TabData svg_text, which is the state as saved to file,
 # which doesn't happen while dragging handles or typing in the code editor for example.
-# "last_saved_svg_text" is a variable set temporarily when a save is requested, so that
-# any changes made between the request and the deferred sync don't go in the undo stack.
-var last_saved_svg_text := ""
-var unstable_svg_text := ""
-var svg_text := ""
+var last_parse_error: SVGParser.ParseError
+var unstable_markup := ""
+var stable_editor_markup := ""
+var stable_export_markup := ""
 var root_element := ElementRoot.new()
-
-# Temporary unsaved tab, set to the file path string when importing an SVG.
-var transient_tab_path := "":
-	set(new_value):
-		if transient_tab_path != new_value:
-			transient_tab_path = new_value
-			Configs.tabs_changed.emit()
-			Configs.active_tab_status_changed.emit()
-			setup_from_tab()
 
 func _enter_tree() -> void:
 	get_window().mouse_exited.connect(clear_all_hovered)
-	
-	xnodes_added.connect(_on_xnodes_added)
-	xnodes_deleted.connect(_on_xnodes_deleted)
-	xnodes_moved_in_parent.connect(_on_xnodes_moved_in_parent)
-	xnodes_moved_to.connect(_on_xnodes_moved_to)
 	svg_unknown_change.connect(clear_all_selections)
+	svg_switched_to_another.connect(clear_all_selections)
 	
-	svg_unknown_change.connect(queue_update)
-	xnode_layout_changed.connect(queue_update)
-	any_attribute_changed.connect(queue_update.unbind(1))
-	basic_xnode_text_changed.connect(queue_update)
-	basic_xnode_rendered_text_changed.connect(queue_update)
+	xnode_layout_changed.connect(_on_svg_edited)
+	any_attribute_changed.connect(_on_svg_edited.unbind(1))
+	basic_xnode_text_changed.connect(_on_svg_edited)
+	basic_xnode_rendered_text_changed.connect(_on_svg_edited)
+	svg_unknown_change.connect(_on_svg_edited)
+	
+	svg_edited.connect(svg_changed.emit)
+	svg_switched_to_another.connect(svg_changed.emit)
 	
 	Configs.active_tab_changed.connect(setup_from_tab)
 	setup_from_tab.call_deferred()  # Let everything load before emitting signals.
@@ -64,101 +46,92 @@ func _enter_tree() -> void:
 	await get_tree().process_frame
 	FileUtils.apply_svgs_from_paths(OS.get_cmdline_args(), false)
 
+
+func _on_svg_edited() -> void:
+	stable_editor_markup = SVGParser.root_to_editor_markup(root_element)
+	stable_export_markup = SVGParser.root_to_export_markup(root_element)
+	svg_edited.emit()
+
+func save_svg() -> void:
+	if stable_export_markup.is_empty():
+		Configs.savedata.get_active_tab().set_svg_text(unstable_markup)
+	else:
+		unstable_markup = ""
+		Configs.savedata.get_active_tab().set_svg_text(stable_export_markup)
+
+
+func sync_stable_editor_markup() -> void:
+	if not stable_editor_markup.is_empty():
+		apply_markup(stable_editor_markup, true)
+
+func apply_markup(markup: String, is_edit: bool) -> void:
+	var svg_parse_result := SVGParser.markup_to_root(markup)
+	last_parse_error = svg_parse_result.error
+	
+	if last_parse_error == SVGParser.ParseError.OK:
+		root_element = svg_parse_result.svg
+		stable_editor_markup = SVGParser.root_to_editor_markup(root_element)
+		stable_export_markup = SVGParser.root_to_export_markup(root_element)
+		parsing_finished.emit()
+		
+		root_element.xnodes_added.connect(_on_xnodes_added)
+		root_element.xnodes_deleted.connect(_on_xnodes_deleted)
+		root_element.xnodes_moved_in_parent.connect(_on_xnodes_moved_in_parent)
+		root_element.xnodes_moved_to.connect(_on_xnodes_moved_to)
+		
+		root_element.xnodes_added.connect(xnode_layout_changed.emit.unbind(1))
+		root_element.xnodes_deleted.connect(xnode_layout_changed.emit.unbind(1))
+		root_element.xnodes_moved_in_parent.connect(xnode_layout_changed.emit.unbind(2))
+		root_element.xnodes_moved_to.connect(xnode_layout_changed.emit.unbind(2))
+		root_element.miscellaneous_xnode_layout_change.connect(xnode_layout_changed.emit)
+		root_element.any_attribute_changed.connect(any_attribute_changed.emit)
+		root_element.basic_xnode_text_changed.connect(basic_xnode_text_changed.emit)
+		root_element.basic_xnode_rendered_text_changed.connect(basic_xnode_rendered_text_changed.emit)
+		
+		(svg_unknown_change if is_edit else svg_switched_to_another).emit()
+	else:
+		unstable_markup = markup
+		if stable_editor_markup.is_empty():
+			root_element = ElementRoot.new()
+			parsing_finished.emit()
+			(svg_edited if is_edit else svg_switched_to_another).emit()
+		else:
+			parsing_finished.emit()
+
 func setup_from_tab() -> void:
 	var active_tab := Configs.savedata.get_active_tab()
-	var new_text := active_tab.get_svg_text()
+	var tab_text := active_tab.get_svg_text()
 	
-	if not transient_tab_path.is_empty():
-		apply_svg_text(TabData.DEFAULT_SVG, false)
+	if not tab_text.is_empty():
+		stable_editor_markup = ""
+		stable_export_markup = ""
+		apply_markup(tab_text, false)
 		return
 	
-	if not new_text.is_empty():
-		apply_svg_text(new_text, false)
-		return
-	
-	if active_tab.fully_loaded and not active_tab.empty_unsaved and FileAccess.file_exists(active_tab.get_edited_file_path()):
+	apply_markup(TabData.DEFAULT_SVG, false)
+	if not active_tab.empty_unsaved and FileAccess.file_exists(active_tab.get_edited_file_path()):
 		var user_facing_path := active_tab.svg_file_path
-		var message := Translator.translate(
-				"The last edited state of this tab could not be found.")
+		var message := Translator.translate("The last edited state of this tab could not be found.")
 		
 		var options_dialog := OptionsDialogScene.instantiate()
 		HandlerGUI.add_dialog(options_dialog)
 		if user_facing_path.is_empty() or not FileAccess.file_exists(user_facing_path):
 			options_dialog.setup(Translator.translate("Alert!"), message)
-			options_dialog.add_option(Translator.translate("Close tab"),
-					Configs.savedata.remove_active_tab)
+			options_dialog.add_option(Translator.translate("Close tab"), Configs.savedata.remove_active_tab)
 		else:
 			options_dialog.setup(Translator.translate("Alert!"), message + "\n\n" + Translator.translate(
 					"The tab is bound to the file path {file_path}. Do you want to restore the SVG from this path?").format({"file_path": user_facing_path}))
 			options_dialog.add_option(Translator.translate("Close tab"), Configs.savedata.remove_active_tab)
 			options_dialog.add_option(Translator.translate("Restore"), FileUtils.reset_svg, true)
-		apply_svg_text(TabData.DEFAULT_SVG, false)
-		return
-	
-	active_tab.setup_svg_text(TabData.DEFAULT_SVG, active_tab.svg_file_path.is_empty())
-	sync_elements()
+	save_svg()
 
-
-# Syncs text to the elements.
-func queue_update() -> void:
-	_update.call_deferred()
-	_update_pending = true
-
-func _update() -> void:
-	if not _update_pending:
-		return
-	_update_pending = false
-	svg_text = SVGParser.root_to_editor_markup(root_element)
-	svg_changed.emit()
-
-
-# Ensure the save happens after the update.
-func queue_svg_save() -> void:
-	_update()
-	last_saved_svg_text = svg_text
-	_svg_save.call_deferred()
-
-func _svg_save() -> void:
-	unstable_svg_text = ""
-	Configs.savedata.get_active_tab().set_svg_text(last_saved_svg_text)
-	last_saved_svg_text = ""
-
-
-func sync_to_editor_formatter() -> void:
-	if not svg_text.is_empty():
-		sync_elements()
-
-func sync_elements() -> void:
-	var text_to_parse := svg_text if unstable_svg_text.is_empty() else unstable_svg_text
-	var svg_parse_result := SVGParser.markup_to_root(text_to_parse)
-	parsing_finished.emit(svg_parse_result.error)
-	if svg_parse_result.error == SVGParser.ParseError.OK:
-		svg_text = unstable_svg_text
-		unstable_svg_text = ""
-		root_element = svg_parse_result.svg
-		root_element.any_attribute_changed.connect(any_attribute_changed.emit)
-		root_element.xnodes_added.connect(xnodes_added.emit)
-		root_element.xnodes_deleted.connect(xnodes_deleted.emit)
-		root_element.xnodes_moved_in_parent.connect(xnodes_moved_in_parent.emit)
-		root_element.xnodes_moved_to.connect(xnodes_moved_to.emit)
-		root_element.xnode_layout_changed.connect(xnode_layout_changed.emit)
-		root_element.basic_xnode_text_changed.connect(basic_xnode_text_changed.emit)
-		root_element.basic_xnode_rendered_text_changed.connect(basic_xnode_rendered_text_changed.emit)
-		svg_unknown_change.emit()
-
-
-func apply_svg_text(new_text: String, save := true) -> void:
-	unstable_svg_text = new_text
-	sync_elements()
-	if save:
-		queue_svg_save()
 
 func optimize() -> void:
 	root_element.optimize()
-	queue_svg_save()
+	save_svg()
 
 func get_export_text() -> String:
-	return SVGParser.root_to_export_markup(root_element)
+	return unstable_markup if stable_export_markup.is_empty() else stable_export_markup
 
 
 signal hover_changed
@@ -569,7 +542,7 @@ func respond_to_key_input(path_cmd_char: String) -> void:
 func delete_selected() -> void:
 	if not selected_xids.is_empty():
 		root_element.delete_xnodes(selected_xids)
-		queue_svg_save()
+		save_svg()
 	elif not inner_selections.is_empty() and not semi_selected_xid.is_empty():
 		inner_selections.sort()
 		inner_selections.reverse()
@@ -577,14 +550,14 @@ func delete_selected() -> void:
 		match element_ref.name:
 			"path": element_ref.get_attribute("d").delete_commands(inner_selections)
 			"polygon", "polyline":
-				var indices_to_delete: Array[int] = []
+				var indices_to_delete := PackedInt64Array()
 				for idx in inner_selections:
 					indices_to_delete.append(idx * 2)
 					indices_to_delete.append(idx * 2 + 1)
 				element_ref.get_attribute("points").delete_elements(indices_to_delete)
 		clear_inner_selection()
 		clear_inner_hovered()
-		queue_svg_save()
+		save_svg()
 
 func move_up_selected() -> void:
 	_move_selected(false)
@@ -601,7 +574,7 @@ func _move_selected(down: bool) -> void:
 			return
 		# TODO
 		#xnode.get_attribute("d").move_subpath(inner_selections[0], down)
-	queue_svg_save()
+	save_svg()
 
 func view_in_inspector(xid: PackedInt32Array, inner_index := -1) -> void:
 	if xid.is_empty():
@@ -610,7 +583,7 @@ func view_in_inspector(xid: PackedInt32Array, inner_index := -1) -> void:
 
 func duplicate_selected() -> void:
 	root_element.duplicate_xnodes(selected_xids)
-	queue_svg_save()
+	save_svg()
 
 func insert_path_command_after_selection(new_command: String) -> void:
 	var path_attrib: AttributePathdata = root_element.get_xnode(
@@ -621,7 +594,7 @@ func insert_path_command_after_selection(new_command: String) -> void:
 		return
 	path_attrib.insert_command(last_selection + 1, new_command)
 	normal_select(semi_selected_xid, last_selection + 1)
-	queue_svg_save()
+	save_svg()
 
 func insert_point_after_selection() -> void:
 	var element_ref: Element = root_element.get_xnode(semi_selected_xid)
@@ -629,7 +602,7 @@ func insert_point_after_selection() -> void:
 	element_ref.get_attribute("points").insert_element(last_selection_next * 2, 0.0)
 	element_ref.get_attribute("points").insert_element(last_selection_next * 2, 0.0)
 	normal_select(semi_selected_xid, last_selection_next)
-	queue_svg_save()
+	save_svg()
 
 
 func get_selection_context(popup_method: Callable, context: Utils.LayoutPart) -> ContextPopup:
@@ -788,13 +761,13 @@ func popup_insert_command_after_context(popup_method: Callable) -> void:
 func convert_selected_element_to(element_name: String) -> void:
 	var xid := selected_xids[0]
 	root_element.replace_xnode(xid, root_element.get_xnode(xid).get_replacement(element_name))
-	queue_svg_save()
+	save_svg()
 
 func convert_selected_xnode_to(xnode_type: BasicXNode.NodeType) -> void:
 	var xid := selected_xids[0]
 	root_element.replace_xnode(xid, root_element.get_xnode(xid).get_replacement(xnode_type))
-	queue_svg_save()
+	save_svg()
 
 func convert_selected_command_to(cmd_type: String) -> void:
 	root_element.get_xnode(semi_selected_xid).get_attribute("d").convert_command(inner_selections[0], cmd_type)
-	queue_svg_save()
+	save_svg()

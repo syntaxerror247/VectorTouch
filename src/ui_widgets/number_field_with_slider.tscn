@@ -6,6 +6,7 @@
 clip_contents = true
 custom_minimum_size = Vector2(62, 0)
 layout_mode = 3
+anchors_preset = 0
 offset_right = 100.0
 script = ExtResource("1_ymm02")
 button_visuals = false

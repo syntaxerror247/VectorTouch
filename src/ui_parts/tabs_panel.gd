@@ -42,33 +42,19 @@ func refresh_tabs() -> void:
 	for i in tab_container.get_children():
 		i.queue_free()
 	
-	var has_transient_tab := not State.transient_tab_path.is_empty()
-	var total_tabs := Configs.savedata.get_tab_count()
-	
-	# If there's a transient tab, we want to draw one more
-	if has_transient_tab:
-		total_tabs += 1
-	
-	for tab_index in total_tabs:
-		var is_transient := (has_transient_tab and tab_index == total_tabs)
+	for tab_index in Configs.savedata.get_tab_count():
 		var tab_name := ""
 		var svg_text := ""
 		
-		if is_transient:
-			tab_name = State.transient_tab_path.get_file()
-		else:
-			var tab_data = Configs.savedata.get_tab(tab_index)
-			if tab_data._sync_pending:
-				await tab_data.data_synced
-			tab_name = tab_data.presented_name
-			svg_text = FileAccess.get_file_as_string(TabData.get_edited_file_path_for_id(tab_data.id))
-			if tab_data.marked_unsaved:
-				tab_name = "* " + tab_name
+		var tab_data = Configs.savedata.get_tab(tab_index)
+		if tab_data._sync_pending:
+			await tab_data.data_synced
+		tab_name = tab_data.presented_name
+		svg_text = FileAccess.get_file_as_string(TabData.get_edited_file_path_for_id(tab_data.id))
+		if tab_data.marked_unsaved:
+			tab_name = "* " + tab_name
 		
-		var is_active := (
-			(is_transient and has_transient_tab) or
-			(not is_transient and tab_index == Configs.savedata.get_active_tab_index())
-		)
+		var is_active = tab_index == Configs.savedata.get_active_tab_index()
 		
 		var tab = tabItem.instantiate()
 		tab_container.add_child(tab)

@@ -31,7 +31,7 @@ func set_list_element(idx: int, new_value: float) -> void:
 func get_list_element(idx: int) -> float:
 	return _list[idx] if idx < _list.size() else NAN
 
-func delete_elements(indices: Array[int]) -> void:
+func delete_elements(indices: PackedInt64Array) -> void:
 	if indices.is_empty():
 		return
 	
@@ -53,11 +53,10 @@ static func text_to_list(string: String) -> PackedFloat64Array:
 	var comma_exhausted := false
 	var pos := 0
 	while pos < string.length():
-		@warning_ignore("shadowed_global_identifier")
-		var char := string[pos]
-		match char:
+		var current_char := string[pos]
+		match current_char:
 			"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "-", "+", ".", "e", "E":
-				current_num_string += char
+				current_num_string += current_char
 			" ":
 				if current_num_string.is_empty():
 					pos += 1

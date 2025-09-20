@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://orlxtok0bt6x" path="res://src/ui_widgets/settings_content_shortcuts.gd" id="1_wf8o4"]
 
 [node name="SettingsContentShortcuts" type="VBoxContainer"]
-anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_constants/separation = 6

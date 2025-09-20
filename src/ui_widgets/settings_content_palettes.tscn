@@ -5,7 +5,6 @@
 [ext_resource type="Texture2D" uid="uid://6ymbl3jqersp" path="res://assets/icons/Import.svg" id="3_p0ru4"]
 
 [node name="SettingsContentPalettes" type="VBoxContainer"]
-anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 40.0
 theme_override_constants/separation = 8

@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://mtwptdpc3cxs" path="res://src/ui_parts/debug_content.gd" id="1_7pqvx"]
 
 [node name="DebugContent" type="MarginContainer"]
-anchors_preset = -1
 offset_top = 4.0
 offset_right = 10.0
 offset_bottom = 40.0

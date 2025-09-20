@@ -7,7 +7,6 @@
 
 [node name="TransformPopup" type="PanelContainer"]
 custom_minimum_size = Vector2(168, 0)
-anchors_preset = -1
 offset_right = 4.0
 offset_bottom = 4.0
 script = ExtResource("1_ye80i")

@@ -49,7 +49,6 @@ shader_parameter/horizontal = true
 shader_parameter/inverted = false
 
 [node name="GoodColorPicker" type="VBoxContainer"]
-anchors_preset = -1
 offset_right = 198.0
 offset_bottom = 344.0
 theme_override_constants/separation = 6

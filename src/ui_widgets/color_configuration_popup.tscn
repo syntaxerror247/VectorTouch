@@ -9,7 +9,6 @@
 
 [node name="ColorConfigurationPopup" type="PanelContainer"]
 custom_minimum_size = Vector2(128, 40)
-anchors_preset = -1
 offset_right = 4.0
 offset_bottom = 4.0
 theme_type_variation = &"SpaciousPanel"
