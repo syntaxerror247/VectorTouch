@@ -13,10 +13,13 @@ static var min_contrast_color: Color
 static var extreme_theme_color: Color  # Black on dark theme, white on light theme.
 static var tinted_contrast_color: Color  # Base color used to derive icon colors and other UI elements.
 static var gray_color: Color  # Light gray on dark theme, darker gray on light theme.
+static var tinted_gray_color: Color  # Used for disabled items that'd normally use tinted_contrast_color.
 static var black_or_white_counter_accent_color: Color
 
 static var warning_icon_color: Color
 static var info_icon_color: Color
+static var folder_color: Color = Color.BLUE
+static var text_file_color: Color = Color.DARK_GRAY
 
 static var hover_selected_inspector_frame_inner_color: Color
 static var hover_selected_inspector_frame_title_color: Color
@@ -104,6 +107,8 @@ static var line_edit_border_color_disabled: Color
 
 static var tab_container_panel_inner_color: Color
 static var tab_container_panel_border_color: Color
+static var text_edit_alternative_inner_color: Color
+
 static var selected_tab_color: Color
 static var selected_tab_border_color: Color
 
@@ -122,7 +127,10 @@ static func recalculate_colors() -> void:
 
 	tinted_contrast_color = accent_color.lerp(max_contrast_color, 0.4)
 	gray_color = base_color.lerp(max_contrast_color, 0.5)
+	tinted_gray_color = tinted_contrast_color.blend(Color(extreme_theme_color, 0.475))
 	black_or_white_counter_accent_color = extreme_theme_color if is_theme_dark else max_contrast_color
+	folder_color = Color("88b6dd") if is_theme_dark else Color("528fcc")
+	text_file_color = Color("fec") if is_theme_dark else Color("cc9629")
 
 	hover_selected_inspector_frame_inner_color = Color.from_hsv(0.625, 0.48, 0.27) if ThemeUtils.is_theme_dark else Color.from_hsv(0.625, 0.27, 0.925)
 	hover_selected_inspector_frame_title_color = hover_selected_inspector_frame_inner_color.lerp(max_contrast_color, 0.02)
@@ -203,8 +211,8 @@ static func recalculate_colors() -> void:
 	contrast_flat_panel_color = Color(tinted_contrast_color, 0.1)
 
 	# Selection
-	caret_color = accent_color.lerp(max_contrast_color, 0.3)
-	selection_color = Color(accent_color, 0.3)
+	caret_color = Color(tinted_contrast_color, 0.875)
+	selection_color = Color(accent_color, 0.375)
 	disabled_selection_color = Color(gray_color, 0.4)
 
 	# Buttons
@@ -217,7 +225,23 @@ static func recalculate_colors() -> void:
 	translucent_button_color_disabled = base_color.lerp(max_contrast_color, 0.1)
 	context_button_color_disabled = Color(Color.BLACK, maxf(0.16, 0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2)) if is_theme_dark\
 			else Color(Color.BLACK, 0.055)
-
+	
+	subtle_flat_panel_color = base_color
+	contrast_flat_panel_color = Color(tinted_contrast_color, 0.1)
+	overlay_panel_inner_color = base_color.lerp(extreme_theme_color, 0.1)
+	
+	scrollbar_pressed_color = intermediate_color.blend(Color(tinted_contrast_color.lerp(accent_color.lerp(max_contrast_color, 0.1), 0.2), 0.4))
+	
+	line_edit_focus_color = Color(accent_color, 0.4)
+	line_edit_inner_color = desaturated_color.lerp(extreme_theme_color, 0.74)
+	line_edit_normal_border_color = desaturated_color.lerp(extreme_theme_color, 0.42 if is_theme_dark else 0.35)
+	mini_line_edit_normal_border_color = desaturated_color.lerp(max_contrast_color, 0.04)
+	line_edit_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.88)
+	line_edit_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.68)
+	
+	text_edit_alternative_inner_color = base_color.lerp(extreme_theme_color, 0.2)
+	text_edit_alternative_inner_color.s *= 0.6
+	
 	connected_button_inner_color_hover = line_edit_inner_color.blend(hover_overlay_color)
 	connected_button_border_color_hover = line_edit_normal_border_color.blend(strong_hover_overlay_color)
 	connected_button_inner_color_pressed = line_edit_inner_color.lerp(common_button_inner_color_pressed, 0.8)
@@ -413,8 +437,7 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_color("icon_pressed_color", "Button", max_contrast_color)
 	theme.set_color("icon_hover_pressed_color", "Button", max_contrast_color)
 	theme.set_color("icon_focus_color", "Button", max_contrast_color)
-	theme.set_color("icon_disabled_color", "Button", gray_color)
-	
+	theme.set_color("icon_disabled_color", "Button", tinted_gray_color)
 	var button_stylebox := StyleBoxFlat.new()
 	button_stylebox.set_corner_radius_all(20)
 	button_stylebox.set_content_margin_all(10)
@@ -664,7 +687,7 @@ static func _setup_button(theme: Theme) -> void:
 	var normal_translucent_button_stylebox := StyleBoxFlat.new()
 	normal_translucent_button_stylebox.set_corner_radius_all(5)
 	normal_translucent_button_stylebox.set_content_margin_all(4)
-	normal_translucent_button_stylebox.bg_color = strong_hover_overlay_color
+	normal_translucent_button_stylebox.bg_color = hover_overlay_color
 	theme.set_stylebox("normal", "TranslucentButton", normal_translucent_button_stylebox)
 	
 	var hover_translucent_button_stylebox := normal_translucent_button_stylebox.duplicate()
@@ -711,7 +734,8 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_color("icon_normal_color", "ContextButton", icon_normal_color)
 	theme.set_color("icon_hover_color", "ContextButton", icon_hover_color)
 	theme.set_color("icon_pressed_color", "ContextButton", icon_pressed_color)
-	theme.set_color("icon_disabled_color", "ContextButton", gray_color)
+	theme.set_color("icon_disabled_color", "ContextButton", tinted_gray_color)
+	
 	var context_button_stylebox := StyleBoxFlat.new()
 	context_button_stylebox.set_corner_radius_all(3)
 	context_button_stylebox.content_margin_bottom = 2.0
@@ -845,24 +869,26 @@ static func _setup_checkbox(theme: Theme) -> void:
 	theme.set_color("font_hover_color", "CheckBox", highlighted_text_color)
 	theme.set_color("font_pressed_color", "CheckBox", text_color)
 	theme.set_color("font_hover_pressed_color", "CheckBox", highlighted_text_color)
-	theme.set_icon("checked", "CheckBox", SVGTexture.create_from_string(
+	theme.set_icon("checked", "CheckBox", DPITexture.create_from_string(
 		"""<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s"/>
 			<path d="M11.5 3.7 5.9 9.3 4.2 7.6 2.7 9.1l3.2 3.2L13 5.2z" fill="#%s"/>
 		</svg>""" % [soft_accent_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
-	theme.set_icon("checked_disabled", "CheckBox", SVGTexture.create_from_string(
+	theme.set_icon("checked_disabled", "CheckBox", DPITexture.create_from_string(
 		"""<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
-			<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s" opacity=".4"/>
-			<path d="M11.5 3.7 5.9 9.3 4.2 7.6 2.7 9.1l3.2 3.2L13 5.2z" fill="#%s" opacity=".4"/>
+			<g opacity=".4">
+				<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s"/>
+				<path d="M11.5 3.7 5.9 9.3 4.2 7.6 2.7 9.1l3.2 3.2L13 5.2z" fill="#%s"/>
+			</g>
 		</svg>""" % [soft_accent_color.lerp(gray_color, 0.2).to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
-	theme.set_icon("unchecked", "CheckBox", SVGTexture.create_from_string(
+	theme.set_icon("unchecked", "CheckBox", DPITexture.create_from_string(
 		"""<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" height="14" width="14" fill="#%s" opacity=".6"/>
 		</svg>""" % gray_color.to_html(false))
 	)
-	theme.set_icon("unchecked_disabled", "CheckBox", SVGTexture.create_from_string(
+	theme.set_icon("unchecked_disabled", "CheckBox", DPITexture.create_from_string(
 		"""<svg height="16" width="16" xmlns="http://www.w3.org/2000/svg">
 			<rect x="1" y="1" rx="2.5" width="14" height="14" fill="#%s" opacity=".2"/>
 		</svg>""" % gray_color.to_html(false))
@@ -901,16 +927,30 @@ static func _setup_checkbutton(theme: Theme) -> void:
 	theme.set_color("font_hover_color", "CheckButton", highlighted_text_color)
 	theme.set_color("font_pressed_color", "CheckButton", text_color)
 	theme.set_color("font_hover_pressed_color", "CheckButton", highlighted_text_color)
-	theme.set_icon("checked", "CheckButton", SVGTexture.create_from_string(
+	theme.set_icon("checked", "CheckButton", DPITexture.create_from_string(
 		"""<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
 			<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s"/>
 			<circle cx="24" cy="8" r="5.5" fill="#%s"/>
 		</svg>""" % [soft_accent_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
-	theme.set_icon("unchecked", "CheckButton", SVGTexture.create_from_string(
+	theme.set_icon("checked_disabled", "CheckButton", DPITexture.create_from_string(
 		"""<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
-			<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s"/>
+			<g opacity=".6">
+				<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s"/>
+				<circle cx="24" cy="8" r="5.5" fill="#%s"/>
+			</g>
+		</svg>""" % [soft_accent_color.lerp(gray_color, 0.2).to_html(false), black_or_white_counter_accent_color.to_html(false)])
+	)
+	theme.set_icon("unchecked", "CheckButton", DPITexture.create_from_string(
+		"""<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
+			<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s" opacity=".6"/>
 			<circle cx="8" cy="8" r="5.5" fill="#%s"/>
+		</svg>""" % [gray_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
+	)
+	theme.set_icon("unchecked_disabled", "CheckButton", DPITexture.create_from_string(
+		"""<svg width="32" height="16" xmlns="http://www.w3.org/2000/svg">
+			<rect height="14" width="30" rx="7" x="1" y="1" fill="#%s" opacity=".2"/>
+			<circle cx="8" cy="8" r="5.5" fill="#%s" opacity=".6"/>
 		</svg>""" % [gray_color.to_html(false), black_or_white_counter_accent_color.to_html(false)])
 	)
 
@@ -1320,12 +1360,12 @@ static func _setup_tooltip(theme: Theme) -> void:
 
 static func _setup_splitcontainer(theme: Theme) -> void:
 	theme.add_type("SplitContainer")
-	theme.set_icon("grabber", "VSplitContainer", SVGTexture.create_from_string(
+	theme.set_icon("grabber", "VSplitContainer", DPITexture.create_from_string(
 		"""<svg width="32" height="4" xmlns="http://www.w3.org/2000/svg">
 			<path d="M1 1h30v2H1z" fill="#%s" opacity=".6"/>
 		</svg>""" % desaturated_color.to_html(false))
 	)
-	theme.set_icon("grabber", "HSplitContainer", SVGTexture.create_from_string(
+	theme.set_icon("grabber", "HSplitContainer", DPITexture.create_from_string(
 		"""<svg width="4" height="48" xmlns="http://www.w3.org/2000/svg">
 			<path d="M1 1v46h2V1z" fill="#%s" opacity=".6"/>
 		</svg>""" % desaturated_color.to_html(false))

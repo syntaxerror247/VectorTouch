@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://dtmassdggpkom" path="res://src/ui_parts/layout_configuration.gd" id="2_lmeyv"]
 
 [node name="LayoutPopup" type="PanelContainer"]
-anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 40.0
 

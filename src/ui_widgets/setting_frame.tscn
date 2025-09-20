@@ -6,6 +6,7 @@
 [node name="SettingFrame" type="Control"]
 custom_minimum_size = Vector2(0, 28)
 layout_mode = 3
+anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 24.0
 grow_horizontal = 2

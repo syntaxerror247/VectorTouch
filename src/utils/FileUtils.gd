@@ -1,4 +1,4 @@
-# This class has functionality for importing, exporting, and saving files.
+## This class has functionality for importing, exporting, and saving files.
 @abstract class_name FileUtils
 
 enum FileState {SAME, DIFFERENT, DOES_NOT_EXIST}
@@ -15,10 +15,10 @@ const GoodFileDialogScene = preload("res://src/ui_parts/good_file_dialog.tscn")
 static func reset_svg() -> void:
 	var file_path := Configs.savedata.get_active_tab().svg_file_path
 	if FileAccess.file_exists(file_path):
-		State.apply_svg_text(FileAccess.get_file_as_string(file_path))
+		State.apply_markup(FileAccess.get_file_as_string(file_path), true)
+		State.save_svg()
 
-static func apply_svgs_from_paths(paths: PackedStringArray,
-show_incorrect_extension_errors := true) -> void:
+static func apply_svgs_from_paths(paths: PackedStringArray, show_incorrect_extension_errors := true) -> void:
 	_start_file_import_process(paths, _apply_svg, PackedStringArray(["svg"]), show_incorrect_extension_errors)
 
 static func compare_svg_to_disk_contents(idx := -1) -> FileState:
@@ -28,11 +28,23 @@ static func compare_svg_to_disk_contents(idx := -1) -> FileState:
 		return FileState.DOES_NOT_EXIST
 	# Check if importing the file's text into VectorTouch would change the current SVG text.
 	# Avoid the parsing if checking the active tab.
-	var state_svg_text := State.svg_text if idx == -1 else SVGParser.root_to_editor_markup(SVGParser.markup_to_root(tab.get_true_svg_text()).svg)
-	if state_svg_text == SVGParser.root_to_editor_markup(SVGParser.markup_to_root(content).svg):
-		return FileState.SAME
+	var parse_result := SVGParser.markup_to_root(tab.get_true_svg_text())
+	if parse_result.error == SVGParser.ParseError.OK:
+		var content_parse_result := SVGParser.markup_to_root(content)
+		if content_parse_result.error != SVGParser.ParseError.OK:
+			return FileState.DIFFERENT
+		else:
+			var state_svg_text := State.stable_editor_markup if idx == -1 else SVGParser.root_to_editor_markup(parse_result.svg)
+			if state_svg_text == SVGParser.root_to_editor_markup(content_parse_result.svg):
+				return FileState.SAME
+			else:
+				return FileState.DIFFERENT
 	else:
-		return FileState.DIFFERENT
+		var state_svg_text := State.unstable_markup if idx == -1 else tab.get_true_svg_text()
+		if state_svg_text == content:
+			return FileState.SAME
+		else:
+			return FileState.DIFFERENT
 
 
 static func _save_svg_with_custom_final_callback(final_callback: Callable) -> void:
@@ -335,43 +347,26 @@ static func _apply_svg(data: Variant, file_path: String, proceed_callback := Cal
 					Translator.translate("Proceed"), proceed_callback)
 		return
 	
-	# If the active tab is empty, replace it. Otherwise make it a new transient tab.
+	# Make new tab only if the active tab isn't empty.
 	var warning_panel := ImportWarningMenuScene.instantiate()
-	if Configs.savedata.get_active_tab().empty_unsaved:
-		var tab_index := Configs.savedata.get_active_tab_index()
-		Configs.savedata.add_tab_with_path(file_path)
-		Configs.savedata.remove_tab(tab_index)
-		Configs.savedata.move_tab(Configs.savedata.get_tab_count() - 1, tab_index)
-		warning_panel.canceled.connect(_on_import_panel_canceled_empty_tab_scenario)
-		warning_panel.imported.connect(_on_import_panel_accepted_empty_tab_scenario.bind(data))
-	else:
-		State.transient_tab_path = file_path
-		warning_panel.canceled.connect(_on_import_panel_canceled_transient_scenario)
-		warning_panel.imported.connect(_on_import_panel_accepted_transient_scenario.bind(file_path, data))
+	warning_panel.imported.connect(_on_import_panel_accepted.bind(file_path, data, Configs.savedata.get_active_tab().empty_unsaved))
 	if not is_last_file:
 		warning_panel.canceled.connect(proceed_callback)
 		warning_panel.imported.connect(proceed_callback)
 	warning_panel.set_svg(data)
 	HandlerGUI.add_menu(warning_panel)
 
-static func _on_import_panel_canceled_empty_tab_scenario() -> void:
-	var tab_index := Configs.savedata.get_active_tab_index()
-	Configs.savedata.add_empty_tab()
-	Configs.savedata.remove_tab(tab_index)
-	Configs.savedata.move_tab(Configs.savedata.get_tab_count() - 1, tab_index)
-
-static func _on_import_panel_accepted_empty_tab_scenario(svg_text: String) -> void:
-	Configs.savedata.get_active_tab().setup_svg_text(svg_text)
-	State.sync_elements()
-
-static func _on_import_panel_canceled_transient_scenario() -> void:
-	State.transient_tab_path = ""
-
-static func _on_import_panel_accepted_transient_scenario(file_path: String, svg_text: String) -> void:
-	Configs.savedata.add_tab_with_path(file_path)
-	State.transient_tab_path = ""
-	Configs.savedata.get_active_tab().setup_svg_text(svg_text)
-	State.sync_elements()
+static func _on_import_panel_accepted(file_path: String, svg_text: String, empty_scenario: bool) -> void:
+	if empty_scenario:
+		# Get the tab index before adding new tab. Then move the new tab to that old index.
+		var tab_index := Configs.savedata.get_active_tab_index()
+		Configs.savedata.add_tab_with_path(file_path)
+		Configs.savedata.remove_tab(tab_index)
+		Configs.savedata.move_tab(Configs.savedata.get_tab_count() - 1, tab_index)
+	else:
+		Configs.savedata.add_tab_with_path(file_path)
+	Configs.savedata.get_active_tab().set_initial_svg_text(svg_text)
+	State.setup_from_tab()
 
 
 static func open_svg(file_path: String) -> void:

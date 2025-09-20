@@ -7,7 +7,6 @@
 
 [node name="NumberDropdown" type="HBoxContainer"]
 custom_minimum_size = Vector2(0, 22)
-anchors_preset = -1
 offset_right = 49.0
 offset_bottom = 22.0
 size_flags_horizontal = 0

@@ -19,7 +19,7 @@ const ColorFieldPopupScene = preload("res://src/ui_widgets/color_field_popup.tsc
 const checkerboard = preload("res://assets/icons/CheckerboardColorButton.svg")
 
 var color_popup: ColorFieldPopup
-var gradient_texture: SVGTexture
+var gradient_texture: DPITexture
 
 func set_value(new_value: String, save := false) -> void:
 	if not new_value.is_empty():
@@ -31,7 +31,7 @@ func set_value(new_value: String, save := false) -> void:
 	element.set_attribute(attribute_name, new_value)
 	sync()
 	if save:
-		State.queue_svg_save()
+		State.save_svg()
 
 func setup_placeholder() -> void:
 	placeholder_text = element.get_default(attribute_name).trim_prefix("#")
@@ -50,8 +50,7 @@ func _ready() -> void:
 	pressed.connect(_on_pressed)
 	button_gui_input.connect(_on_button_gui_input)
 	# URLs and currentColor require to always listen for changes to the SVG.
-	element.root.any_attribute_changed.connect(_on_svg_changed.unbind(1))
-	element.root.xnode_layout_changed.connect(_on_svg_changed)
+	State.svg_edited.connect(_on_svg_modified)
 	tooltip_text = attribute_name
 	setup_placeholder()
 
@@ -66,7 +65,7 @@ func _on_element_ancestor_attribute_changed(attribute_changed: String) -> void:
 		sync()
 
 # Redraw in case the gradient might have changed.
-func _on_svg_changed() -> void:
+func _on_svg_modified() -> void:
 	if cached_allow_url and ColorParser.is_valid_url(element.get_implied_attribute_value(attribute_name)):
 		update_gradient_texture()
 		queue_redraw()

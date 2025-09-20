@@ -10,6 +10,13 @@ func sync_localization() -> void:
 	layout_button.tooltip_text = Translator.translate("Layout")
 
 func _ready() -> void:
+	# The settings button can be called from anywhere, but it's bound to this registration for the highlight.
+	var shortcuts := ShortcutsRegistration.new()
+	shortcuts.add_shortcut("open_settings", HandlerGUI.open_settings, ShortcutsRegistration.Behavior.PASS_THROUGH_POPUPS)
+	shortcuts.add_shortcut("import", FileUtils.open_svg_import_dialog, ShortcutsRegistration.Behavior.PASS_THROUGH_POPUPS)
+	shortcuts.add_shortcut("export", HandlerGUI.open_export, ShortcutsRegistration.Behavior.PASS_THROUGH_POPUPS)
+	HandlerGUI.register_shortcuts(self, shortcuts)
+	
 	State.svg_changed.connect(update_size_button)
 	update_size_button()
 	Configs.theme_changed.connect(sync_theming)
@@ -69,7 +76,7 @@ func open_savedata_folder() -> void:
 
 
 func update_size_button() -> void:
-	var svg_text_size := State.svg_text.length()
+	var svg_text_size := State.get_export_text().length()
 	size_button.text = String.humanize_size(svg_text_size)
 	size_button.tooltip_text = String.num_uint64(svg_text_size) + " B"
 	if State.root_element.optimize(true):

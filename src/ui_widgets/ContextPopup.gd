@@ -1,5 +1,5 @@
-class_name ContextPopup extends PanelContainer
 ## Standard popup for actions with methods for easy setup.
+class_name ContextPopup extends PanelContainer
 
 const arrow = preload("res://assets/icons/PopupArrow.svg")
 
@@ -101,16 +101,16 @@ static func create_button(text: String, press_callback: Callable, disabled := fa
 	return main_button
 
 
-static func create_shortcut_checkbox(action: String, start_pressed: bool, disabled := false) -> CheckBox:
+static func create_shortcut_checkbox(action: String, start_toggled: bool, disabled := false) -> CheckBox:
 	if not InputMap.has_action(action):
 		push_error("Non-existent shortcut was passed.")
 		return
 	
 	return create_checkbox(TranslationUtils.get_action_description(action, true),
 			HandlerGUI.throw_action_event.bind(action),
-			start_pressed, disabled, ShortcutUtils.get_action_showcase_text(action))
+			start_toggled, disabled, ShortcutUtils.get_action_showcase_text(action))
 
-static func create_checkbox(text: String, toggle_action: Callable, start_pressed: bool, disabled := false, dim_text := "") -> CheckBox:
+static func create_checkbox(text: String, toggle_action: Callable, start_toggled: bool, disabled := false, dim_text := "") -> CheckBox:
 	# Create main checkbox.
 	var checkbox := CheckBox.new()
 	checkbox.focus_mode = Control.FOCUS_NONE
@@ -120,7 +120,8 @@ static func create_checkbox(text: String, toggle_action: Callable, start_pressed
 		checkbox.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	
 	checkbox.text = text
-	checkbox.button_pressed = start_pressed
+	checkbox.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+	checkbox.button_pressed = start_toggled
 	checkbox.toggled.connect(toggle_action.unbind(1))
 	
 	if not dim_text.is_empty():

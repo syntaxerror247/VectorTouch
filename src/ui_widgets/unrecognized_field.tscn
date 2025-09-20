@@ -5,7 +5,6 @@
 
 [node name="UnrecognizedField" type="LineEdit"]
 custom_minimum_size = Vector2(78, 22)
-anchors_preset = -1
 offset_right = 48.8125
 offset_bottom = 21.0
 focus_mode = 1

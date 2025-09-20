@@ -1,6 +1,6 @@
+## A regular Button with some helpers for hover + press theming situations and shortcuts.
 @icon("res://godot_only/icons/BetterButton.svg")
 class_name BetterButton extends Button
-## A regular Button with some helpers for hover + press theming situations and shortcuts.
 
 const HIGHLIGHT_TIME = 0.1
 
@@ -27,14 +27,16 @@ func _on_pressed() -> void:
 	HandlerGUI.throw_action_event(action)
 
 func _on_shortcut_activated(activated_action: String) -> void:
-	if activated_action != action or toggle_mode or just_pressed:
+	if activated_action != action or toggle_mode or just_pressed or disabled:
 		return
 	
 	begin_bulk_theme_override()
 	add_theme_color_override("icon_normal_color", get_theme_color("icon_pressed_color"))
 	add_theme_color_override("icon_hover_color", get_theme_color("icon_pressed_color"))
+	add_theme_color_override("icon_disabled_color", get_theme_color("icon_pressed_color"))
 	add_theme_stylebox_override("normal", get_theme_stylebox("pressed"))
 	add_theme_stylebox_override("hover", get_theme_stylebox("hover_pressed"))
+	add_theme_stylebox_override("disabled", get_theme_stylebox("pressed"))
 	end_bulk_theme_override()
 	if is_instance_valid(timer):
 		timer.timeout.disconnect(end_highlight)
@@ -45,8 +47,10 @@ func end_highlight() -> void:
 	begin_bulk_theme_override()
 	remove_theme_color_override("icon_normal_color")
 	remove_theme_color_override("icon_hover_color")
+	remove_theme_color_override("icon_disabled_color")
 	remove_theme_stylebox_override("normal")
 	remove_theme_stylebox_override("hover")
+	remove_theme_stylebox_override("disabled")
 	end_bulk_theme_override()
 	timer = null
 	

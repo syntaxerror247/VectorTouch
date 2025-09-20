@@ -17,30 +17,39 @@ func _ready() -> void:
 	code_edit.focus_exited.connect(_on_svg_code_edit_focus_exited)
 	Configs.theme_changed.connect(sync_theming)
 	sync_theming()
-	State.parsing_finished.connect(update_error)
+	State.parsing_finished.connect(react_to_last_parsing)
+	react_to_last_parsing()
 	Configs.highlighting_colors_changed.connect(update_syntax_highlighter)
 	update_syntax_highlighter()
+	Configs.basic_colors_changed.connect(sync_basic_colors)
+	sync_basic_colors()
 	code_edit.clear_undo_history()
-	State.svg_changed.connect(auto_update_text)
-	auto_update_text()
+	State.svg_changed.connect(sync_text_from_svg)
+	sync_text_from_svg()
 
 
-func auto_update_text() -> void:
+func sync_text_from_svg() -> void:
 	if not code_edit.has_focus():
-		code_edit.text = State.svg_text
-		code_edit.clear_undo_history()
-
-func update_error(err_id: SVGParser.ParseError) -> void:
-	if err_id == SVGParser.ParseError.OK:
 		if error_bar.visible:
 			error_bar.hide()
 			sync_theming()
-	else:
-		# When the error is shown, the code editor's theme is changed to match up.
-		if not error_bar.visible:
-			error_bar.show()
-			error_label.text = SVGParser.get_parsing_error_string(err_id)
+		code_edit.text = State.stable_editor_markup
+		code_edit.clear_undo_history()
+
+func react_to_last_parsing() -> void:
+	if State.last_parse_error == SVGParser.ParseError.OK:
+		if error_bar.visible:
+			error_bar.hide()
 			sync_theming()
+		return
+	# When the error is shown, the code editor's theme is changed to match up.
+	if not code_edit.has_focus():
+		code_edit.text = State.unstable_markup
+		code_edit.grab_focus()
+	if not error_bar.visible:
+		error_bar.show()
+		error_label.text = SVGParser.get_parsing_error_string(State.last_parse_error)
+		sync_theming()
 
 func sync_theming() -> void:
 	# Set up the code edit.
@@ -50,7 +59,7 @@ func sync_theming() -> void:
 		var stylebox := get_theme_stylebox(theme_type, "TextEdit").duplicate()
 		stylebox.corner_radius_top_right = 0
 		stylebox.corner_radius_top_left = 0
-		stylebox.bg_color = ThemeUtils.line_edit_inner_color.lerp(ThemeUtils.extreme_theme_color, 0.1)
+		stylebox.bg_color = ThemeUtils.text_edit_alternative_inner_color
 		if error_bar.visible:
 			stylebox.corner_radius_bottom_right = 0
 			stylebox.corner_radius_bottom_left = 0
@@ -99,17 +108,20 @@ func sync_theming() -> void:
 	bottom_stylebox.content_margin_bottom = -1
 	error_bar.add_theme_stylebox_override("panel", bottom_stylebox)
 
+func sync_basic_colors() -> void:
+	error_label.add_theme_color_override("default_color", Configs.savedata.basic_color_error)
+
 
 func _on_svg_code_edit_text_changed() -> void:
-	State.apply_svg_text(code_edit.text, false)
-
-func _on_svg_code_edit_focus_exited() -> void:
-	State.queue_svg_save()
-	code_edit.text = State.svg_text
-	update_error(SVGParser.ParseError.OK)
+	State.apply_markup(code_edit.text, true)
 
 func _on_svg_code_edit_focus_entered() -> void:
 	State.clear_all_selections()
+
+func _on_svg_code_edit_focus_exited() -> void:
+	State.save_svg()
+	if not State.stable_editor_markup.is_empty():
+		State.apply_markup(State.stable_editor_markup, true)
 
 
 func _on_options_button_pressed() -> void:

@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://b2gchy70px8jt" path="res://src/ui_widgets/points_field.tscn" id="2_8l4pm"]
 
 [node name="ElementContentPoly" type="VBoxContainer"]
-anchors_preset = -1
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_10fyu")
