@@ -967,12 +967,12 @@ msgid "Determines the default values of theming-related settings, including the 
 msgstr "Определя стойностите по подразбиране на гамовите настройки, включително шаблона на синтаксовото маркиране."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the base color of GodSVG's interface."
-msgstr "Определя основния цвят на интерфейса на GodSVG."
+msgid "Determines the base color of VectorTouch's interface."
+msgstr "Определя основния цвят на интерфейса на VectorTouch."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the accent color used for highlighted elements in GodSVG's interface."
-msgstr "Определя акцентния цвят, използван за подчертаване на елементи в интерфейса на GodSVG."
+msgid "Determines the accent color used for highlighted elements in VectorTouch's interface."
+msgstr "Определя акцентния цвят, използван за подчертаване на елементи в интерфейса на VectorTouch."
 
 #: src/ui_widgets/settings_content_generic.gd:
 msgid "When enabled, clicking on a tab with the middle mouse button closes it instead of simply focusing it."
@@ -1015,8 +1015,8 @@ msgid "When enabled, uses your operating system's native file dialog instead of 
 msgstr "Когато е активирано, ще бъде използван файловият мениджър на твоята операционна система вместо вградения файлов мениджър на VectorTouch."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
-msgstr "Когато е включено, добавя името на настоящия файл пред заглавието на прозореца \"GodSVG\"."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
+msgstr "Когато е включено, добавя името на настоящия файл пред заглавието на прозореца \"VectorTouch\"."
 
 #: src/ui_widgets/settings_content_palettes.gd:
 msgid "New palette"

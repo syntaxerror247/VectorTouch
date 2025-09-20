@@ -982,12 +982,12 @@ msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "Determines the base color of GodSVG's interface."
+msgid "Determines the base color of VectorTouch's interface."
 msgstr "Verändert den Skalierungsfaktor der Benutzeroberfläche."
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "Determines the accent color used for highlighted elements in GodSVG's interface."
+msgid "Determines the accent color used for highlighted elements in VectorTouch's interface."
 msgstr "Verändert den Skalierungsfaktor der Benutzeroberfläche."
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -1035,7 +1035,7 @@ msgid "When enabled, uses your operating system's native file dialog instead of 
 msgstr "Wenn diese Option aktiviert ist, wird der Dateidialog des Betriebssystems verwendet. Wenn diese Option deaktiviert ist, wird VectorTouch's eingebauter Dateidialog verwendet."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_palettes.gd:

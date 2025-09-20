@@ -86,7 +86,7 @@ func get_setting_default(setting: String) -> Variant:
 		"selection_rectangle_color2": return Color("000c")
 		"canvas_color":
 			match theme_preset:
-				ThemePreset.DARK: return Color("1f2233")
+				ThemePreset.DARK: return Color("1a1a1a")
 				ThemePreset.LIGHT: return Color("fff")
 				ThemePreset.BLACK: return Color("000")
 		"grid_color":
@@ -441,7 +441,7 @@ const MAX_SELECTION_RECTANGLE_DASH_LENGTH = 600.0
 			emit_changed()
 			Configs.selection_rectangle_visuals_changed.emit()
 
-@export var canvas_color := Color("1f2233"):
+@export var canvas_color := Color("1a1a1a"):
 	set(new_value):
 		if canvas_color != new_value:
 			canvas_color = new_value

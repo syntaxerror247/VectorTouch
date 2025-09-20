@@ -971,12 +971,12 @@ msgstr "Bepaalt de standaard waardes voor thema-instellingen, inclusief de marke
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "Determines the base color of GodSVG's interface."
+msgid "Determines the base color of VectorTouch's interface."
 msgstr "Bepaalt de maat-factor van de interface."
 
 #: src/ui_widgets/settings_content_generic.gd:
 #, fuzzy
-msgid "Determines the accent color used for highlighted elements in GodSVG's interface."
+msgid "Determines the accent color used for highlighted elements in VectorTouch's interface."
 msgstr "Bepaalt de maat-factor van de interface."
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -1020,8 +1020,8 @@ msgid "When enabled, uses your operating system's native file dialog instead of 
 msgstr "Waneer ingeschakeld, gebruikt jouw besturingssysteem's inheemse bestandendialoog in plaats van VectorTouch's ingebouwde bestandendialoog."
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
-msgstr "Wanneer ingeschakelt, voegt de huidige bestandsnaam voor de \"GodSVG\" venstertitel."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
+msgstr "Wanneer ingeschakelt, voegt de huidige bestandsnaam voor de \"VectorTouch\" venstertitel."
 
 #: src/ui_widgets/settings_content_palettes.gd:
 msgid "New palette"

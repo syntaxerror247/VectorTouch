@@ -966,11 +966,11 @@ msgid "Determines the default values of theming-related settings, including the 
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the base color of GodSVG's interface."
+msgid "Determines the base color of VectorTouch's interface."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "Determines the accent color used for highlighted elements in GodSVG's interface."
+msgid "Determines the accent color used for highlighted elements in VectorTouch's interface."
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
@@ -1014,7 +1014,7 @@ msgid "When enabled, uses your operating system's native file dialog instead of 
 msgstr ""
 
 #: src/ui_widgets/settings_content_generic.gd:
-msgid "When enabled, adds the current file name before the \"GodSVG\" window title."
+msgid "When enabled, adds the current file name before the \"VectorTouch\" window title."
 msgstr ""
 
 #: src/ui_widgets/settings_content_palettes.gd:

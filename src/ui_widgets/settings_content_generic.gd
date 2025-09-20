@@ -391,11 +391,11 @@ func setup_theming_content() -> void:
 	current_setup_setting = "base_color"
 	add_color_edit(Translator.translate("Base color"), false)
 	add_preview(SettingTextPreview.new(Translator.translate(
-			"Determines the base color of GodSVG's interface.")))
+			"Determines the base color of VectorTouch's interface.")))
 	current_setup_setting = "accent_color"
 	add_color_edit(Translator.translate("Accent color"), false)
 	add_preview(SettingTextPreview.new(Translator.translate(
-			"Determines the accent color used for highlighted elements in GodSVG's interface.")))
+			"Determines the accent color used for highlighted elements in VectorTouch's interface.")))
 	
 	var basic_svg_text = """<circle cx="6" cy="8" r="4" fill="gold" />"""
 	var basic_svg_text_with_syntax_error = """<circle cx="6" cy="8" ==syntax error"""
