@@ -35,7 +35,7 @@ var minimum_content_width : float
 func set_system_bar_color(color: Color, override := false) -> void:
 	if (system_bar_color == color and not override) or not VTAndroidCore:
 		return
-	VTAndroidCore.setWindowColor(color)
+	VTAndroidCore.setWindowColor("#" + color.to_html(false))
 	system_bar_color = color
 
 func toogle_status_bar(visible: bool, override := false) -> void:
