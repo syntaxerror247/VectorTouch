@@ -721,11 +721,11 @@ func setup_frame(frame: Control, has_default := true) -> void:
 	frame.getter = resource_ref.get.bind(bind)
 	if has_default:
 		frame.default = resource_ref.get_setting_default(current_setup_setting)
-	frame.mouse_entered.connect(set_preview.bind(current_setup_setting))
+	frame.focus_entered.connect(set_preview.bind(current_setup_setting))
 	# Remove the preview when one of the following happens:
-	# 1. The mouse exits the setting frame and there's no popup.
-	# 2. The popup after the mouse exited the setting frame (i.e. color picker or dropdown) has been cleared.
-	frame.mouse_exited.connect(
+	# 1. The focus exits the setting frame and there's no popup.
+	# 2. The popup after the focus exited the setting frame (i.e. color picker or dropdown) has been cleared.
+	frame.focus_exited.connect(
 		func() -> void:
 			if HandlerGUI.popup_stack.is_empty():
 				remove_preview(bind)
