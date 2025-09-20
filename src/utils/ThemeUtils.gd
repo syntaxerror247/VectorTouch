@@ -8,8 +8,7 @@ static var base_color: Color
 static var accent_color: Color
 static var is_theme_dark: bool
 
-static var max_contrast_color: Color
-static var min_contrast_color: Color
+static var max_contrast_color: Color  # White on dark theme, black on light theme.
 static var extreme_theme_color: Color  # Black on dark theme, white on light theme.
 static var tinted_contrast_color: Color  # Base color used to derive icon colors and other UI elements.
 static var gray_color: Color  # Light gray on dark theme, darker gray on light theme.
@@ -18,8 +17,8 @@ static var black_or_white_counter_accent_color: Color
 
 static var warning_icon_color: Color
 static var info_icon_color: Color
-static var folder_color: Color = Color.BLUE
-static var text_file_color: Color = Color.DARK_GRAY
+static var folder_color: Color
+static var text_file_color: Color
 
 static var hover_selected_inspector_frame_inner_color: Color
 static var hover_selected_inspector_frame_title_color: Color
@@ -87,26 +86,24 @@ static var icon_normal_color: Color
 static var icon_hover_color: Color
 static var icon_pressed_color: Color
 
-static var translucent_button_color_disabled: Color
 static var flat_button_color_disabled: Color
 static var context_button_color_disabled: Color
 
 static var subtle_flat_panel_color: Color
 static var contrast_flat_panel_color: Color
 static var overlay_panel_inner_color: Color
-static var overlay_panel_subtler_inner_color: Color
+static var overlay_panel_border_color: Color
 
 static var scrollbar_pressed_color: Color
 
 static var line_edit_focus_color: Color
 static var line_edit_inner_color: Color
 static var line_edit_normal_border_color: Color
+static var mini_line_edit_inner_color: Color
 static var mini_line_edit_normal_border_color: Color
 static var line_edit_inner_color_disabled: Color
 static var line_edit_border_color_disabled: Color
 
-static var tab_container_panel_inner_color: Color
-static var tab_container_panel_border_color: Color
 static var text_edit_alternative_inner_color: Color
 
 static var selected_tab_color: Color
@@ -115,23 +112,23 @@ static var selected_tab_border_color: Color
 static func color_difference(color1: Color, color2: Color) -> float:
 	return (absf(color1.r - color2.r) + absf(color1.g - color2.g) + absf(color1.b - color2.b)) / 3.0
 
-
 static func recalculate_colors() -> void:
 	base_color = Configs.savedata.base_color
 	accent_color = Configs.savedata.accent_color
-	is_theme_dark = base_color.get_luminance() < 0.5
-
-	extreme_theme_color = Color.BLACK if is_theme_dark else Color.WHITE
-	max_contrast_color = Color(1, 1, 1, 0.94) if is_theme_dark else Color(0, 0, 0, 0.87)
-	min_contrast_color = Color(1, 1, 1, 0.24) if is_theme_dark else Color(0, 0, 0, 0.24)
-
-	tinted_contrast_color = accent_color.lerp(max_contrast_color, 0.4)
-	gray_color = base_color.lerp(max_contrast_color, 0.5)
+	is_theme_dark = (base_color.get_luminance() < 0.5)
+	
+	max_contrast_color = Color("#fff") if is_theme_dark else Color("000")
+	extreme_theme_color = Color("#000") if is_theme_dark else Color("fff")
+	tinted_contrast_color = Color("#def") if is_theme_dark else Color("061728")
+	gray_color = Color("808080") if is_theme_dark else Color("666")
 	tinted_gray_color = tinted_contrast_color.blend(Color(extreme_theme_color, 0.475))
-	black_or_white_counter_accent_color = extreme_theme_color if is_theme_dark else max_contrast_color
+	black_or_white_counter_accent_color = Color("#000") if accent_color.get_luminance() > 0.625 else Color("fff")
+	
+	warning_icon_color = Color("fca") if is_theme_dark else Color("96592c")
+	info_icon_color = Color("acf") if is_theme_dark else Color("3a6ab0")
 	folder_color = Color("88b6dd") if is_theme_dark else Color("528fcc")
 	text_file_color = Color("fec") if is_theme_dark else Color("cc9629")
-
+	
 	hover_selected_inspector_frame_inner_color = Color.from_hsv(0.625, 0.48, 0.27) if ThemeUtils.is_theme_dark else Color.from_hsv(0.625, 0.27, 0.925)
 	hover_selected_inspector_frame_title_color = hover_selected_inspector_frame_inner_color.lerp(max_contrast_color, 0.02)
 	selected_inspector_frame_inner_color = Color.from_hsv(0.625, 0.5, 0.25) if ThemeUtils.is_theme_dark else Color.from_hsv(0.625, 0.23, 0.925)
@@ -143,98 +140,96 @@ static func recalculate_colors() -> void:
 	inspector_frame_inner_color = Color.from_hsv(0.625, 0.6, 0.16) if ThemeUtils.is_theme_dark else Color.from_hsv(0.625, 0.12, 0.9)
 	inspector_frame_title_color = inspector_frame_inner_color.lerp(max_contrast_color, 0.02)
 	inspector_frame_border_color = Color.from_hsv(0.6, 0.5, 0.35) if ThemeUtils.is_theme_dark else Color.from_hsv(0.6, 0.5, 0.875)
-
-	# Icons
-	warning_icon_color = Color("#FFD54F")
-	info_icon_color = Color("#64B5F6")
-	var icon_base = accent_color.lerp(max_contrast_color, 0.4)
+	
+	intermediate_color = base_color
 	if is_theme_dark:
-		icon_normal_color  = icon_base.lightened(0.1)
-		icon_hover_color   = icon_base.lightened(0.2)
-		icon_pressed_color = icon_base.darkened(0.1)
+		intermediate_color.s *= 0.96
+		intermediate_color.v = 0.25 + 0.4 * sqrt(intermediate_color.v)
+		if is_zero_approx(base_color.s):
+			intermediate_color.h = accent_color.h
+		elif base_color.h <= 5/6.0 and base_color.h > 1/6.0:
+			intermediate_color.h = move_toward(intermediate_color.h, 1/6.0, 0.05)
 	else:
-		icon_normal_color  = icon_base.darkened(0.05)
-		icon_hover_color   = icon_base
-		icon_pressed_color = icon_base.darkened(0.15)
-
-	# Intermediate/neutral variants
-	intermediate_color = accent_color.lerp(extreme_theme_color, 0.6)
+		intermediate_color.s = 0.3 + 0.4 * sqrt(intermediate_color.s)
+		intermediate_color.v *= 0.92
+		if is_zero_approx(base_color.s):
+			if not is_zero_approx(accent_color.s):
+				intermediate_color.h = accent_color.h
+			else:
+				intermediate_color.s = 0
+				intermediate_color.v *= 0.9
+	
 	desaturated_color = intermediate_color.lerp(gray_color, 0.3).lerp(extreme_theme_color, 0.08)
+	if not is_theme_dark:
+		desaturated_color.v *= 0.9
 	disabled_color = intermediate_color.lerp(gray_color, 0.8)
-
-	# Base/accent soft tones
-	soft_base_color = base_color.lerp(max_contrast_color, 0.015)
-	softer_base_color = base_color.lerp(max_contrast_color, 0.04)
+	
+	soft_base_color = base_color.lerp(max_contrast_color, 0.015 if is_theme_dark else 0.03)
+	softer_base_color = base_color.lerp(max_contrast_color, 0.04 if is_theme_dark else 0.08)
 	soft_accent_color = accent_color.lerp(extreme_theme_color, 0.1)
-
-	# Overlay layers
-	hover_overlay_color = Color(max_contrast_color, 0.08)
+	hover_overlay_color = Color(tinted_contrast_color, 0.08)
 	pressed_overlay_color = Color(tinted_contrast_color.lerp(soft_accent_color, 0.6), 0.24)
 	hover_pressed_overlay_color = hover_overlay_color.blend(pressed_overlay_color)
-
-	soft_hover_overlay_color = Color(max_contrast_color, 0.06)
+	
+	soft_hover_overlay_color = Color(tinted_contrast_color, 0.06)
 	soft_pressed_overlay_color = Color(tinted_contrast_color.lerp(soft_accent_color, 0.4), 0.18)
-	soft_hover_pressed_overlay_color = soft_hover_overlay_color.blend(soft_pressed_overlay_color)
-
-	strong_hover_overlay_color = Color(max_contrast_color, 0.12)
-	stronger_hover_overlay_color = Color(max_contrast_color, 0.16)
-
-	# Intermediate overlays
-	intermediate_hover_color = intermediate_color.blend(hover_overlay_color)
-	soft_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.36)
-	soft_intermediate_hover_color = soft_intermediate_color.blend(soft_hover_overlay_color)
-	softer_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.48)
-	softer_intermediate_hover_color = softer_intermediate_color.blend(soft_hover_overlay_color)
-
-	# Text
+	var softer_hover_overlay_color := soft_hover_overlay_color
+	softer_hover_overlay_color.a *= 0.5
+	soft_hover_pressed_overlay_color = softer_hover_overlay_color.blend(soft_pressed_overlay_color)
+	
+	strong_hover_overlay_color = Color(tinted_contrast_color, 0.12)
+	stronger_hover_overlay_color = Color(tinted_contrast_color, 0.16)
+	
+	intermediate_hover_color = intermediate_color.blend(strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color)
+	soft_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.36 if is_theme_dark else 0.48)
+	soft_intermediate_hover_color = soft_intermediate_color.blend(soft_hover_overlay_color if is_theme_dark else hover_overlay_color)
+	softer_intermediate_color = intermediate_color.lerp(extreme_theme_color, 0.44)
+	if not is_theme_dark:
+		softer_intermediate_color.s *= 0.8
+	softer_intermediate_hover_color = softer_intermediate_color.blend(soft_hover_overlay_color if is_theme_dark else hover_overlay_color)
+	
 	text_color = Color(max_contrast_color, 0.875)
 	highlighted_text_color = Color(max_contrast_color)
 	dim_text_color = Color(max_contrast_color, 0.75)
 	dimmer_text_color = Color(max_contrast_color, 0.5)
 	subtle_text_color = Color(max_contrast_color, 0.375)
 	editable_text_color = tinted_contrast_color
-
-	# Panels
+	
 	basic_panel_inner_color = softer_base_color
 	basic_panel_border_color = base_color.lerp(max_contrast_color, 0.24)
 	basic_panel_border_color.s = minf(basic_panel_border_color.s * 2.0, lerpf(basic_panel_border_color.s, 1.0, 0.2))
-	subtle_panel_border_color = basic_panel_border_color.lerp(basic_panel_inner_color, 0.4)
-	subtle_panel_border_color.s = minf(subtle_panel_border_color.s * 2.0, lerpf(subtle_panel_border_color.s, 1.0, 0.2))
-
-	overlay_panel_inner_color = base_color.lerp(extreme_theme_color, 0.15)
-	overlay_panel_subtler_inner_color = base_color.lerp(extreme_theme_color, 0.08)
-
-	tab_container_panel_inner_color = base_color.lerp(extreme_theme_color, 0.12)
-	tab_container_panel_border_color = max_contrast_color.lerp(base_color, 0.9)
-
-	subtle_flat_panel_color = base_color.lerp(max_contrast_color, 0.05)
-	contrast_flat_panel_color = Color(tinted_contrast_color, 0.1)
-
-	# Selection
+	subtle_panel_border_color = basic_panel_border_color.lerp(extreme_theme_color, 0.24)
+	
 	caret_color = Color(tinted_contrast_color, 0.875)
 	selection_color = Color(accent_color, 0.375)
 	disabled_selection_color = Color(gray_color, 0.4)
-
-	# Buttons
+	
 	common_button_inner_color_pressed = intermediate_color.lerp(accent_color, 0.64).lerp(extreme_theme_color, 0.4)
 	common_button_border_color_pressed = intermediate_color.lerp(accent_color, 0.8)
 	common_button_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.72)
 	common_button_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.56)
-
-	flat_button_color_disabled = base_color.lerp(max_contrast_color, 0.08)
-	translucent_button_color_disabled = base_color.lerp(max_contrast_color, 0.1)
+	
+	icon_normal_color = tinted_contrast_color.lerp(extreme_theme_color, 0.2)
+	icon_hover_color = tinted_contrast_color
+	icon_pressed_color = max_contrast_color
+	
+	flat_button_color_disabled = Color(disabled_color.lerp(extreme_theme_color, 0.4), 0.18)
 	context_button_color_disabled = Color(Color.BLACK, maxf(0.16, 0.48 - color_difference(Color.BLACK, basic_panel_inner_color) * 2)) if is_theme_dark\
 			else Color(Color.BLACK, 0.055)
 	
 	subtle_flat_panel_color = base_color
 	contrast_flat_panel_color = Color(tinted_contrast_color, 0.1)
 	overlay_panel_inner_color = base_color.lerp(extreme_theme_color, 0.1)
+	overlay_panel_border_color = base_color.lerp(max_contrast_color, 0.32)
+	overlay_panel_border_color.s = minf(overlay_panel_border_color.s * 4.0, lerpf(overlay_panel_border_color.s, 1.0, 0.6))
+	overlay_panel_border_color.v = lerpf(overlay_panel_border_color.v, 1.0, 0.125)
 	
 	scrollbar_pressed_color = intermediate_color.blend(Color(tinted_contrast_color.lerp(accent_color.lerp(max_contrast_color, 0.1), 0.2), 0.4))
 	
 	line_edit_focus_color = Color(accent_color, 0.4)
 	line_edit_inner_color = desaturated_color.lerp(extreme_theme_color, 0.74)
 	line_edit_normal_border_color = desaturated_color.lerp(extreme_theme_color, 0.42 if is_theme_dark else 0.35)
+	mini_line_edit_inner_color = desaturated_color.lerp(extreme_theme_color, 0.78)
 	mini_line_edit_normal_border_color = desaturated_color.lerp(max_contrast_color, 0.04)
 	line_edit_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.88)
 	line_edit_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.68)
@@ -246,19 +241,7 @@ static func recalculate_colors() -> void:
 	connected_button_border_color_hover = line_edit_normal_border_color.blend(strong_hover_overlay_color)
 	connected_button_inner_color_pressed = line_edit_inner_color.lerp(common_button_inner_color_pressed, 0.8)
 	connected_button_border_color_pressed = line_edit_normal_border_color.lerp(common_button_border_color_pressed, 0.6)
-
-	# Scrollbars
-	scrollbar_pressed_color = accent_color.lerp(max_contrast_color, 0.4)
-
-	# LineEdits
-	line_edit_focus_color = Color(accent_color, 0.4)
-	line_edit_inner_color = desaturated_color.lerp(extreme_theme_color, 0.74)
-	line_edit_normal_border_color = desaturated_color.lerp(extreme_theme_color, 0.42)
-	mini_line_edit_normal_border_color = desaturated_color.lerp(extreme_theme_color, 0.225)
-	line_edit_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.88)
-	line_edit_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.68)
-
-	# Tabs
+	
 	selected_tab_color = softer_intermediate_hover_color.lerp(accent_color, 0.2)
 	selected_tab_border_color = accent_color
 
@@ -375,7 +358,8 @@ static func _setup_panelcontainer(theme: Theme) -> void:
 	tab_stylebox.content_margin_right = 12.0
 	tab_stylebox.content_margin_top = 10.0
 	tab_stylebox.content_margin_bottom = 10.0
-	tab_stylebox.bg_color = subtle_flat_panel_color
+	tab_stylebox.bg_color = basic_panel_inner_color
+	tab_stylebox.border_color = basic_panel_border_color
 	theme.set_stylebox("panel", "TabItem", tab_stylebox)
 
 	theme.add_type("TabItemActive")
@@ -402,8 +386,8 @@ static func _setup_panelcontainer(theme: Theme) -> void:
 	theme.add_type("SideBarContent")
 	theme.set_type_variation("SideBarContent", "PanelContainer")
 	var panel_stylebox := StyleBoxFlat.new()
-	panel_stylebox.bg_color = tab_container_panel_inner_color
-	panel_stylebox.border_color = tab_container_panel_border_color
+	panel_stylebox.bg_color = soft_base_color.lerp(softer_base_color, 0.6)
+	panel_stylebox.border_color = subtle_panel_border_color
 	panel_stylebox.set_border_width_all(1)
 	panel_stylebox.set_corner_radius_all(8)
 	panel_stylebox.content_margin_left = 16
@@ -699,7 +683,7 @@ static func _setup_button(theme: Theme) -> void:
 	theme.set_stylebox("pressed", "TranslucentButton", pressed_translucent_button_stylebox)
 	
 	var disabled_translucent_button_stylebox := normal_translucent_button_stylebox.duplicate()
-	disabled_translucent_button_stylebox.bg_color = translucent_button_color_disabled
+	disabled_translucent_button_stylebox.bg_color = context_button_color_disabled
 	theme.set_stylebox("disabled", "TranslucentButton", disabled_translucent_button_stylebox)
 	
 	theme.add_type("FlatButton")
@@ -1250,8 +1234,8 @@ static func _setup_tabcontainer(theme: Theme) -> void:
 	theme.set_font_size("font_size", "TabContainer", 14)
 	
 	var panel_stylebox := StyleBoxFlat.new()
-	panel_stylebox.bg_color = tab_container_panel_inner_color
-	panel_stylebox.border_color = tab_container_panel_border_color
+	panel_stylebox.bg_color = soft_base_color.lerp(softer_base_color, 0.5)
+	panel_stylebox.border_color = subtle_panel_border_color
 	panel_stylebox.border_width_left = 2
 	panel_stylebox.border_width_right = 2
 	panel_stylebox.border_width_bottom = 2
