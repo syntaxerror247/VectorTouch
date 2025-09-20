@@ -209,7 +209,7 @@ static func recalculate_colors() -> void:
 	common_button_inner_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.72)
 	common_button_border_color_disabled = desaturated_color.lerp(gray_color, 0.4).lerp(extreme_theme_color, 0.56)
 	
-	icon_normal_color = tinted_contrast_color.lerp(extreme_theme_color, 0.2)
+	icon_normal_color = soft_accent_color.lerp(max_contrast_color, 0.4)
 	icon_hover_color = tinted_contrast_color
 	icon_pressed_color = max_contrast_color
 	
