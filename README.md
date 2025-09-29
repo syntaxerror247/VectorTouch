@@ -11,9 +11,9 @@ For the desktop version of GodSVG, please visit the [GodSVG repository](https://
 
 ## Installation
 
-Download the latest release of the app from the [releases](https://github.com/syntaxerror247/VectorTouch/releases).
+VectorTouch is available on the [Google Play Store](https://play.google.com/store/apps/details?id=com.vectortouch.app)
 
-To try the latest version, download the apk from the last [CI run](https://github.com/syntaxerror247/VectorTouch/actions) artifact.
+If you prefer not to use the Play Store, you can download the APK directly from the [releases](https://github.com/syntaxerror247/VectorTouch/releases)
 
 To verify the APK signature, check if the release APK is signed with the correct certificate by comparing the following fingerprints:
 ```
