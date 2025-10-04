@@ -98,7 +98,7 @@ jobs:
         run: |
           cd godot
           scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_debug
-          scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_debug generate_apk=yes
+          scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_debug generate_android_binaries=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_debug.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
@@ -107,10 +107,10 @@ jobs:
         name: Build Godot release template for Android
         run: |
           cd godot
-          scons p=android arch=x86_32 ${BUILD_OPTIONS} target=template_release
-          scons p=android arch=x86_64 ${BUILD_OPTIONS} target=template_release
-          scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release
-          scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release generate_apk=yes
+          scons p=android arch=x86_32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
+          scons p=android arch=x86_64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
+          scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
+          scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes separate_debug_symbols=yes generate_android_binaries=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_release.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
@@ -174,5 +174,13 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME }}-aab
           path: vectortouch/artifacts/VectorTouch.aab
+          if-no-files-found: ignore
+          retention-days: 28
+
+      - name: Upload debug symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: native_debug_symbols.zip
+          path: godot/bin/android-template-release-native-symbols.zip
           if-no-files-found: ignore
           retention-days: 28
