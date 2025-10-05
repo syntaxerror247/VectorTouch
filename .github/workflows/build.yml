@@ -93,8 +93,8 @@ jobs:
         with:
           path: vectortouch
 
-      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
-        name: Build Godot template for Android
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name != 'workflow_dispatch'}}
+        name: Build Godot debug template for Android
         run: |
           cd godot
           scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_debug
