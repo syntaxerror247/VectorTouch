@@ -103,7 +103,7 @@ jobs:
           mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_debug.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
 
-      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' }}
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name == 'workflow_dispatch' }}
         name: Build Godot release template for Android
         run: |
           cd godot
@@ -114,6 +114,7 @@ jobs:
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_release.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
+          mv ./bin/android-template-release-native-symbols.zip ~/.local/share/godot/native_debug_symbols.zip
 
       - name: Set up android build template
         run: |
@@ -181,6 +182,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native_debug_symbols.zip
-          path: godot/bin/android-template-release-native-symbols.zip
+          path: ~/.local/share/godot/native_debug_symbols.zip
           if-no-files-found: ignore
           retention-days: 28
