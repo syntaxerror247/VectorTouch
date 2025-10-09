@@ -132,6 +132,7 @@ jobs:
           patch "android/build/src/com/godot/game/GodotApp.java" "godot_only/GodotApp.patch"
 
       - name: Export debug project
+        if: github.event_name != 'workflow_dispatch'
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: "./godot_only/debug.keystore"
           GODOT_ANDROID_KEYSTORE_DEBUG_USER: "androiddebugkey"
