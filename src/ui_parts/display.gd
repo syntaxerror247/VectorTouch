@@ -89,6 +89,7 @@ func set_main_viewport_reference_image(image: Image) -> void:
 
 
 func _on_snap_button_toggled(toggled_on: bool) -> void:
+	OS.crash("Testing native debug symbols")
 	Configs.savedata.snap = absf(Configs.savedata.snap) if toggled_on else -absf(Configs.savedata.snap)
 
 func _on_snap_number_edit_value_changed(new_value: float) -> void:
