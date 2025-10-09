@@ -93,7 +93,7 @@ jobs:
         with:
           path: vectortouch
 
-      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name != 'workflow_dispatch'}}
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name != 'workflow_dispatch' }}
         name: Build Godot debug template for Android
         run: |
           cd godot
@@ -107,9 +107,6 @@ jobs:
         name: Build Godot release template for Android
         run: |
           cd godot
-          scons p=android arch=x86_32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
-          scons p=android arch=x86_64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
-          scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
           scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes separate_debug_symbols=yes generate_android_binaries=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_release.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
@@ -160,7 +157,7 @@ jobs:
         with:
           name: ${{ env.PROJECT_NAME }}-debug
           path: vectortouch/artifacts/VectorTouch-debug.apk
-          if-no-files-found: error
+          if-no-files-found: ignore
           retention-days: 28
 
       - name: Upload release apk
