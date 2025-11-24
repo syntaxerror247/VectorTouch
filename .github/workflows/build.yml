@@ -17,7 +17,8 @@ env:
   # Commit hash
   GODOT_COMMIT_HASH: f62fdbde15035c5576dad93e586201f4d41ef0cb
   PROJECT_NAME: VectorTouch
-  BUILD_OPTIONS: target=template_release lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes disable_physics_2d=yes disable_navigation_2d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes module_mbedtls_enabled=yes swappy=no build_profile=../vectortouch/.github/disabled_classes.gdbuild
+  BUILD_TYPE: ${{ github.event_name == 'workflow_dispatch' && 'release' || 'debug' }}
+  BUILD_OPTIONS: lto=full production=yes deprecated=no minizip=no brotli=no vulkan=no openxr=no use_volk=no disable_3d=yes disable_physics_2d=yes disable_navigation_2d=yes modules_enabled_by_default=no module_freetype_enabled=yes module_gdscript_enabled=yes module_svg_enabled=yes module_jpg_enabled=yes module_text_server_adv_enabled=yes graphite=no module_webp_enabled=yes module_mbedtls_enabled=yes swappy=no build_profile=../vectortouch/.github/disabled_classes.gdbuild
   GODOT_REPO: https://github.com/godotengine/godot.git
 
 jobs:
@@ -46,7 +47,7 @@ jobs:
         id: cache-template
         uses: actions/cache@v3
         with:
-          key: template-${{ env.PLATFORM }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_RELEASE }}-${{ env.BUILD_OPTIONS }}
+          key: template-${{ env.PLATFORM }}-${{ env.GODOT_VERSION }}-${{ env.GODOT_RELEASE }}-${{ env.BUILD_TYPE }}-${{ env.BUILD_OPTIONS }}
           path: |
             ~/.local/share/godot/export_templates/
 
@@ -93,7 +94,7 @@ jobs:
         with:
           path: vectortouch
 
-      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name != 'workflow_dispatch'}}
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && env.BUILD_TYPE == 'debug' }}
         name: Build Godot debug template for Android
         run: |
           cd godot
@@ -103,11 +104,10 @@ jobs:
           mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_debug.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
 
-      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && github.event_name == 'workflow_dispatch' }}
+      - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && env.BUILD_TYPE == 'release' }}
         name: Build Godot release template for Android
         run: |
           cd godot
-          scons p=android arch=x86_32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
           scons p=android arch=x86_64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
           scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
           scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes separate_debug_symbols=yes generate_android_binaries=yes
@@ -132,7 +132,7 @@ jobs:
           patch "android/build/src/com/godot/game/GodotApp.java" "godot_only/GodotApp.patch"
 
       - name: Export debug project
-        if: github.event_name != 'workflow_dispatch'
+        if: env.BUILD_TYPE == 'debug'
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: "./godot_only/debug.keystore"
           GODOT_ANDROID_KEYSTORE_DEBUG_USER: "androiddebugkey"
@@ -143,7 +143,7 @@ jobs:
           godot --headless --export-debug "Android" artifacts/VectorTouch-debug.apk
 
       - name: Export release project
-        if: github.event_name == 'workflow_dispatch'
+        if: env.BUILD_TYPE == 'release'
         env:
           GODOT_ANDROID_KEYSTORE_RELEASE_PATH: "/tmp/release.keystore"
           GODOT_ANDROID_KEYSTORE_RELEASE_USER: ${{ secrets.KEY_ALIAS }}
