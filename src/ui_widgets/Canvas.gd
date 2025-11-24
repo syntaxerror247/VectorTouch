@@ -63,6 +63,7 @@ signal camera_center_changed
 
 var camera_zoom := -1.0:
 	set(new_value):
+		new_value = clampf(new_value, MIN_ZOOM, MAX_ZOOM)
 		if camera_zoom != new_value:
 			camera_zoom = new_value
 			checkerboard.material.set_shader_parameter("uv_scale", nearest_po2(int(camera_zoom * 32.0)) / 32.0)
@@ -154,8 +155,7 @@ func center_frame() -> void:
 	var available_size := size * ZOOM_RESET_BUFFER
 	var ratio := available_size / root_element.get_size()
 	if ratio.is_finite():
-		var new_zoom := nearest_po2(ceili(minf(ratio.x, ratio.y) * 32.0)) / 64.0
-		camera_zoom = new_zoom
+		camera_zoom = nearest_po2(ceili(minf(ratio.x, ratio.y) * 32.0)) / 64.0
 	else:
 		camera_zoom = 1.0
 	
@@ -224,77 +224,60 @@ func update_show_grid() -> void:
 	RenderingServer.canvas_item_set_visible(grid_numbers_ci, show_grid)
 	queue_redraw()
 
-# Don't ask me to explain this.
 func _draw() -> void:
 	RenderingServer.canvas_item_clear(grid_ci)
 	RenderingServer.canvas_item_clear(grid_numbers_ci)
 	
-	var snapped_pos := get_camera_position()
 	var axis_line_color := Color(Configs.savedata.grid_color, 0.75)
 	var major_grid_color := Color(Configs.savedata.grid_color, 0.35)
 	var minor_grid_color := Color(Configs.savedata.grid_color, 0.15)
 	
-	var grid_size := size / camera_zoom
-	RenderingServer.canvas_item_add_line(grid_ci, Vector2(-snapped_pos.x * camera_zoom, 0),
-			Vector2(-snapped_pos.x * camera_zoom, grid_size.y * camera_zoom), axis_line_color)
-	RenderingServer.canvas_item_add_line(grid_ci, Vector2(0, -snapped_pos.y * camera_zoom),
-			Vector2(grid_size.x * camera_zoom, -snapped_pos.y * camera_zoom), axis_line_color)
-	
 	var major_points := PackedVector2Array()
 	var minor_points := PackedVector2Array()
-	var draw_minor_lines := (camera_zoom >= 8.0)
-	var mark_pixel_lines := (camera_zoom >= 128.0)
+	var snapped_pos := get_camera_position()
+	var grid_size := size / camera_zoom
+	var mark_pixel_lines := (camera_zoom > 127.999)
 	var rate := nearest_po2(roundi(maxf(128.0 / (TICKS_INTERVAL * camera_zoom), 2.0))) / 2
 	
-	var i := fmod(-snapped_pos.x, 1.0)
-	var major_line_h_offset := fposmod(-snapped_pos.x, TICK_DISTANCE)
+	# Draw axis lines.
+	RenderingServer.canvas_item_add_line(grid_ci, Vector2(-snapped_pos.x * camera_zoom, 0),
+			Vector2(-snapped_pos.x, grid_size.y) * camera_zoom, axis_line_color)
+	RenderingServer.canvas_item_add_line(grid_ci, Vector2(0, -snapped_pos.y * camera_zoom),
+			Vector2(grid_size.x, -snapped_pos.y) * camera_zoom, axis_line_color)
+	
+	var i := fmod(-snapped_pos.x, rate)
 	# Horizontal offset.
 	while i <= grid_size.x:
-		if major_line_h_offset != fposmod(i, TICK_DISTANCE):
-			if draw_minor_lines:
-				minor_points.append(Vector2(i * camera_zoom, 0))
-				minor_points.append(Vector2(i * camera_zoom, grid_size.y * camera_zoom))
-				if mark_pixel_lines:
-					ThemeUtils.regular_font.draw_string(grid_numbers_ci,
-							Vector2(i * camera_zoom + 4, 14), String.num_int64(floori(i + snapped_pos.x)),
-							HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
+		var coord := snappedi(i + snapped_pos.x, rate)
+		if coord % (rate * TICKS_INTERVAL) == 0:
+			major_points.append(Vector2(i * camera_zoom, 0))
+			major_points.append(Vector2(i, grid_size.y) * camera_zoom)
+			ThemeUtils.main_font.draw_string(grid_numbers_ci, Vector2(i * camera_zoom + 4, 14),
+					String.num_int64(coord), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
 		else:
-			var coord := snappedi(i + snapped_pos.x, TICKS_INTERVAL)
-			if int(coord / TICK_DISTANCE) % rate == 0:
-				major_points.append(Vector2(i * camera_zoom, 0))
-				major_points.append(Vector2(i * camera_zoom, grid_size.y * camera_zoom))
-				ThemeUtils.regular_font.draw_string(grid_numbers_ci,
-						Vector2(i * camera_zoom + 4, 14), String.num_int64(coord),
-						HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
-			elif coord % rate == 0:
-				minor_points.append(Vector2(i * camera_zoom, 0))
-				minor_points.append(Vector2(i * camera_zoom, grid_size.y * camera_zoom))
-		i += 1.0
+			minor_points.append(Vector2(i * camera_zoom, 0))
+			minor_points.append(Vector2(i, grid_size.y) * camera_zoom)
+			if mark_pixel_lines:
+				ThemeUtils.main_font.draw_string(grid_numbers_ci, Vector2(i * camera_zoom + 4, 14),
+						String.num_int64(coord), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
+		i += rate
 	
-	i = fmod(-snapped_pos.y, 1.0)
-	var major_line_v_offset := fposmod(-snapped_pos.y, TICK_DISTANCE)
+	i = fmod(-snapped_pos.y, rate)
 	# Vertical offset.
-	while i < grid_size.y:
-		if major_line_v_offset != fposmod(i, TICK_DISTANCE):
-			if draw_minor_lines:
-				minor_points.append(Vector2(0, i * camera_zoom))
-				minor_points.append(Vector2(grid_size.x * camera_zoom, i * camera_zoom))
-				if mark_pixel_lines:
-					ThemeUtils.regular_font.draw_string(grid_numbers_ci,
-							Vector2(4, i * camera_zoom + 14), String.num_int64(floori(i + snapped_pos.y)),
-							HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
+	while i <= grid_size.y:
+		var coord := snappedi(i + snapped_pos.y, rate)
+		if coord % (rate * TICKS_INTERVAL) == 0:
+			major_points.append(Vector2(0, i * camera_zoom))
+			major_points.append(Vector2(grid_size.x, i) * camera_zoom)
+			ThemeUtils.main_font.draw_string(grid_numbers_ci, Vector2(4, i * camera_zoom + 14),
+					String.num_int64(coord), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
 		else:
-			var coord := snappedi(i + snapped_pos.y, TICKS_INTERVAL)
-			if int(coord / TICK_DISTANCE) % rate == 0:
-				major_points.append(Vector2(0, i * camera_zoom))
-				major_points.append(Vector2(grid_size.x * camera_zoom, i * camera_zoom))
-				ThemeUtils.regular_font.draw_string(grid_numbers_ci,
-						Vector2(4, i * camera_zoom + 14), String.num_int64(coord),
-						HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
-			elif coord % rate == 0:
-				minor_points.append(Vector2(0, i * camera_zoom))
-				minor_points.append(Vector2(grid_size.x * camera_zoom, i * camera_zoom))
-		i += 1.0
+			minor_points.append(Vector2(0, i * camera_zoom))
+			minor_points.append(Vector2(grid_size.x, i) * camera_zoom)
+			if mark_pixel_lines:
+				ThemeUtils.main_font.draw_string(grid_numbers_ci, Vector2(4, i * camera_zoom + 14),
+						String.num_int64(coord), HORIZONTAL_ALIGNMENT_LEFT, -1, 14, axis_line_color)
+		i += rate
 	
 	if not major_points.is_empty():
 		var pca := PackedColorArray()
@@ -317,7 +300,7 @@ var limit_bottom_right := Vector2.ZERO
 
 
 func set_zoom(new_zoom: float, offset := Vector2(0.5, 0.5)) -> void:
-	camera_zoom = clampf(new_zoom, MIN_ZOOM, MAX_ZOOM)
+	camera_zoom = new_zoom
 	adjust_view(offset)
 
 # Top left corner.

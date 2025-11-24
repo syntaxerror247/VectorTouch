@@ -13,6 +13,7 @@ signal files_selected(paths: PackedStringArray)
 const folder_icon = preload("res://assets/icons/Folder.svg")
 const broken_file_icon = preload("res://assets/icons/FileBroken.svg")
 const text_file_icon = preload("res://assets/icons/TextFile.svg")
+const font_file_icon = preload("res://assets/icons/FontFile.svg")
 
 const system_dirs_to_show: Array[OS.SystemDir] = [OS.SYSTEM_DIR_DESKTOP, OS.SYSTEM_DIR_DOCUMENTS,
 		OS.SYSTEM_DIR_DOWNLOADS, OS.SYSTEM_DIR_MOVIES, OS.SYSTEM_DIR_MUSIC, OS.SYSTEM_DIR_PICTURES]
@@ -204,11 +205,7 @@ func update_filtering() -> void:
 func open_dir(dir: String, add_to_history := true, only_filtering_update := false) -> void:
 	dir_cursor = DirAccess.open(dir)
 	if not is_instance_valid(dir_cursor):
-		# TODO implement a fallback.
 		return
-	
-	if dir != current_dir and search_button.button_pressed:
-		search_button.button_pressed = false
 	
 	if add_to_history:
 		navigation_index += 1
@@ -216,10 +213,13 @@ func open_dir(dir: String, add_to_history := true, only_filtering_update := fals
 		navigation_history.append(dir)
 		update_navigation_buttons()
 	
+	if dir != current_dir:
+		current_dir = dir
+		if search_button.button_pressed:
+			search_button.button_pressed = false
+	
 	file_list.clear()
 	file_list.get_v_scroll_bar().value = 0
-	
-	current_dir = dir
 	
 	if not only_filtering_update:
 		sync_to_selection()
@@ -260,12 +260,16 @@ func open_dir(dir: String, add_to_history := true, only_filtering_update := fals
 		file_list.set_item_metadata(item_idx, Actions.new(open_dir.bind(dir_path), sync_to_selection, open_dir_context.bind(dir_path)))
 	
 	for file in files:
-		if not file.get_extension() in extensions or (not search_text.is_empty() and not search_text.is_subsequence_ofn(file)):
+		if not Utils.get_lowercase_extension(file) in extensions or (not search_text.is_empty() and not search_text.is_subsequence_ofn(file)):
 			continue
 		
 		var item_idx := file_list.add_item(file, null)
-		if file.get_extension() == "xml":
+		var file_extension := Utils.get_lowercase_extension(file)
+		if file_extension == "xml":
 			file_list.set_item_icon(item_idx, text_file_icon)
+			file_list.set_item_icon_modulate(item_idx, ThemeUtils.text_file_color)
+		elif file_extension in Utils.DYNAMIC_FONT_FORMATS:
+			file_list.set_item_icon(item_idx, font_file_icon)
 			file_list.set_item_icon_modulate(item_idx, ThemeUtils.text_file_color)
 		file_list.set_item_metadata(item_idx, Actions.new(select_files, sync_to_selection, open_file_context))
 	# If we don't await this stuff, sometimes the item_rect we get is all wrong.
@@ -277,7 +281,7 @@ func sync_file_field() -> void:
 	file_field.text = add_extension_if_missing(get_save_name())
 
 func add_extension_if_missing(file_name: String) -> String:
-	if not file_name.is_empty() and not file_name.get_extension() in extensions and\
+	if not file_name.is_empty() and not Utils.get_lowercase_extension(file_name) in extensions and\
 	extensions.size() >= 1:
 		return file_name + "." + extensions[0]
 	else:
@@ -298,7 +302,7 @@ func _setup_file_images() -> void:
 		var file_rect := file_list.get_item_rect(item_idx)
 		if not is_instance_valid(file_list.get_item_icon(item_idx)) and file_rect.end.y > visible_start and file_rect.position.y < visible_end:
 			var file := file_list.get_item_text(item_idx)
-			match file.get_extension():
+			match Utils.get_lowercase_extension(file):
 				"svg":
 					# Setup a clean SVG graphic by using the scaling parameter.
 					var svg_text := FileAccess.get_file_as_string(current_dir.path_join(file))

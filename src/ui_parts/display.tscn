@@ -116,7 +116,6 @@ layout_mode = 2
 theme_type_variation = &"LeftConnectedLineEdit"
 max_length = 20
 min_value = 0.001
-allow_lower = false
 
 [node name="spacer" type="Control" parent="ViewportPanel/VBoxContainer/Toolbar/ViewportOptions"]
 layout_mode = 2

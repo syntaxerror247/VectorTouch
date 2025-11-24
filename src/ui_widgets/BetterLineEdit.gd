@@ -36,7 +36,6 @@ func sync_theming() -> void:
 
 var first_click := false
 var text_before_focus := ""
-var popup_level := -1  # Set when focused, as it can't be focused unless it's top level.
 
 func _on_base_class_focus_entered() -> void:
 	# Hack to check if focus entered was from a mouse click.
@@ -45,7 +44,6 @@ func _on_base_class_focus_entered() -> void:
 	else:
 		select_all()
 	text_before_focus = text
-	popup_level = HandlerGUI.popup_stack.size()
 
 func _on_base_class_focus_exited() -> void:
 	first_click = false
@@ -76,9 +74,8 @@ func _input(event: InputEvent) -> void:
 	if not has_focus():
 		return
 	
-	if event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT,
-	MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]):
-		if event.is_pressed() and not get_global_rect().has_point(event.position) and popup_level == HandlerGUI.popup_stack.size():
+	if event is InputEventMouseButton and (event.button_index in [MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]):
+		if event.is_pressed() and not get_global_rect().has_point(event.position) and HandlerGUI.is_node_on_top_menu_or_popup(self):
 			release_focus()
 		elif event.is_released() and first_click and not has_selection():
 			first_click = false
@@ -88,6 +85,24 @@ func _input(event: InputEvent) -> void:
 		select_all()
 
 func _gui_input(event: InputEvent) -> void:
+	if event.is_action_pressed("evaluate"):
+		var numstring_evaluation := NumstringParser.evaluate(get_selected_text() if has_selection() else text)
+		if not is_nan(numstring_evaluation):
+			if has_selection():
+				var selection_start := get_selection_from_column()
+				var caret_column_was_at_start := (selection_start == caret_column)
+				var result := Utils.num_simple(numstring_evaluation, Utils.MAX_NUMERIC_PRECISION)
+				var new_selection_end := selection_start + result.length()
+				
+				text = text.left(selection_start) + result + text.right(-get_selection_to_column())
+				select(selection_start, new_selection_end)
+				caret_column = selection_start if caret_column_was_at_start else new_selection_end
+			else:
+				text = Utils.num_simple(numstring_evaluation, Utils.MAX_NUMERIC_PRECISION)
+				caret_column = text.length()
+		accept_event()
+		return
+	
 	if event.is_action_pressed("select_all"):
 		menu_option(MENU_SELECT_ALL)
 		accept_event()
@@ -105,25 +120,34 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_pressed():
 		grab_focus()
 		var btn_arr: Array[Button] = []
-		var separator_arr: Array[int] = []
+		var separator_arr := PackedInt32Array()
 		
 		var is_text_empty := text.is_empty()
 		
 		if editable:
+			var text_to_evaluate := get_selected_text() if has_selection() else text
+			var selection_evaluation := NumstringParser.evaluate(text_to_evaluate)
+			if not is_nan(selection_evaluation) and Utils.num_simple(selection_evaluation, Utils.MAX_NUMERIC_PRECISION) != text_to_evaluate:
+				btn_arr.append(ContextPopup.create_shortcut_button("evaluate"))
+			
+			if not btn_arr.is_empty():
+				separator_arr.append(btn_arr.size())
+			
 			btn_arr.append(ContextPopup.create_shortcut_button("ui_undo", not has_undo()))
 			btn_arr.append(ContextPopup.create_shortcut_button("ui_redo", not has_redo()))
 			if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
-				separator_arr = [2]
+				separator_arr.append(btn_arr.size())
 				btn_arr.append(ContextPopup.create_shortcut_button("ui_cut", is_text_empty))
 				btn_arr.append(ContextPopup.create_shortcut_button("ui_copy", is_text_empty))
-				btn_arr.append(ContextPopup.create_shortcut_button("ui_paste",
-						not Utils.has_clipboard_web_safe()))
+				btn_arr.append(ContextPopup.create_shortcut_button("ui_paste", not Utils.has_clipboard_web_safe()))
+				btn_arr.append(ContextPopup.create_shortcut_button("select_all", is_text_empty))
 		else:
 			btn_arr.append(ContextPopup.create_shortcut_button("ui_copy", is_text_empty))
+			btn_arr.append(ContextPopup.create_shortcut_button("select_all", is_text_empty))
 		
 		var vp := get_viewport()
 		var context_popup := ContextPopup.new()
-		context_popup.setup(btn_arr, true, -1, -1, separator_arr)
+		context_popup.setup(btn_arr, true, -1, separator_arr)
 		HandlerGUI.popup_under_pos(context_popup, vp.get_mouse_position(), vp)
 		accept_event()
 		# Wow, no way to find out the column of a given click? Okay...

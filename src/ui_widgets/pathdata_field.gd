@@ -13,8 +13,8 @@ const STRIP_HEIGHT = 22.0
 
 signal focused
 
-const MiniNumberFieldScene = preload("mini_number_field.tscn")
-const FlagFieldScene = preload("flag_field.tscn")
+const MiniNumberFieldScene = preload("res://src/ui_widgets/mini_number_field.tscn")
+const FlagFieldScene = preload("res://src/ui_widgets/flag_field.tscn")
 
 const more_icon = preload("res://assets/icons/SmallMore.svg")
 const plus_icon = preload("res://assets/icons/Plus.svg")
@@ -23,7 +23,7 @@ var mini_line_edit_stylebox := get_theme_stylebox("normal", "MiniLineEdit")
 var mini_line_edit_font_size := get_theme_font_size("font_size", "MiniLineEdit")
 var mini_line_edit_font_color := get_theme_color("font_color", "MiniLineEdit")
 
-@onready var line_edit: LineEdit = $LineEdit
+@onready var line_edit: BetterLineEdit = $LineEdit
 @onready var commands_container: Control = $Commands
 
 # Variables around the big optimization.
@@ -98,7 +98,7 @@ func _on_line_edit_focus_entered() -> void:
 
 func setup_font(new_text: String) -> void:
 	if new_text.is_empty():
-		line_edit.add_theme_font_override("font", ThemeUtils.regular_font)
+		line_edit.add_theme_font_override("font", ThemeUtils.main_font)
 	else:
 		line_edit.remove_theme_font_override("font")
 
@@ -106,12 +106,12 @@ var last_synced_value := " "  # Invalid initial string.
 
 func sync() -> void:
 	var new_value := element.get_attribute_value(attribute_name)
+	line_edit.text = new_value
+	setup_font(new_value)
 	if last_synced_value == new_value:
 		return
 	last_synced_value = new_value
 	
-	line_edit.text = new_value
-	setup_font(new_value)
 	# A plus button for adding a move command if empty.
 	var cmd_count: int = element.get_attribute(attribute_name).get_command_count()
 	if cmd_count == 0 and not is_instance_valid(add_move_button):

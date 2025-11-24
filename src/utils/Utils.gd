@@ -1,15 +1,19 @@
 @abstract class_name Utils
 
+const IMAGE_FORMATS: PackedStringArray = ["png", "jpg", "jpeg", "webp", "svg"]
+const DYNAMIC_FONT_FORMATS: PackedStringArray = ["ttf", "otf", "woff", "woff2", "pfb", "pfm"]
+
 const MAX_NUMERIC_PRECISION = 6
 const MAX_ANGLE_PRECISION = 4
 
 enum InteractionType {NONE = 0, HOVERED = 1, SELECTED = 2, HOVERED_SELECTED = 3}
-enum LayoutPart {NONE, CODE_EDITOR, INSPECTOR, VIEWPORT}
+enum LayoutPart {NONE, CODE_EDITOR, INSPECTOR, VIEWPORT, PREVIEWS}
 
 const _LAYOUT_ICONS: Dictionary[LayoutPart, Texture2D] = {
 	LayoutPart.CODE_EDITOR: preload("res://assets/icons/CodeEditor.svg"),
 	LayoutPart.INSPECTOR: preload("res://assets/icons/Inspector.svg"),
 	LayoutPart.VIEWPORT: preload("res://assets/icons/Viewport.svg"),
+	LayoutPart.PREVIEWS: preload("res://assets/icons/Previews.svg"),
 }
 const _LAYOUT_PLACEHOLDER_ICON = preload("res://assets/icons/Placeholder.svg")
 
@@ -28,6 +32,9 @@ static func is_string_lower(string: String) -> bool:
 
 static func get_file_name(string: String) -> String:
 	return string.get_file().trim_suffix("." + string.get_extension())
+
+static func get_lowercase_extension(string: String) -> String:
+	return string.get_extension().to_lower()
 
 ## Method for showing the file path without stuff like "/home/mewpurpur/".
 static func simplify_file_path(file_path: String) -> String:

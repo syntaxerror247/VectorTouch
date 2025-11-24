@@ -12,6 +12,9 @@ var _shortcut_validities: Dictionary[Key, bool] = {}
 # Most settings don't need a default.
 func get_setting_default(setting: String) -> Variant:
 	match setting:
+		"main_font_path": return ""
+		"bold_font_path": return ""
+		"mono_font_path": return ""
 		"base_color":
 			match theme_preset:
 				ThemePreset.DARK: return Color("1a1a1a")
@@ -192,6 +195,8 @@ func validate() -> void:
 		editor_formatter = Formatter.new(Formatter.Preset.PRETTY)
 	if not is_instance_valid(export_formatter):
 		export_formatter = Formatter.new(Formatter.Preset.COMPACT)
+	if not is_instance_valid(default_optimizer):
+		default_optimizer = Optimizer.new()
 	if _active_tab_index >= _tabs.size() or _active_tab_index < 0:
 		_active_tab_index = _active_tab_index  # Run the setter.
 	
@@ -244,6 +249,30 @@ const CURRENT_VERSION = 1
 			accent_color = new_value
 			emit_changed()
 			external_call(Configs.sync_theme)
+
+
+# Don't check if the value has changed here, even the file path haven't changed the font should still update.
+
+@export var main_font_path := "":
+	set(new_value):
+		if new_value.is_empty() or FileAccess.file_exists(new_value):
+			main_font_path = new_value
+			emit_changed()
+			external_call(Configs.sync_fonts)
+
+@export var bold_font_path := "":
+	set(new_value):
+		if new_value.is_empty() or FileAccess.file_exists(new_value):
+			bold_font_path = new_value
+			emit_changed()
+			external_call(Configs.sync_fonts)
+
+@export var mono_font_path := "":
+	set(new_value):
+		if new_value.is_empty() or FileAccess.file_exists(new_value):
+			mono_font_path = new_value
+			emit_changed()
+			external_call(Configs.sync_fonts)
 
 
 @export var highlighter_preset := HighlighterPreset.DEFAULT_DARK:
@@ -806,6 +835,14 @@ func set_palettes(new_palettes: Array[Palette]) -> void:
 			export_formatter.changed.connect(emit_changed)
 
 
+@export var default_optimizer: Optimizer = null:
+	set(new_value):
+		if default_optimizer != new_value and is_instance_valid(new_value):
+			default_optimizer = new_value
+			emit_changed()
+			default_optimizer.changed.connect(emit_changed)
+
+
 @export var shortcut_panel_layout := ShortcutPanel.Layout.HORIZONTAL_STRIP:
 	set(new_value):
 		# Validation
@@ -1121,6 +1158,22 @@ func get_layout_part_index(part: Utils.LayoutPart) -> int:
 		# Main part
 		if side_panel_splitter_offset != new_value:
 			side_panel_splitter_offset = new_value
+			emit_changed()
+
+const DEFAULT_PREVIEW_SIZES: PackedInt32Array = [16, 24, 32, 48, 64]
+@export var preview_sizes := DEFAULT_PREVIEW_SIZES:
+	set(new_value):
+		if preview_sizes != new_value:
+			var real_sizes: PackedInt32Array
+			for size in new_value:
+				real_sizes.append(maxi(size, 1))
+			preview_sizes = real_sizes
+			emit_changed()
+
+@export var previews_background := Color.TRANSPARENT:
+	set(new_value):
+		if previews_background != new_value:
+			previews_background = new_value
 			emit_changed()
 
 

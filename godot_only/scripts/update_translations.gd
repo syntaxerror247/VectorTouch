@@ -13,10 +13,12 @@ const COMMENTS_DICT: Dictionary[String, String] = {
 	"Update check failed": "When checking for updates.",
 	"Project Founder and Manager": "If the language has different gendered versions, prefer the most neutral-sounding one, i.e., the one used when you don't know the person's gender. If that's not possible, use feminine.",
 	"V-Sync": "Stands for \"Vertical Synchronization\".",
+	"Previews": "Refers to a part of the layout where icons are previewed at various sizes.",
 	"Dark": "Refers to a theme preset.",
 	"Light": "Refers to a theme preset.",
 	"Black (OLED)": "Refers to a theme preset.",
 	"translation-credits": "Translators (comma-separated): Name or alias, optionally followed by an email in angle brackets <email@example.com>.\nUsed for credits. Adding yourself is optional. New entries go at the end. Don't remove or rearrange existing entries.",
+	"Evaluate": """Refers to evaluating an expression such as "sin(2*pi/5)"."""
 }
 
 const TRANSLATIONS_DIR = "translations"
@@ -90,10 +92,10 @@ func search_directory(dir: String) -> void:
 				for msg in messages:
 					if msg.msgid == msgid:
 						already_exists = true
-						msg.files.append(full_file_name + ":")
+						msg.files.append(full_file_name)
 						break
 				if not already_exists:
-					messages.append(Message.new(msgid, PackedStringArray([full_file_name + ":"])))
+					messages.append(Message.new(msgid, PackedStringArray([full_file_name])))
 
 
 func update_translations() -> void:

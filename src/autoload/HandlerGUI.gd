@@ -111,7 +111,13 @@ func _on_files_dropped(files: PackedStringArray) -> void:
 ## Registers the given set of shortcuts to the given node.
 func register_shortcuts(node: Node, registrations: ShortcutsRegistration) -> void:
 	shortcut_registrations[node] = registrations
-	node.tree_exiting.connect(func() -> void: shortcut_registrations.erase(node))
+	if not node.tree_exiting.is_connected(forget_all_shortcuts):
+		node.tree_exiting.connect(forget_all_shortcuts.bind(node))
+
+## Removes all shortcuts registered to a node.
+func forget_all_shortcuts(node: Node) -> void:
+	shortcut_registrations.erase(node)
+
 
 ## Adds a new menu to menu_stack which hides the previous one.
 func add_menu(new_menu: Control) -> void:
@@ -127,8 +133,6 @@ func add_dialog(new_dialog: Control) -> void:
 
 # Common logic for add_menu() and add_dialog().
 func _add_control(new_control: Control) -> void:
-	# FIXME subpar workaround to drag & drop not able to be canceled manually.
-	get_tree().root.propagate_notification(NOTIFICATION_DRAG_END)
 	remove_all_popups()
 	
 	var overlay_ref := ColorRect.new()
@@ -139,6 +143,11 @@ func _add_control(new_control: Control) -> void:
 	overlay_ref.add_child(new_control)
 	new_control.tree_exiting.connect(_remove_control.bind(overlay_ref))
 	throw_mouse_motion_event()
+	
+	# TODO Right now, I have to force a drag from a control inside the tree,
+	# otherwise the current dragging operation can turn into drag and drop. Wtf Godot?
+	overlay_ref.force_drag(0, null)
+	get_viewport().gui_cancel_drag()
 
 func _remove_control(overlay_ref: ColorRect = null) -> void:
 	# If an overlay_ref is passed but doesn't match, do nothing.
@@ -177,6 +186,12 @@ func add_popup(new_popup: Control, add_shadow := true) -> Control:
 	overlay_ref.gui_input.connect(_parse_popup_overlay_event)
 	popup_stack.append(overlay_ref)
 	get_tree().root.add_child(overlay_ref)
+	
+	# TODO Right now, I have to force a drag from a control inside the tree,
+	# otherwise the current dragging operation can turn into drag and drop. Wtf Godot?
+	overlay_ref.force_drag(0, null)
+	get_viewport().gui_cancel_drag()
+	
 	if add_shadow:
 		var shadow_container := PanelContainer.new()
 		var sb := StyleBoxFlat.new()
@@ -278,6 +293,7 @@ func _parse_popup_overlay_event(event: InputEvent) -> void:
 			remove_popup()
 	get_viewport().set_input_as_handled()
 
+
 var last_mouse_click_double := false
 
 func _input(event: InputEvent) -> void:
@@ -291,30 +307,29 @@ func _input(event: InputEvent) -> void:
 			event.double_click = true
 			last_mouse_click_double = false
 	
-	# Prioritize clearing popups over letting controls receive ui_cancel.
-	if ShortcutUtils.is_action_pressed(event, "ui_cancel") and not popup_stack.is_empty():
+	if not (event is InputEventAction or event is InputEventKey):
+		return
+	
+	var focus_owner := get_viewport().gui_get_focus_owner()
+	if is_instance_valid(focus_owner) and not is_node_on_top_menu_or_popup(focus_owner):
 		get_viewport().set_input_as_handled()
-		remove_popup()
-
+		_react_to_action(event)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventAction or event is InputEventKey):
 		return
+	_react_to_action(event)
+
+func _react_to_action(event: InputEvent) -> void:
+	if ShortcutUtils.is_action_pressed(event, "ui_cancel"):
+		if not popup_stack.is_empty():
+			get_viewport().set_input_as_handled()
+			remove_popup()
+		elif not menu_stack.is_empty():
+			get_viewport().set_input_as_handled()
+			_remove_control()
 	
-	if ShortcutUtils.is_action_pressed(event, "ui_cancel") and not menu_stack.is_empty():
-		get_viewport().set_input_as_handled()
-		_remove_control()
-		return
-	
-	var behavior_priority: Array[ShortcutsRegistration.Behavior] = [
-		ShortcutsRegistration.Behavior.STRICT_NO_PASSTHROUGH,
-		ShortcutsRegistration.Behavior.NO_PASSTHROUGH,
-		ShortcutsRegistration.Behavior.PASS_THROUGH_POPUPS,
-		ShortcutsRegistration.Behavior.PASS_THROUGH_AND_PRESERVE_POPUPS,
-		ShortcutsRegistration.Behavior.PASS_THROUGH_ALL
-	]
-	
-	for behavior in behavior_priority:
+	for behavior in ShortcutsRegistration.BEHAVIOR_PRIORITY:
 		for node in shortcut_registrations:
 			if node is CanvasItem and not node.visible:
 				continue
@@ -333,19 +348,14 @@ func _unhandled_input(event: InputEvent) -> void:
 						ShortcutsRegistration.Behavior.PASS_THROUGH_ALL:
 							should_execute = true
 						ShortcutsRegistration.Behavior.PASS_THROUGH_POPUPS:
-							if menu_stack.is_empty() or menu_stack[-1].is_ancestor_of(node):
+							if is_node_on_top_menu(node):
 								should_execute = true
 								should_clear_popups = true
 						ShortcutsRegistration.Behavior.PASS_THROUGH_AND_PRESERVE_POPUPS:
-							if menu_stack.is_empty() or menu_stack[-1].is_ancestor_of(node):
+							if is_node_on_top_menu(node):
 								should_execute = true
 						ShortcutsRegistration.Behavior.NO_PASSTHROUGH:
-							if (menu_stack.is_empty() and popup_stack.is_empty()) or (popup_stack.is_empty() and menu_stack[-1].is_ancestor_of(node)) or\
-							(not popup_stack.is_empty() and popup_stack[-1].is_ancestor_of(node)):
-								should_execute = true
-						ShortcutsRegistration.Behavior.STRICT_NO_PASSTHROUGH:
-							if not get_viewport().gui_is_dragging() and ((menu_stack.is_empty() and popup_stack.is_empty()) or (popup_stack.is_empty() and\
-							menu_stack[-1].is_ancestor_of(node)) or (not popup_stack.is_empty() and popup_stack[-1].is_ancestor_of(node))):
+							if not get_viewport().gui_is_dragging() and is_node_on_top_menu_or_popup(node):
 								should_execute = true
 					
 					if should_execute:
@@ -355,6 +365,14 @@ func _unhandled_input(event: InputEvent) -> void:
 							remove_all_popups()
 						get_viewport().set_input_as_handled()
 						return
+
+
+func is_node_on_top_menu(node: Node) -> bool:
+	return (menu_stack.is_empty() or menu_stack[-1].is_ancestor_of(node))
+
+func is_node_on_top_menu_or_popup(node: Node) -> bool:
+	return ((menu_stack.is_empty() and popup_stack.is_empty()) or (popup_stack.is_empty() and\
+			menu_stack[-1].is_ancestor_of(node)) or (not popup_stack.is_empty() and popup_stack[-1].is_ancestor_of(node)))
 
 
 func get_window_default_size() -> Vector2i:
