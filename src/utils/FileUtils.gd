@@ -156,7 +156,7 @@ static func _finish_xml_export(file_path: String, xml: String) -> void:
 
 static func _finish_reference_load(data: Variant, file_path: String, final_callback: Callable) -> void:
 	var img := Image.new()
-	match file_path.get_extension().to_lower():
+	match Utils.get_lowercase_extension(file_path):
 		"svg": img.load_svg_from_string(data)
 		"png": img.load_png_from_buffer(data)
 		"jpg", "jpeg": img.load_jpg_from_buffer(data)
@@ -173,17 +173,17 @@ static func _choose_file_name() -> String:
 
 # No need for completion callback here yet.
 static func open_svg_import_dialog() -> void:
-	_open_import_dialog(PackedStringArray(["svg"]), _apply_svg, true)
+	open_custom_import_dialog(PackedStringArray(["svg"]), _apply_svg, true)
 
 static func open_image_import_dialog(completion_callback: Callable) -> void:
-	_open_import_dialog(PackedStringArray(["png", "jpg", "jpeg", "webp", "svg"]), _finish_reference_load.bind(completion_callback))
+	open_custom_import_dialog(Utils.IMAGE_FORMATS, _finish_reference_load.bind(completion_callback))
 
 static func open_xml_import_dialog(completion_callback: Callable) -> void:
-	_open_import_dialog(PackedStringArray(["xml"]), completion_callback)
+	open_custom_import_dialog(PackedStringArray(["xml"]), completion_callback)
 
 
 # On web, the completion callback can't use the full file path.
-static func _open_import_dialog(extensions: PackedStringArray, completion_callback: Callable, multi_select := false) -> void:
+static func open_custom_import_dialog(extensions: PackedStringArray, completion_callback: Callable, multi_select := false) -> void:
 	var permission := "android.permission.READ_MEDIA_IMAGES"
 	if Configs.current_sdk < 33:
 		permission = "android.permission.READ_EXTERNAL_STORAGE"
@@ -225,7 +225,7 @@ static func _start_file_import_process(file_paths: PackedStringArray, completion
 allowed_extensions: PackedStringArray, show_incorrect_extension_errors := true) -> void:
 	if not show_incorrect_extension_errors:
 		for i in range(file_paths.size() - 1, -1, -1):
-			if not file_paths[i].get_extension() in allowed_extensions:
+			if not Utils.get_lowercase_extension(file_paths[i]) in allowed_extensions:
 				file_paths.remove_at(i)
 		if not file_paths.is_empty():
 			_file_import_proceed(file_paths, completion_callback)
@@ -233,7 +233,7 @@ allowed_extensions: PackedStringArray, show_incorrect_extension_errors := true) 
 	
 	var incorrect_extension_file_paths := PackedStringArray()
 	for i in range(file_paths.size() - 1, -1, -1):
-		if not file_paths[i].get_extension() in allowed_extensions:
+		if not Utils.get_lowercase_extension(file_paths[i]) in allowed_extensions:
 			incorrect_extension_file_paths.append(Utils.simplify_file_path(file_paths[i]))
 			file_paths.remove_at(i)
 	
@@ -309,14 +309,18 @@ static func _file_import_proceed(file_paths: PackedStringArray, completion_callb
 	
 	# The XML callbacks currently happen to not need the file path.
 	# The SVG callback used currently can popup extra dialogs, so they need the callable.
-	match file_path.get_extension():
-		"svg":
-			if file_paths.is_empty():
-				completion_callback.call(file.get_as_text(), file_path)
-			else:
-				completion_callback.call(file.get_as_text(), file_path, proceed_callback, false)
-		"xml": completion_callback.call(file.get_as_text())
-		_: completion_callback.call(file.get_buffer(file.get_length()), file_path)
+	var file_extension := Utils.get_lowercase_extension(file_path)
+	if file_extension == "svg":
+		if file_paths.is_empty():
+			completion_callback.call(file.get_as_text(), file_path)
+		else:
+			completion_callback.call(file.get_as_text(), file_path, proceed_callback, false)
+	elif file_extension == "xml":
+		completion_callback.call(file.get_as_text())
+	elif file_extension in Utils.DYNAMIC_FONT_FORMATS:
+		completion_callback.call(file_path)
+	else:
+		completion_callback.call(file.get_buffer(file.get_length()), file_path)
 
 
 static func _apply_svg(data: Variant, file_path: String, proceed_callback := Callable(), is_last_file := true) -> void:
@@ -333,7 +337,7 @@ static func _apply_svg(data: Variant, file_path: String, proceed_callback := Cal
 					{"file_path": Utils.simplify_file_path(file_path)})
 		if compare_svg_to_disk_contents(existing_tab_idx) == FileState.DIFFERENT:
 			alert_message += "\n\n" + Translator.translate(
-					"If you want to revert your edits since the last save, use {reset_svg}.").format(
+					"If you want to revert your edits since the last save, use \"{reset_svg}\".").format(
 					{"reset_svg": TranslationUtils.get_action_description("reset_svg")})
 		
 		if is_last_file:
@@ -598,7 +602,7 @@ static func _web_on_files_selected(args: Array) -> void:
 		window.vectortouchFileNames[i] = file.name
 		
 		# Read file based on extension.
-		if file.name.get_extension().to_lower() in ["svg", "xml"]:
+		if Utils.get_lowercase_extension(file.name) in ["svg", "xml"]:
 			reader.readAsText(file)
 		else:
 			reader.readAsArrayBuffer(file)
@@ -614,7 +618,7 @@ static func _web_on_file_loaded(args: Array, file_index: int) -> void:
 	var file_name: String = window.vectortouchFileNames[file_index]
 	
 	# Store file data based on type.
-	if file_name.get_extension().to_lower() in ["svg", "xml"]:
+	if Utils.get_lowercase_extension(file_name) in ["svg", "xml"]:
 		# For text files, store directly
 		window.vectortouchFileDataArray[file_index] = event.target.result
 	else:

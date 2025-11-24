@@ -47,6 +47,7 @@ static func get_action_description(action_name: String, for_button := false) -> 
 		"ui_copy": return Translator.translate("Copy")
 		"ui_paste": return Translator.translate("Paste")
 		"ui_cut": return Translator.translate("Cut")
+		"evaluate": return Translator.translate("Evaluate")
 		"select_all": return Translator.translate("Select all")
 		"duplicate": return Translator.translate("Duplicate") if for_button else Translator.translate("Duplicate the selection")
 		"delete": return Translator.translate("Delete") if for_button else Translator.translate("Delete the selection")
@@ -125,6 +126,7 @@ static func get_layout_part_name(layout_part: Utils.LayoutPart) -> String:
 		Utils.LayoutPart.CODE_EDITOR: return Translator.translate("Code editor")
 		Utils.LayoutPart.INSPECTOR: return Translator.translate("Inspector")
 		Utils.LayoutPart.VIEWPORT: return Translator.translate("Viewport")
+		Utils.LayoutPart.PREVIEWS: return Translator.translate("Previews")
 		_: return ""
 
 ## Generates an alert text for unsupported file extensions.
@@ -139,9 +141,10 @@ static func get_file_dialog_select_mode_title_text(multi_select: bool, extension
 	if multi_select:
 		return Translator.translate("Select {format} files").format({"format": _get_extension_readable_name("svg")})
 	else:
-		if extensions.size() > 1:
-			# Multiple formats currently only show up for reference images.
+		if extensions == Utils.IMAGE_FORMATS:
 			return Translator.translate("Select an image")
+		elif extensions == Utils.DYNAMIC_FONT_FORMATS:
+			return Translator.translate("Select a font")
 		else:
 			# "an" because this can currently only show for SVG and XML files.
 			return Translator.translate("Select an {format} file").format({"format": _get_extension_readable_name(extensions[0])})

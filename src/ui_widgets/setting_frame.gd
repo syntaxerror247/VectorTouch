@@ -1,14 +1,20 @@
 extends Control
 
-enum Type {NONE, CHECKBOX, COLOR, DROPDOWN, NUMBER_DROPDOWN}
+const reload_icon = preload("res://assets/icons/Reload.svg")
+const clear_icon = preload("res://assets/icons/Clear.svg")
+
+enum Type {NONE, CHECKBOX, COLOR, DROPDOWN, NUMERIC_DROPDOWN, FILE_PATH}
 var type := Type.NONE
 
 signal value_changed
 
+const info_icon = preload("res://assets/icons/Info.svg")
+
+const OptimizerSettingInfoScene = preload("res://src/ui_widgets/optimizer_setting_info.tscn")
 const ColorEditScene = preload("res://src/ui_widgets/color_edit.tscn")
-const DropdownScene = preload("res://src/ui_widgets/dropdown.tscn")
-const NumberDropdownScene = preload("res://src/ui_widgets/number_dropdown.tscn")
-const FpsLimitDropdownScene = preload("res://src/ui_widgets/fps_limit_dropdown.tscn")
+const BasicDropdownScene = preload("res://src/ui_widgets/dropdown_basic.tscn")
+const NumericDropdownScene = preload("res://src/ui_widgets/dropdown_numeric.tscn")
+const FilePathFieldScene = preload("res://src/ui_widgets/file_path_field.tscn")
 
 var getter: Callable
 var setter: Callable
@@ -25,11 +31,29 @@ var dim_text := false  # For settings that wouldn't have an effect.
 
 var widget: Control
 var panel_width := 0
+var info_button: Button
 
 var is_focused := false
+var tooltip_rect := Rect2(NAN, NAN, NAN, NAN)
 
 @onready var reset_button: Button = $ResetButton
 var ci := get_canvas_item()
+
+func set_optimizer_info(example_root: ElementRoot, optimizer: Optimizer, main_text := "") -> void:
+	info_button = Button.new()
+	info_button.icon = info_icon
+	info_button.theme_type_variation = "FlatButton"
+	info_button.mouse_filter = Control.MOUSE_FILTER_PASS
+	info_button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	info_button.focus_mode = Control.FOCUS_NONE
+	add_child(info_button)
+	info_button.pressed.connect(func() -> void:
+		var info := OptimizerSettingInfoScene.instantiate()
+		info.setup(example_root.duplicate(), optimizer, main_text)
+		HandlerGUI.popup_under_rect_center(info, info_button.get_global_rect(), get_viewport())
+	)
+	var margin_size := (size.y - info_button.size.y) / 2.0
+	info_button.position = Vector2(margin_size, margin_size)
 
 func permanent_disable_checkbox(checkbox_state: bool) -> void:
 	disabled = true
@@ -46,7 +70,7 @@ func setup_checkbox() -> void:
 	widget.button_pressed = getter.call()
 	widget.toggled.connect(_checkbox_modification.unbind(1))
 	type = Type.CHECKBOX
-	panel_width = 76
+	panel_width = 74
 
 func setup_color(enable_alpha: bool) -> void:
 	widget = ColorEditScene.instantiate()
@@ -55,52 +79,58 @@ func setup_color(enable_alpha: bool) -> void:
 	add_child(widget)
 	widget.value_changed.connect(_color_modification.bind(enable_alpha))
 	type = Type.COLOR
-	panel_width = 114 if enable_alpha else 100
+	panel_width = 110 if enable_alpha else 96
+
+func setup_file_path(extensions: PackedStringArray) -> void:
+	widget = FilePathFieldScene.instantiate()
+	widget.extensions = extensions
+	widget.value = getter.call()
+	add_child(widget)
+	widget.value_changed.connect(_generic_modification)
+	type = Type.FILE_PATH
+	panel_width = 160
 
 # TODO Typed Dictionary wonkiness
-func setup_dropdown(values: Array[Variant],
-value_text_map: Dictionary) -> void:  # Dictionary[Variant, String]
-	widget = DropdownScene.instantiate()
+func setup_dropdown(values: Array[Variant], value_text_map: Dictionary) -> void:  # Dictionary[Variant, String]
+	widget = BasicDropdownScene.instantiate()
 	widget.values = values
-	widget.restricted = true
 	widget.value_text_map = value_text_map
 	add_child(widget)
-	widget.value_changed.connect(_dropdown_modification)
+	widget.value_changed.connect(_generic_modification)
 	type = Type.DROPDOWN
-	panel_width = 100
+	panel_width = 140
 
-func setup_number_dropdown(values: Array[float], is_integer: bool, restricted: bool,
-min_value: float, max_value: float) -> void:
-	widget = NumberDropdownScene.instantiate()
-	widget.values = values
-	widget.is_integer = is_integer
-	widget.restricted = restricted
+func setup_numeric_dropdown(values_for_dropdown: PackedFloat64Array, use_integers: bool,
+min_value: float, max_value: float, special_value_exception: float, value_text_map: Dictionary[float, String]) -> void:
+	widget = NumericDropdownScene.instantiate()
+	widget.values_for_dropdown = values_for_dropdown
+	widget.use_integers = use_integers
 	widget.min_value = min_value
 	widget.max_value = max_value
+	widget.special_value_exception = special_value_exception
+	widget.value_text_map = value_text_map
 	add_child(widget)
-	widget.value_changed.connect(_number_dropdown_modification)
-	type = Type.NUMBER_DROPDOWN
-	panel_width = 100
-
-func setup_fps_limit_dropdown() -> void:
-	widget = FpsLimitDropdownScene.instantiate()
-	add_child(widget)
-	widget.value_changed.connect(_fps_limit_dropdown_modification)
-	type = Type.NUMBER_DROPDOWN
-	panel_width = 100
+	widget.value_changed.connect(_float_modification_with_nan_reset)
+	type = Type.NUMERIC_DROPDOWN
+	panel_width = 101
 
 func _ready() -> void:
-	widget.size = Vector2(panel_width - 32, 22)
+	widget.custom_minimum_size = Vector2(panel_width - 28, 22)
 	focus_entered.connect(_on_focus_entered)
 	focus_exited.connect(_on_focus_exited)
 	resized.connect(_on_resized)
 	reset_button.reset_size()
 	if type != Type.NONE:
 		widget.reset_size()
-	reset_button.tooltip_text = Translator.translate("Reset to default")
-	reset_button.set_anchors_and_offsets_preset(Control.PRESET_CENTER_RIGHT)
+	reset_button.position = Vector2(size.x - 24, 4)
 	reset_button.pressed.connect(_on_reset_button_pressed)
 	update_widgets()
+	if typeof(default) == TYPE_STRING and default.is_empty():
+		reset_button.tooltip_text = Translator.translate("Clear")
+		reset_button.icon = clear_icon
+	else:
+		reset_button.tooltip_text = Translator.translate("Reset to default")
+		reset_button.icon = reload_icon
 
 func _on_resized() -> void:
 	widget.position = Vector2(size.x - panel_width, 3)
@@ -120,33 +150,15 @@ func _color_modification(value: String, enable_alpha: bool) -> void:
 	setter.call(ColorParser.text_to_color(value, Color(), enable_alpha))
 	post_modification()
 
-func _dropdown_modification(value: int) -> void:
+func _generic_modification(value: Variant) -> void:
 	setter.call(value)
 	post_modification()
 
-func _number_dropdown_modification(value: String) -> void:
-	var actual_number := NumstringParser.evaluate(value)
-	actual_number = clampf(actual_number, widget.min_value, widget.max_value)
-	value = var_to_str(actual_number)
-	if value == "nan":
+func _float_modification_with_nan_reset(value: float) -> void:
+	if is_nan(value):
 		setter.call(default)
 	else:
-		setter.call(actual_number)
-	post_modification()
-
-# TODO This was written very hastily, probably has a lot of redundancy.
-func _fps_limit_dropdown_modification(value: String) -> void:
-	var actual_number: int
-	if value == Translator.translate("Unlimited"):
-		actual_number = 0
-	else:
-		actual_number = roundi(NumstringParser.evaluate(value))
-	
-	if is_nan(actual_number) or actual_number == INF:
-		actual_number = 0
-	elif actual_number != 0:
-		actual_number = clampi(actual_number, widget.min_value, widget.max_value)
-	setter.call(actual_number)
+		setter.call(value)
 	post_modification()
 
 
@@ -169,11 +181,11 @@ func update_widgets() -> void:
 			var setting_str := setting_value.to_html(show_alpha)
 			widget.value = setting_str
 			reset_button.visible = (not disabled and getter.call().to_html() != default.to_html())
-		Type.DROPDOWN:
+		Type.DROPDOWN, Type.FILE_PATH:
 			widget.set_value(getter.call())
 			reset_button.visible = (not disabled and getter.call() != default)
-		Type.NUMBER_DROPDOWN:
-			widget.set_value(widget.to_str(getter.call()))
+		Type.NUMERIC_DROPDOWN:
+			widget.set_value(getter.call())
 			reset_button.visible = not (disabled or is_equal_approx(getter.call(), default))
 	queue_redraw()
 
@@ -199,11 +211,25 @@ func _draw() -> void:
 	elif dim_text:
 		color = ThemeUtils.dimmer_text_color
 	
+	var text_pos_x := 4.0
 	var non_panel_width := size.x - panel_width
+	var text_space := non_panel_width - 16
+	if is_instance_valid(info_button):
+		text_pos_x += info_button.size.x + (size.y - info_button.size.x) / 2.0
+		text_space -= size.y
 	var text_obj := TextLine.new()
-	text_obj.add_string(text, ThemeUtils.regular_font, 13)
-	text_obj.width = non_panel_width - 16
+	text_obj.add_string(text, ThemeUtils.main_font, 13)
+	text_obj.width = text_space
 	text_obj.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	text_obj.draw(ci, Vector2(4, 5), color)
-	get_theme_stylebox("panel", "SubtleFlatPanel").draw(ci, Rect2(non_panel_width - 2, 2,
-			panel_width, size.y - 4))
+	text_obj.draw(ci, Vector2(text_pos_x, 5), color)
+	get_theme_stylebox("panel", "SubtleFlatPanel").draw(ci, Rect2(non_panel_width - 2, 2, panel_width, size.y - 4))
+
+	if text_space < ThemeUtils.main_font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x:
+		tooltip_rect = Rect2(text_pos_x, 5, text_space, size.y - 10)
+	else:
+		tooltip_rect = Rect2(NAN, NAN, NAN, NAN)
+
+func _get_tooltip(at_position: Vector2) -> String:
+	if tooltip_rect.is_finite() and tooltip_rect.has_point(at_position):
+		return text
+	return ""

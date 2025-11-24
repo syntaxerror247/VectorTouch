@@ -20,13 +20,11 @@ static func create_shortcut_button(action: String, disabled := false, custom_tex
 	var btn := create_button(custom_text, HandlerGUI.throw_action_event.bind(action),
 			disabled, custom_icon, no_modulation, ShortcutUtils.get_action_showcase_text(action))
 	
-	var shortcut_events := ShortcutUtils.get_action_all_valid_shortcuts(action)
-	if not shortcut_events.is_empty():
-		var shortcut_obj := Shortcut.new()
-		shortcut_obj.events = shortcut_events
-		btn.shortcut = shortcut_obj
-		btn.shortcut_in_tooltip = false
-		btn.shortcut_feedback = false
+	if not ShortcutUtils.get_action_all_valid_shortcuts(action).is_empty():
+		var shortcuts := ShortcutsRegistration.new()
+		shortcuts.add_shortcut(action, btn.pressed.emit)
+		HandlerGUI.register_shortcuts(btn, shortcuts)
+	
 	return btn
 
 static func create_shortcut_button_without_icon(action: String, disabled := false, custom_text := "") -> Button:
@@ -39,13 +37,10 @@ static func create_shortcut_button_without_icon(action: String, disabled := fals
 	var btn := create_button(custom_text, HandlerGUI.throw_action_event.bind(action),
 			disabled, null, false, ShortcutUtils.get_action_showcase_text(action))
 	
-	var shortcut_events := ShortcutUtils.get_action_all_valid_shortcuts(action)
-	if not shortcut_events.is_empty():
-		var shortcut_obj := Shortcut.new()
-		shortcut_obj.events = shortcut_events
-		btn.shortcut = shortcut_obj
-		btn.shortcut_in_tooltip = false
-		btn.shortcut_feedback = false
+	if not ShortcutUtils.get_action_all_valid_shortcuts(action).is_empty():
+		var shortcuts := ShortcutsRegistration.new()
+		shortcuts.add_shortcut(action, btn.pressed.emit)
+		HandlerGUI.register_shortcuts(btn, shortcuts)
 	
 	return btn
 
@@ -107,8 +102,7 @@ static func create_shortcut_checkbox(action: String, start_toggled: bool, disabl
 		return
 	
 	return create_checkbox(TranslationUtils.get_action_description(action, true),
-			HandlerGUI.throw_action_event.bind(action),
-			start_toggled, disabled, ShortcutUtils.get_action_showcase_text(action))
+			HandlerGUI.throw_action_event.bind(action), start_toggled, disabled, ShortcutUtils.get_action_showcase_text(action))
 
 static func create_checkbox(text: String, toggle_action: Callable, start_toggled: bool, disabled := false, dim_text := "") -> CheckBox:
 	# Create main checkbox.
@@ -163,8 +157,7 @@ func _order_signals(btn: Button) -> void:
 			btn.pressed.connect(connection.callable, CONNECT_DEFERRED)
 	set_block_signals(true)
 
-func setup(buttons: Array[Button], align_left := false, min_width := -1.0,
-max_height := -1.0, separator_indices := PackedInt32Array()) -> void:
+func setup(buttons: Array[Button], align_left := false, min_width := -1.0, separator_indices := PackedInt32Array()) -> void:
 	var main_container := _common_initial_setup()
 	# Add the buttons.
 	if buttons.is_empty():
@@ -181,7 +174,9 @@ max_height := -1.0, separator_indices := PackedInt32Array()) -> void:
 	await main_container.ready
 	if min_width > 0:
 		custom_minimum_size.x = min_width
-	if max_height > 0 and max_height < get_minimum_size().y:
+	
+	var max_height := get_window().size.y / (get_tree().root.content_scale_factor * 2.0) - 16.0
+	if get_minimum_size().y > max_height:
 		custom_minimum_size.y = max_height
 		main_container.get_parent().vertical_scroll_mode = ScrollContainer.SCROLL_MODE_AUTO
 

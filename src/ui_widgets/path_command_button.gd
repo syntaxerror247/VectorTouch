@@ -10,10 +10,10 @@ signal pressed_custom(cmd_char: String)
 func _ready() -> void:
 	text = ""
 	queue_redraw()
-	pressed.connect(emit_pressed_custom)
-
-func emit_pressed_custom() -> void:
-	pressed_custom.emit(command_char)
+	pressed.connect(
+		func() -> void:
+			pressed_custom.emit(command_char)
+	)
 
 func set_invalid(new_state := true) -> void:
 	disabled = new_state
@@ -38,12 +38,17 @@ func _draw() -> void:
 	var normal_text := " " + TranslationUtils.get_path_command_description(command_char, true)
 	# Try with font size 13.
 	text_obj.add_string(bold_text, ThemeUtils.bold_font, 13)
-	text_obj.add_string(normal_text, ThemeUtils.regular_font, 13)
+	text_obj.add_string(normal_text, ThemeUtils.main_font, 13)
 	if text_obj.get_line_width() > max_size:
 		# Try with font size 12.
 		text_obj.clear()
 		text_obj.add_string(bold_text, ThemeUtils.bold_font, 12)
-		text_obj.add_string(normal_text, ThemeUtils.regular_font, 12)
+		text_obj.add_string(normal_text, ThemeUtils.main_font, 12)
 		if text_obj.get_line_width() > max_size:
 			custom_minimum_size.x = size.x + 4 + text_obj.get_line_width() - max_size
 	text_obj.draw(get_canvas_item(), Vector2(left_margin + 2, 3), text_color)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.is_pressed() and event.keycode == OS.find_keycode_from_string(command_char):
+		pressed.emit()

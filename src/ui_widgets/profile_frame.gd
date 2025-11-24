@@ -1,12 +1,12 @@
 # This is similar to SettingFrame, but specifically for dropdowns without a default value.
 extends MarginContainer
 
-const Dropdown = preload("res://src/ui_widgets/dropdown.gd")
+const BasicDropdown = preload("res://src/ui_widgets/dropdown_basic.gd")
 
 signal value_changed
 signal defaults_applied
 
-const DropdownScene = preload("res://src/ui_widgets/dropdown.tscn")
+const BasicDropdownScene = preload("res://src/ui_widgets/dropdown_basic.tscn")
 
 var getter: Callable
 var setter: Callable
@@ -14,15 +14,16 @@ var disabled_check_callback: Callable
 var text: String
 
 var ci := get_canvas_item()
-var dropdown: Dropdown
+var dropdown: BasicDropdown
 
 var is_hovered := false
+var tooltip_rect := Rect2(NAN, NAN, NAN, NAN)
 
 @onready var button: Button = $HBoxContainer/Button
 @onready var control: Control = $HBoxContainer/Control
 
 func setup_dropdown(values: Array, value_text_map: Dictionary) -> void:
-	dropdown = DropdownScene.instantiate()
+	dropdown = BasicDropdownScene.instantiate()
 	dropdown.values = values
 	dropdown.value_text_map = value_text_map
 
@@ -57,7 +58,7 @@ func button_update_disabled() -> void:
 
 func setup_size() -> void:
 	dropdown.position = Vector2(control.size.x - 102, 1)
-	dropdown.size = Vector2(98, 22)
+	dropdown.size = Vector2(100, 22)
 	queue_redraw()
 
 # value can be String for dropdown or int for enum dropdown.
@@ -78,5 +79,20 @@ func _on_mouse_exited() -> void:
 func _draw() -> void:
 	if is_hovered:
 		get_theme_stylebox("hover", "FlatButton").draw(ci, Rect2(Vector2.ZERO, size))
-	ThemeUtils.regular_font.draw_string(ci, Vector2(4, 19), text,
-			HORIZONTAL_ALIGNMENT_LEFT, -1, 13, ThemeUtils.text_color)
+	
+	var text_width := size.x - button.size.x - dropdown.size.x - 16
+	var text_obj := TextLine.new()
+	text_obj.add_string(text, ThemeUtils.main_font, 13)
+	text_obj.width = text_width
+	text_obj.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	text_obj.draw(ci, Vector2(4, 5), ThemeUtils.text_color)
+	
+	if text_width < ThemeUtils.main_font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13).x:
+		tooltip_rect = Rect2(4, 5, text_width, size.y - 10)
+	else:
+		tooltip_rect = Rect2(NAN, NAN, NAN, NAN)
+
+func _get_tooltip(at_position: Vector2) -> String:
+	if tooltip_rect.is_finite() and tooltip_rect.has_point(at_position):
+		return text
+	return ""

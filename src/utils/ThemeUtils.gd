@@ -1,8 +1,8 @@
 @abstract class_name ThemeUtils
 
-const regular_font = preload("res://assets/fonts/Font.ttf")
-const bold_font = preload("res://assets/fonts/FontBold.ttf")
-const mono_font = preload("res://assets/fonts/FontMono.ttf")
+static var main_font: FontVariation = preload("res://assets/fonts/MainFont.tres")
+static var bold_font: FontVariation = preload("res://assets/fonts/BoldFont.tres")
+static var mono_font: FontVariation = preload("res://assets/fonts/MonoFont.tres")
 
 static var base_color: Color
 static var accent_color: Color
@@ -245,16 +245,29 @@ static func recalculate_colors() -> void:
 	selected_tab_color = softer_intermediate_hover_color.lerp(accent_color, 0.2)
 	selected_tab_border_color = accent_color
 
+static func rebuild_fonts() -> void:
+	main_font.base_font = FontFile.new()
+	if not Configs.savedata.main_font_path.is_empty():
+		main_font.base_font.load_dynamic_font(Configs.savedata.main_font_path)
+	
+	bold_font.base_font = FontFile.new()
+	if not Configs.savedata.bold_font_path.is_empty():
+		bold_font.base_font.load_dynamic_font(Configs.savedata.bold_font_path)
+	
+	mono_font.base_font = FontFile.new()
+	if not Configs.savedata.mono_font_path.is_empty():
+		mono_font.base_font.load_dynamic_font(Configs.savedata.mono_font_path)
 
 static func generate_theme() -> Theme:
 	recalculate_colors()
 	var theme := Theme.new()
-	theme.default_font = regular_font
+	theme.default_font = main_font
 	theme.default_font_size = 13
 	_setup_panelcontainer(theme)
 	_setup_button(theme)
 	_setup_checkbox(theme)
 	_setup_checkbutton(theme)
+	_setup_dropdown(theme)
 	_setup_itemlist(theme)
 	_setup_lineedit(theme)
 	_setup_scrollbar(theme)
@@ -269,7 +282,7 @@ static func generate_theme() -> Theme:
 
 static func generate_and_apply_theme() -> void:
 	var default_theme := ThemeDB.get_default_theme()
-	default_theme.default_font = regular_font
+	default_theme.default_font = main_font
 	default_theme.default_font_size = 13
 	var generated_theme := generate_theme()
 	default_theme.merge_with(generated_theme)
@@ -973,6 +986,28 @@ static func _setup_itemlist(theme: Theme) -> void:
 	theme.set_stylebox("hovered_selected", "ItemList", hovered_selected_item_stylebox)
 	theme.set_stylebox("hovered_selected_focus", "ItemList", hovered_selected_item_stylebox)
 
+static func _setup_dropdown(theme: Theme) -> void:
+	theme.add_type("Dropdown")
+	theme.set_type_variation("Dropdown", "Control")
+	theme.set_font_size("font_size", "Dropdown", 12)
+	theme.set_font("font", "Dropdown", main_font)
+	theme.set_color("font_color", "Dropdown", ThemeUtils.editable_text_color)
+	
+	var stylebox := StyleBoxFlat.new()
+	stylebox.set_corner_radius_all(5)
+	stylebox.set_border_width_all(2)
+	stylebox.content_margin_left = 5.0
+	stylebox.content_margin_right = 5.0
+	
+	var normal_stylebox := stylebox.duplicate()
+	normal_stylebox.bg_color = line_edit_inner_color
+	normal_stylebox.border_color = line_edit_normal_border_color
+	theme.set_stylebox("normal", "Dropdown", normal_stylebox)
+	
+	var hover_stylebox := stylebox.duplicate()
+	hover_stylebox.draw_center = false
+	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
+	theme.set_stylebox("hover", "Dropdown", hover_stylebox)
 
 static func _setup_lineedit(theme: Theme) -> void:
 	theme.add_type("LineEdit")
@@ -1014,8 +1049,6 @@ static func _setup_lineedit(theme: Theme) -> void:
 	
 	theme.add_type("LeftConnectedLineEdit")
 	theme.set_type_variation("LeftConnectedLineEdit", "LineEdit")
-	theme.set_font_size("font_size", "LeftConnectedLineEdit", 12)
-	theme.set_font("font", "LeftConnectedLineEdit", mono_font)
 	var left_connected_stylebox := StyleBoxFlat.new()
 	left_connected_stylebox.corner_radius_top_left = 0
 	left_connected_stylebox.corner_radius_bottom_left = 0
@@ -1052,8 +1085,6 @@ static func _setup_lineedit(theme: Theme) -> void:
 	
 	theme.add_type("RightConnectedLineEdit")
 	theme.set_type_variation("RightConnectedLineEdit", "LineEdit")
-	theme.set_font_size("font_size", "RightConnectedLineEdit", 12)
-	theme.set_font("font", "RightConnectedLineEdit", mono_font)
 	var right_connected_stylebox := StyleBoxFlat.new()
 	right_connected_stylebox.corner_radius_top_left = 5
 	right_connected_stylebox.corner_radius_bottom_left = 5
@@ -1223,6 +1254,7 @@ static func _setup_label(theme: Theme) -> void:
 	theme.set_color("default_color", "RichTextLabel", text_color)
 	theme.set_color("selection_color", "RichTextLabel", selection_color)
 	theme.set_font("bold_font", "RichTextLabel", bold_font)
+	theme.set_font("mono_font", "RichTextLabel", mono_font)
 
 
 static func _setup_tabcontainer(theme: Theme) -> void:
@@ -1308,18 +1340,13 @@ static func _setup_textedit(theme: Theme) -> void:
 	theme.set_stylebox("normal", "TextEdit", normal_stylebox)
 	theme.set_stylebox("read_only", "TextEdit", normal_stylebox)
 	
-	var focus_stylebox := StyleBoxFlat.new()
+	var focus_stylebox := normal_stylebox.duplicate()
 	focus_stylebox.draw_center = false
 	focus_stylebox.border_color = line_edit_focus_color
-	focus_stylebox.set_border_width_all(2)
-	focus_stylebox.set_corner_radius_all(5)
 	theme.set_stylebox("focus", "TextEdit", focus_stylebox)
 	
-	var hover_stylebox := StyleBoxFlat.new()
-	hover_stylebox.draw_center = false
+	var hover_stylebox := focus_stylebox.duplicate()
 	hover_stylebox.border_color = strong_hover_overlay_color if is_theme_dark else stronger_hover_overlay_color
-	hover_stylebox.set_border_width_all(2)
-	hover_stylebox.set_corner_radius_all(5)
 	theme.set_stylebox("hover", "TextEdit", hover_stylebox)
 
 
@@ -1339,7 +1366,7 @@ static func _setup_tooltip(theme: Theme) -> void:
 	theme.add_type("TooltipLabel")
 	theme.set_color("font_color", "TooltipLabel", text_color)
 	theme.set_font_size("font_size", "TooltipLabel", 14)
-	theme.set_font("font", "TooltipLabel", regular_font)
+	theme.set_font("font", "TooltipLabel", main_font)
 
 
 static func _setup_splitcontainer(theme: Theme) -> void:
