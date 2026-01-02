@@ -124,7 +124,6 @@
 		"MultiplayerAPI",
 		"MultiplayerSpawner",
 		"MultiplayerSynchronizer",
-		"Mutex",
 		"NavigationAgent2D",
 		"NavigationAgent3D",
 		"NavigationMesh",
