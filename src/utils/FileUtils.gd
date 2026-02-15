@@ -126,9 +126,6 @@ static func open_xml_export_dialog(xml: String, file_name: String) -> void:
 			)
 
 static func _finish_export(file_path: String, export_data: ImageExportData) -> void:
-	if not (file_path.contains("/Documents/") or file_path.contains("/Download/")):
-		OS.alert("Saving is only allowed in the Documents or Download directories.", "Save Failed")
-		return
 	if file_path.get_extension().is_empty():
 		file_path += "." + export_data.format
 	
@@ -184,13 +181,6 @@ static func open_xml_import_dialog(completion_callback: Callable) -> void:
 
 # On web, the completion callback can't use the full file path.
 static func open_custom_import_dialog(extensions: PackedStringArray, completion_callback: Callable, multi_select := false) -> void:
-	var permission := "android.permission.READ_MEDIA_IMAGES"
-	if Configs.current_sdk < 33:
-		permission = "android.permission.READ_EXTERNAL_STORAGE"
-	
-	if not OS.request_permission(permission):
-		return
-	
 	var extensions_with_dots := PackedStringArray()
 	for extension in extensions:
 		extensions_with_dots.append("." + extension)
@@ -223,9 +213,13 @@ static func open_custom_import_dialog(extensions: PackedStringArray, completion_
 # Preprocessing step where all files with wrong extensions are discarded.
 static func _start_file_import_process(file_paths: PackedStringArray, completion_callback: Callable,
 allowed_extensions: PackedStringArray, show_incorrect_extension_errors := true) -> void:
-	if not show_incorrect_extension_errors:
+	if not file_paths.is_empty() and file_paths[0].begins_with("content://"):
+		_file_import_proceed(file_paths, completion_callback)
+		return
+	
+	if (not show_incorrect_extension_errors):
 		for i in range(file_paths.size() - 1, -1, -1):
-			if not Utils.get_lowercase_extension(file_paths[i]) in allowed_extensions:
+			if (not Utils.get_lowercase_extension(file_paths[i]) in allowed_extensions):
 				file_paths.remove_at(i)
 		if not file_paths.is_empty():
 			_file_import_proceed(file_paths, completion_callback)
@@ -251,7 +245,7 @@ allowed_extensions: PackedStringArray, show_incorrect_extension_errors := true) 
 			passed_list = incorrect_extension_file_paths
 		else:
 			error_text += Translator.translate("{file_name} was discarded.").format(
-					{"file_name": incorrect_extension_file_paths[0].get_file()})
+					{"file_name": Utils.get_file_name(incorrect_extension_file_paths[0], false)})
 		
 		var options_dialog := OptionsDialogScene.instantiate()
 		HandlerGUI.add_dialog(options_dialog)
@@ -284,7 +278,7 @@ static func _file_import_proceed(file_paths: PackedStringArray, completion_callb
 			var options_dialog := OptionsDialogScene.instantiate()
 			HandlerGUI.add_dialog(options_dialog)
 			var error := Translator.translate("{file_name} couldn't be opened.").format(
-					{"file_name": Utils.simplify_file_path(file_path).get_file()})
+					{"file_name": Utils.get_file_name(Utils.simplify_file_path(file_path), false)})
 			if not FileAccess.file_exists(file_path):
 				error += "\n" + Translator.translate("Check if the file still exists in the selected file path.")
 			if not file_paths.is_empty():

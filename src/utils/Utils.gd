@@ -30,8 +30,13 @@ static func is_string_upper(string: String) -> bool:
 static func is_string_lower(string: String) -> bool:
 	return string.to_lower() == string
 
-static func get_file_name(string: String) -> String:
-	return string.get_file().trim_suffix("." + string.get_extension())
+static func get_file_name(string: String, trim_extension := true) -> String:
+	if string.begins_with("content://"):
+		string = string.uri_file_decode()
+	if trim_extension:
+		return string.get_file().trim_suffix("." + string.get_extension())
+	else:
+		return string.get_file()
 
 static func get_lowercase_extension(string: String) -> String:
 	return string.get_extension().to_lower()

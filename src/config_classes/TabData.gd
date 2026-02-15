@@ -145,7 +145,7 @@ func _sync() -> void:
 	
 	if is_saved():
 		# The extension is included in the presented name because it's always in the end and can't hide useless info.
-		presented_name = svg_file_path.get_file()
+		presented_name = Utils.get_file_name(svg_file_path, false)
 		empty_unsaved = false
 		
 		if OS.has_feature("web"):
