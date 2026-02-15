@@ -292,7 +292,7 @@ func get_save_name() -> String:
 	if selected_file_paths.is_empty() or selected_file_paths[0].get_extension().is_empty():
 		return default_saved_file
 	else:
-		return selected_file_paths[0].get_file()
+		return Utils.get_file_name(selected_file_paths[0], false)
 
 # For optimization, only generate the visible files' images.
 func _setup_file_images() -> void:
