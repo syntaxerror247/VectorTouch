@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="VectorTouch"
-config/version="1.0-alpha4"
+config/version="1.0-alpha5"
 config/tags=PackedStringArray("application", "mobile", "project")
 run/main_scene="uid://bihwwoedqcyo8"
 config/use_custom_user_dir=true
