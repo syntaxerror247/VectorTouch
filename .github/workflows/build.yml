@@ -98,28 +98,33 @@ jobs:
         name: Build Godot debug template for Android
         run: |
           cd godot
-          scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_debug
           scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_debug generate_android_binaries=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_debug.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_debug.apk
-          mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
+          mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source_debug.zip
 
       - if: ${{ steps.cache-template.outputs.cache-hit != 'true' && env.BUILD_TYPE == 'release' }}
         name: Build Godot release template for Android
         run: |
           cd godot
+          scons p=android arch=x86_64 ${BUILD_OPTIONS} lto=thin target=template_release debug_symbols=yes
           scons p=android arch=arm32 ${BUILD_OPTIONS} target=template_release debug_symbols=yes
           scons p=android arch=arm64 ${BUILD_OPTIONS} target=template_release debug_symbols=yes separate_debug_symbols=yes generate_android_binaries=yes
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
           mv ./bin/android_release.apk ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_release.apk
           mv ./bin/android_source.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip
-          mv ./bin/android-template-release-native-symbols.zip ~/.local/share/godot/native_debug_symbols.zip
+          mv ./bin/android-template-release-native-symbols.zip ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/native_debug_symbols.zip
 
       - name: Set up android build template
         run: |
+          TEMPLATE="android_source.zip"
+          if [ "${BUILD_TYPE}" = "debug" ]; then
+            TEMPLATE="android_source_debug.zip"
+          fi
+
           cd vectortouch
           mkdir -p android/build
-          unzip -q ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/android_source.zip -d android/build
+          unzip -q ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/${TEMPLATE} -d android/build
           touch android/build/.gdignore
           echo "${GODOT_VERSION}.${GODOT_RELEASE}" > android/.build_version
 
@@ -139,7 +144,7 @@ jobs:
         run: |
           cd vectortouch
           mkdir -p artifacts
-          godot --headless --export-debug "Android" artifacts/VectorTouch-debug.apk
+          godot --headless --export-debug "Android-debug" artifacts/VectorTouch-debug.apk
 
       - name: Export release project
         if: env.BUILD_TYPE == 'release'
