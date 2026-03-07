@@ -13,7 +13,7 @@ For the desktop version of GodSVG, please visit the [GodSVG repository](https://
 
 VectorTouch is available on the [Google Play Store](https://play.google.com/store/apps/details?id=com.vectortouch.app)
 
-If you prefer not to use the Play Store, you can download the APK directly from the [releases](https://github.com/syntaxerror247/VectorTouch/releases)
+If you prefer not to use the Play Store, you can download the Uriversal APK (arm32, arm64, x86_64) directly from the [releases](https://github.com/syntaxerror247/VectorTouch/releases)
 
 To verify the APK signature, check if the release APK is signed with the correct certificate by comparing the following fingerprints:
 ```
